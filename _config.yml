@@ -3,17 +3,17 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
-subtitle: ''
-description: ''
-keywords:
+title: Innovation Louke's Blog
+subtitle: 'Welcome Strangers'
+description: '二进制新手 Java菜鸡 大神路过轻喷QAQ'
+keywords: 
 author: InnovationLou
 language: zh
 timezone: 'Asia/Shanghai'
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: https://innovationlou.github.io/
+url: https://www.innnovation.cn/
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
@@ -102,4 +102,7 @@ theme: landscape
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
-  type: ''
+  type: git
+  repo: https://github.com/InnovationLou/InnovationLou.github.io
+  # example, https://github.com/hexojs/hexojs.github.io
+  branch: master
