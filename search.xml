@@ -3,7 +3,7 @@
   <entry>
     <title>逆向工程学习录——Detour / Hook Functions</title>
     <url>/2020/12/29/Detour%20%20Hook%20Functions/</url>
-    <content><![CDATA[<p>在游戏逆向中我们需要在某个执行函数的地方添加自己的代码。<br>案例：HackMe.exe</p>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting/dist/Meting.min.js"></script><p>在游戏逆向中我们需要在某个执行函数的地方添加自己的代码。<br>案例：HackMe.exe</p>
 <p>每按一次空格扣两滴血<br>目标：hook扣血函数，改为double加血<br><img src="https://img-blog.csdnimg.cn/20201229150322967.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3VkYWhjaQ==,size_16,color_FFFFFF,t_70"><br>拉进Od后定位到扣血的函数如下图</p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><code class="hljs asm">00BB2740    55              push ebp<br>00BB2741    8BEC            mov ebp,esp<br>00BB2743    81EC CC000000   sub esp,0xCC<br>00BB2749    53              push ebx<br>00BB274A    56              push esi                                 ; HackMe.<br><br>00BB274B    57              push edi                                 ; HackMe.<br><br>00BB274C    51              push ecx                                 ; HackMe.<br><br>00BB274D    8DBD 34FFFFFF   lea edi,dword ptr ss:[ebp-0xCC]<br>00BB2753    B9 33000000     mov ecx,0x33<br>00BB2758    B8 CCCCCCCC     mov eax,0xCCCCCCCC<br>00BB275D    F3:AB           rep stos dword ptr es:[edi]<br>00BB275F    59              pop ecx                                  ; kernel32.771F6359<br>00BB2760    894D F8         mov dword ptr ss:[ebp-0x8],ecx           ; HackMe.<br><br>00BB2763    8B45 F8         mov eax,dword ptr ss:[ebp-0x8]<br>00BB2766    8B08            mov ecx,dword ptr ds:[eax]<br>00BB2768    2B4D 08         sub ecx,dword ptr ss:[ebp+0x8]<br>00BB276B    8B55 F8         mov edx,dword ptr ss:[ebp-0x8]<br>00BB276E    890A            mov dword ptr ds:[edx],ecx               ; HackMe.<br><br>00BB2770    8B45 F8         mov eax,dword ptr ss:[ebp-0x8]<br>00BB2773    8338 00         cmp dword ptr ds:[eax],0x0<br>00BB2776    7F 07           jg short HackMe.00BB277F<br>00BB2778    8B45 F8         mov eax,dword ptr ss:[ebp-0x8]<br>00BB277B    C640 08 01      mov byte ptr ds:[eax+0x8],0x1<br>00BB277F    5F              pop edi                                  ; kernel32.771F6359<br>00BB2780    5E              pop esi                                  ; kernel32.771F6359<br>00BB2781    5B              pop ebx                                  ; kernel32.771F6359<br>00BB2782    8BE5            mov esp,ebp<br>00BB2784    5D              pop ebp                                  ; kernel32.771F6359<br>00BB2785    C2 0400         retn 0x4<br></code></pre></td></tr></table></figure>
 
@@ -26,7 +26,7 @@
   <entry>
     <title>记一次用python做的多元线性回归分析</title>
     <url>/2020/01/24/python%E5%A4%9A%E5%85%83%E7%BA%BF%E6%80%A7%E5%9B%9E%E5%BD%92%E5%88%86%E6%9E%90/</url>
-    <content><![CDATA[<h2 id="相关背景"><a href="#相关背景" class="headerlink" title="相关背景"></a>相关背景</h2><p>调查分析某鱼主播收到付费礼物收入和免费礼物收入<br>模型如下：<br><img src="https://img-blog.csdnimg.cn/20200124123603196.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3VkYWhjaQ==,size_16,color_FFFFFF,t_70"></p>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting/dist/Meting.min.js"></script><h2 id="相关背景"><a href="#相关背景" class="headerlink" title="相关背景"></a>相关背景</h2><p>调查分析某鱼主播收到付费礼物收入和免费礼物收入<br>模型如下：<br><img src="https://img-blog.csdnimg.cn/20200124123603196.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3VkYWhjaQ==,size_16,color_FFFFFF,t_70"></p>
 <h3 id="抓取数据"><a href="#抓取数据" class="headerlink" title="; 抓取数据"></a><a name="_4">;</a> 抓取数据</h3><p>主播相关信息</p>
 <blockquote>
 <p>主播名,主播编号,礼物总收入,付费礼物收入,免费礼物收入,礼物人数,弹幕人数,直播时长,人气峰值,订阅变化,活跃观众,订阅数,抓取时间,直播类型</p>
@@ -54,7 +54,7 @@
   <entry>
     <title>测试代码</title>
     <url>/2021/06/08/%E6%B5%8B%E8%AF%95%E4%BB%A3%E7%A0%81/</url>
-    <content><![CDATA[<figure class="highlight cpp"><table><tr><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span><span class="hljs-meta-string">&lt;stdio&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;<br>	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting/dist/Meting.min.js"></script><figure class="highlight cpp"><table><tr><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span><span class="hljs-meta-string">&lt;stdio&gt;</span></span><br><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;<br>	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
 
 ]]></content>
       <categories>
@@ -68,7 +68,7 @@
   <entry>
     <title>火绒安全一面病毒样本分析</title>
     <url>/2021/03/15/%E7%81%AB%E7%BB%92%E5%AE%89%E5%85%A8%E4%B8%80%E9%9D%A2%E7%97%85%E6%AF%92%E6%A0%B7%E6%9C%AC%E5%88%86%E6%9E%90/</url>
-    <content><![CDATA[<p>Summary ：</p>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="https://cdn.jsdelivr.net/npm/meting/dist/Meting.min.js"></script><p>Summary ：</p>
 <p>病毒高危行为：</p>
 <ol>
 <li>请求一系列加密的未知IP的443端口，连接可能与其他恶意软件通讯;尝试HTTP但是全都失败了</li>
