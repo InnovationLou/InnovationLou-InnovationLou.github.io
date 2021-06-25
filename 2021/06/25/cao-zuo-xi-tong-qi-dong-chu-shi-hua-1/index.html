@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="逆向,Detour Hook">
+    <meta name="keywords" content="操作系统-硬件到软件启动初始化-设置工作模式与环境, Innovation Louke">
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>逆向工程学习录——Detour / Hook Functions | Innovation Louke</title>
+    <title>操作系统-硬件到软件启动初始化-设置工作模式与环境 | Innovation Louke</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -332,12 +332,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/4.jpg')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('https://pic.innnovation.cn//img/20210625223502.png')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">逆向工程学习录——Detour / Hook Functions</h1>
+                    <h1 class="description center-align post-title">操作系统-硬件到软件启动初始化-设置工作模式与环境</h1>
                 </div>
             </div>
         </div>
@@ -347,10 +347,104 @@
 
 
 
-<main class="container content">
+<main class="post-container content">
 
     
-    <!-- 文章内容详情 -->
+    <link rel="stylesheet" href="/libs/tocbot/tocbot.css">
+<style>
+    #articleContent h1::before,
+    #articleContent h2::before,
+    #articleContent h3::before,
+    #articleContent h4::before,
+    #articleContent h5::before,
+    #articleContent h6::before {
+        display: block;
+        content: " ";
+        height: 100px;
+        margin-top: -100px;
+        visibility: hidden;
+    }
+
+    #articleContent :focus {
+        outline: none;
+    }
+
+    .toc-fixed {
+        position: fixed;
+        top: 64px;
+    }
+
+    .toc-widget {
+        width: 345px;
+        padding-left: 20px;
+    }
+
+    .toc-widget .toc-title {
+        padding: 35px 0 15px 17px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        line-height: 1.5rem;
+    }
+
+    .toc-widget ol {
+        padding: 0;
+        list-style: none;
+    }
+
+    #toc-content {
+        padding-bottom: 30px;
+        overflow: auto;
+    }
+
+    #toc-content ol {
+        padding-left: 10px;
+    }
+
+    #toc-content ol li {
+        padding-left: 10px;
+    }
+
+    #toc-content .toc-link:hover {
+        color: #42b983;
+        font-weight: 700;
+        text-decoration: underline;
+    }
+
+    #toc-content .toc-link::before {
+        background-color: transparent;
+        max-height: 25px;
+
+        position: absolute;
+        right: 23.5vw;
+        display: block;
+    }
+
+    #toc-content .is-active-link {
+        color: #42b983;
+    }
+
+    #floating-toc-btn {
+        position: fixed;
+        right: 15px;
+        bottom: 76px;
+        padding-top: 15px;
+        margin-bottom: 0;
+        z-index: 998;
+    }
+
+    #floating-toc-btn .btn-floating {
+        width: 48px;
+        height: 48px;
+    }
+
+    #floating-toc-btn .btn-floating i {
+        line-height: 48px;
+        font-size: 1.4rem;
+    }
+</style>
+<div class="row">
+    <div id="main-content" class="col s12 m12 l9">
+        <!-- 文章内容详情 -->
 <div id="artDetail">
     <div class="card">
         <div class="card-content article-info">
@@ -359,12 +453,8 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/%E9%80%86%E5%90%91/">
-                                <span class="chip bg-color">逆向</span>
-                            </a>
-                        
-                            <a href="/tags/Detour-Hook/">
-                                <span class="chip bg-color">Detour Hook</span>
+                            <a href="/tags/OS/">
+                                <span class="chip bg-color">OS</span>
                             </a>
                         
                     </div>
@@ -375,8 +465,8 @@
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/%E9%80%86%E5%90%91%E5%88%86%E6%9E%90/" class="post-category">
-                                逆向分析
+                            <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="post-category">
+                                操作系统
                             </a>
                         
                     </div>
@@ -388,28 +478,28 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2020-12-29
+                    2021-06-25
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2021-06-08
+                    2021-06-25
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    498
+                    1.1k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    2 分
+                    4 分
                 </div>
                 
 
@@ -432,107 +522,116 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                <p>在游戏逆向中我们需要在某个执行函数的地方添加自己的代码。<br>案例：HackMe.exe</p>
-<p>每按一次空格扣两滴血<br>目标：hook扣血函数，改为double加血<br><img src="https://img-blog.csdnimg.cn/20201229150322967.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3VkYWhjaQ==,size_16,color_FFFFFF,t_70"><br>拉进Od后定位到扣血的函数如下图</p>
-<pre class="line-numbers language-asm" data-language="asm"><code class="language-asm">00BB2740    55              push ebp
-00BB2741    8BEC            mov ebp,esp
-00BB2743    81EC CC000000   sub esp,0xCC
-00BB2749    53              push ebx
-00BB274A    56              push esi                                 ; HackMe.
+                <blockquote>
+<p>部分代码来源于极客时间《操作系统45讲》，这里记录了我自己操作的过程和思路</p>
+</blockquote>
+<p>一个常规操作系统的启动如下图：</p>
+<p><img src="https://pic.innnovation.cn//img/20210625225319.jpeg" alt="HelloOS引导流程"></p>
+<p>而这里的helloOS中的文件我们称之为内核镜像文件，我们可以引导GRUB加载一个或者多个文件</p>
+<p>多文件加载时grub会解析如下图的文件然后加载：</p>
+<p><img src="https://pic.innnovation.cn//img/20210625225827.png" alt="内核映像文件格式"></p>
+<p>映像文件头描述符和文件描述符如下：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">
+<span class="token comment">//映像文件头描述符</span>
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">s_mlosrddsc</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">u64_t</span> mdc_mgic<span class="token punctuation">;</span> <span class="token comment">//映像文件标识</span>
+    <span class="token class-name">u64_t</span> mdc_sfsum<span class="token punctuation">;</span><span class="token comment">//未使用</span>
+    <span class="token class-name">u64_t</span> mdc_sfsoff<span class="token punctuation">;</span><span class="token comment">//未使用</span>
+    <span class="token class-name">u64_t</span> mdc_sfeoff<span class="token punctuation">;</span><span class="token comment">//未使用</span>
+    <span class="token class-name">u64_t</span> mdc_sfrlsz<span class="token punctuation">;</span><span class="token comment">//未使用</span>
+    <span class="token class-name">u64_t</span> mdc_ldrbk_s<span class="token punctuation">;</span><span class="token comment">//映像文件中二级引导器的开始偏移</span>
+    <span class="token class-name">u64_t</span> mdc_ldrbk_e<span class="token punctuation">;</span><span class="token comment">//映像文件中二级引导器的结束偏移</span>
+    <span class="token class-name">u64_t</span> mdc_ldrbk_rsz<span class="token punctuation">;</span><span class="token comment">//映像文件中二级引导器的实际大小</span>
+    <span class="token class-name">u64_t</span> mdc_ldrbk_sum<span class="token punctuation">;</span><span class="token comment">//映像文件中二级引导器的校验和</span>
+    <span class="token class-name">u64_t</span> mdc_fhdbk_s<span class="token punctuation">;</span><span class="token comment">//映像文件中文件头描述的开始偏移</span>
+    <span class="token class-name">u64_t</span> mdc_fhdbk_e<span class="token punctuation">;</span><span class="token comment">//映像文件中文件头描述的结束偏移</span>
+    <span class="token class-name">u64_t</span> mdc_fhdbk_rsz<span class="token punctuation">;</span><span class="token comment">//映像文件中文件头描述的实际大小</span>
+    <span class="token class-name">u64_t</span> mdc_fhdbk_sum<span class="token punctuation">;</span><span class="token comment">//映像文件中文件头描述的校验和</span>
+    <span class="token class-name">u64_t</span> mdc_filbk_s<span class="token punctuation">;</span><span class="token comment">//映像文件中文件数据的开始偏移</span>
+    <span class="token class-name">u64_t</span> mdc_filbk_e<span class="token punctuation">;</span><span class="token comment">//映像文件中文件数据的结束偏移</span>
+    <span class="token class-name">u64_t</span> mdc_filbk_rsz<span class="token punctuation">;</span><span class="token comment">//映像文件中文件数据的实际大小</span>
+    <span class="token class-name">u64_t</span> mdc_filbk_sum<span class="token punctuation">;</span><span class="token comment">//映像文件中文件数据的校验和</span>
+    <span class="token class-name">u64_t</span> mdc_ldrcodenr<span class="token punctuation">;</span><span class="token comment">//映像文件中二级引导器的文件头描述符的索引号</span>
+    <span class="token class-name">u64_t</span> mdc_fhdnr<span class="token punctuation">;</span><span class="token comment">//映像文件中文件头描述符有多少个</span>
+    <span class="token class-name">u64_t</span> mdc_filnr<span class="token punctuation">;</span><span class="token comment">//映像文件中文件头有多少个</span>
+    <span class="token class-name">u64_t</span> mdc_endgic<span class="token punctuation">;</span><span class="token comment">//映像文件结束标识</span>
+    <span class="token class-name">u64_t</span> mdc_rv<span class="token punctuation">;</span><span class="token comment">//映像文件版本</span>
+<span class="token punctuation">&#125;</span><span class="token class-name">mlosrddsc_t</span><span class="token punctuation">;</span>
 
-00BB274B    57              push edi                                 ; HackMe.
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">FHDSC_NMAX</span> <span class="token expression"><span class="token number">192</span> </span><span class="token comment">//文件名长度</span></span>
+<span class="token comment">//文件头描述符</span>
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">s_fhdsc</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">u64_t</span> fhd_type<span class="token punctuation">;</span><span class="token comment">//文件类型</span>
+    <span class="token class-name">u64_t</span> fhd_subtype<span class="token punctuation">;</span><span class="token comment">//文件子类型</span>
+    <span class="token class-name">u64_t</span> fhd_stuts<span class="token punctuation">;</span><span class="token comment">//文件状态</span>
+    <span class="token class-name">u64_t</span> fhd_id<span class="token punctuation">;</span><span class="token comment">//文件id</span>
+    <span class="token class-name">u64_t</span> fhd_intsfsoff<span class="token punctuation">;</span><span class="token comment">//文件在映像文件位置开始偏移</span>
+    <span class="token class-name">u64_t</span> fhd_intsfend<span class="token punctuation">;</span><span class="token comment">//文件在映像文件的结束偏移</span>
+    <span class="token class-name">u64_t</span> fhd_frealsz<span class="token punctuation">;</span><span class="token comment">//文件实际大小</span>
+    <span class="token class-name">u64_t</span> fhd_fsum<span class="token punctuation">;</span><span class="token comment">//文件校验和</span>
+    <span class="token keyword">char</span>   fhd_name<span class="token punctuation">[</span>FHDSC_NMAX<span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token comment">//文件名</span>
+<span class="token punctuation">&#125;</span><span class="token class-name">fhdsc_t</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-00BB274C    51              push ecx                                 ; HackMe.
+<p>我用的是windows10+VMware的方式进行开发：</p>
+<p>我在VMware中先建立了虚拟机：</p>
+<ul>
+<li>1GB</li>
+<li>1CPU</li>
+<li>100MB硬盘</li>
+<li>其他64位</li>
+</ul>
+<p>在Ubuntu64bit下生产硬盘</p>
+<p>在虚拟机中开辟一块全0的100MB的虚拟磁盘</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">
+dd bs&#x3D;512 if&#x3D;&#x2F;dev&#x2F;zero of&#x3D;hd.img count&#x3D;204800
 
-00BB274D    8DBD 34FFFFFF   lea edi,dword ptr ss:[ebp-0xCC]
-00BB2753    B9 33000000     mov ecx,0x33
-00BB2758    B8 CCCCCCCC     mov eax,0xCCCCCCCC
-00BB275D    F3:AB           rep stos dword ptr es:[edi]
-00BB275F    59              pop ecx                                  ; kernel32.771F6359
-00BB2760    894D F8         mov dword ptr ss:[ebp-0x8],ecx           ; HackMe.
+;bs:表示块大小，这里是512字节
+;if：表示输入文件，&#x2F;dev&#x2F;zero就是Linux下专门返回0数据的设备文件，读取它就返回0
+;of：表示输出文件，即我们的硬盘文件。
+;count：表示输出多少块<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-00BB2763    8B45 F8         mov eax,dword ptr ss:[ebp-0x8]
-00BB2766    8B08            mov ecx,dword ptr ds:[eax]
-00BB2768    2B4D 08         sub ecx,dword ptr ss:[ebp+0x8]
-00BB276B    8B55 F8         mov edx,dword ptr ss:[ebp-0x8]
-00BB276E    890A            mov dword ptr ds:[edx],ecx               ; HackMe.
+<p>然后将这个文件转换为可识别的虚拟磁盘：</p>
+<ul>
+<li>将文件转为设备并设置回环设备</li>
+<li>格式化为EXT4文件系统</li>
+<li>挂在虚拟磁盘到目录下</li>
+<li>安装GRUB</li>
+</ul>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sudo losetup -a #查看所有设备，我的机器上已经有十几个设备了，不能使用这些设备的名称
+sudo losetup &#x2F;dev&#x2F;loop15 hd.img #0-14都被占用了
+sudo mkfs.ext4 -q &#x2F;dev&#x2F;loop15
+sudo mount -o loop .&#x2F;hd.img .&#x2F;hdisk&#x2F; ;挂载硬盘文件
+sudo mkdir .&#x2F;hdisk&#x2F;boot&#x2F; ;建立boot目录
+第一步挂载虚拟硬盘文件为loop0回环设备
+sudo losetup &#x2F;dev&#x2F;loop15 hd.img
+sudo mount -o loop .&#x2F;hd.img .&#x2F;hdisk&#x2F; ;挂载硬盘文件
+第二步安装GRUB
+sudo grub-install --boot-directory&#x3D;.&#x2F;hdisk&#x2F;boot&#x2F; --force --allow-floppy &#x2F;dev&#x2F;loop15
+；--boot-directory 指向先前我们在虚拟硬盘中建立的boot目录。
+；--force --allow-floppy ：指向我们的虚拟硬盘设备文件&#x2F;dev&#x2F;loop0<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-00BB2770    8B45 F8         mov eax,dword ptr ss:[ebp-0x8]
-00BB2773    8338 00         cmp dword ptr ds:[eax],0x0
-00BB2776    7F 07           jg short HackMe.00BB277F
-00BB2778    8B45 F8         mov eax,dword ptr ss:[ebp-0x8]
-00BB277B    C640 08 01      mov byte ptr ds:[eax+0x8],0x1
-00BB277F    5F              pop edi                                  ; kernel32.771F6359
-00BB2780    5E              pop esi                                  ; kernel32.771F6359
-00BB2781    5B              pop ebx                                  ; kernel32.771F6359
-00BB2782    8BE5            mov esp,ebp
-00BB2784    5D              pop ebp                                  ; kernel32.771F6359
-00BB2785    C2 0400         retn 0x4<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>安装完毕后用sudo在**/hdisk/boot/grub/** 目录下建立一个<strong>grub.cfg 文本文件</strong>,grub会通过该文件找到系统镜像</p>
+<p>grub.cfg</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">
+menuentry &#39;HelloOS&#39; &#123; #名字随意
+insmod part_msdos
+insmod ext2
+set root&#x3D;&#39;hd0&#39; #我的机器只能指定hd0，表示第一块磁盘引导启动
+multiboot2 &#x2F;boot&#x2F;HelloOS.eki #加载boot目录下的HelloOS.eki文件
+boot #引导启动
+&#125;
+set timeout_style&#x3D;menu
+if [ &quot;$&#123;timeout&#125;&quot; &#x3D; 0 ]; then
+  set timeout&#x3D;10 #等待10秒钟自动启动
+fi<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<p>地址00BB2768 sub ecx,dword ptr ss:[ebp+0x8]<br>我们想要把该指令改为jmp [ourFunc]然后在ourFunc中在jmp回来。<br><img src="https://img-blog.csdnimg.cn/20201229150840103.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3VkYWhjaQ==,size_16,color_FFFFFF,t_70"></p>
-<p>代码实现</p>
-<pre class="line-numbers language-cpp" data-language="cpp"><code class="language-cpp"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span></span>
 
-<span class="token keyword">bool</span> <span class="token function">Hook</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span> toHook<span class="token punctuation">,</span> <span class="token keyword">void</span><span class="token operator">*</span> ourFunct<span class="token punctuation">,</span> <span class="token keyword">int</span> len<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-	<span class="token keyword">if</span> <span class="token punctuation">(</span>len <span class="token operator">&lt;</span> <span class="token number">5</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-		<span class="token keyword">return</span> <span class="token boolean">false</span><span class="token punctuation">;</span>
-	<span class="token punctuation">&#125;</span>
 
-	DWORD curProtection<span class="token punctuation">;</span>
-	<span class="token function">VirtualProtect</span><span class="token punctuation">(</span>toHook<span class="token punctuation">,</span> len<span class="token punctuation">,</span> PAGE_EXECUTE_READWRITE<span class="token punctuation">,</span> <span class="token operator">&amp;</span>curProtection<span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-	<span class="token function">memset</span><span class="token punctuation">(</span>toHook<span class="token punctuation">,</span> <span class="token number">0x90</span><span class="token punctuation">,</span> len<span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-	DWORD relativeAddress <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">(</span>DWORD<span class="token punctuation">)</span>ourFunct <span class="token operator">-</span> <span class="token punctuation">(</span>DWORD<span class="token punctuation">)</span>toHook<span class="token punctuation">)</span> <span class="token operator">-</span> <span class="token number">5</span><span class="token punctuation">;</span>
-
-	<span class="token operator">*</span><span class="token punctuation">(</span>BYTE<span class="token operator">*</span><span class="token punctuation">)</span>toHook <span class="token operator">=</span> <span class="token number">0xE9</span><span class="token punctuation">;</span>
-	<span class="token operator">*</span><span class="token punctuation">(</span>DWORD<span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">(</span>DWORD<span class="token punctuation">)</span>toHook <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token operator">=</span> relativeAddress<span class="token punctuation">;</span>
-
-	DWORD temp<span class="token punctuation">;</span>
-	<span class="token function">VirtualProtect</span><span class="token punctuation">(</span>toHook<span class="token punctuation">,</span> len<span class="token punctuation">,</span> curProtection<span class="token punctuation">,</span> <span class="token operator">&amp;</span>temp<span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-	<span class="token keyword">return</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-
-DWORD jmpBackAddy<span class="token punctuation">;</span>
-<span class="token keyword">void</span> <span class="token function">__declspec</span><span class="token punctuation">(</span>naked<span class="token punctuation">)</span> <span class="token function">ourFunct</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-	__asm <span class="token punctuation">&#123;</span>
-		add ecx<span class="token punctuation">,</span> ecx
-		mov edx<span class="token punctuation">,</span> <span class="token punctuation">[</span>ebp <span class="token operator">-</span> <span class="token number">8</span><span class="token punctuation">]</span>
-		jmp<span class="token punctuation">[</span>jmpBackAddy<span class="token punctuation">]</span>
-	<span class="token punctuation">&#125;</span>
-<span class="token punctuation">&#125;</span>
-
-DWORD WINAPI <span class="token function">MainThread</span><span class="token punctuation">(</span>LPVOID param<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-	<span class="token keyword">int</span> hookLength <span class="token operator">=</span> <span class="token number">6</span><span class="token punctuation">;</span>
-	DWORD hookAddress <span class="token operator">=</span> <span class="token number">0xBB2768</span><span class="token punctuation">;</span>
-	jmpBackAddy <span class="token operator">=</span> hookAddress <span class="token operator">+</span> hookLength<span class="token punctuation">;</span>
-
-	<span class="token function">Hook</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span><span class="token punctuation">)</span>hookAddress<span class="token punctuation">,</span> ourFunct<span class="token punctuation">,</span> hookLength<span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-	<span class="token keyword">while</span> <span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-		<span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">GetAsyncKeyState</span><span class="token punctuation">(</span>VK_ESCAPE<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">break</span><span class="token punctuation">;</span>
-		<span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">50</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-	<span class="token punctuation">&#125;</span>
-
-	<span class="token function">FreeLibraryAndExitThread</span><span class="token punctuation">(</span><span class="token punctuation">(</span>HMODULE<span class="token punctuation">)</span>param<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-
-	<span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-
-BOOL WINAPI <span class="token function">DllMain</span><span class="token punctuation">(</span>HINSTANCE hModule<span class="token punctuation">,</span> DWORD dwReason<span class="token punctuation">,</span> LPVOID lpReserved<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-	<span class="token keyword">switch</span> <span class="token punctuation">(</span>dwReason<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-	<span class="token keyword">case</span> DLL_PROCESS_ATTACH<span class="token operator">:</span>
-		<span class="token function">CreateThread</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> MainThread<span class="token punctuation">,</span> hModule<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-		<span class="token keyword">break</span><span class="token punctuation">;</span>
-	<span class="token punctuation">&#125;</span>
-
-	<span class="token keyword">return</span> TRUE<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>由于jmp指令最少占5字节，所以我们必须覆写连同目标指令下一条指令<br><img src="https://img-blog.csdnimg.cn/20201229151005170.png"><br>连起来为6字节</p>
-<p>运行HackMe 并注入dll<br><img src="https://img-blog.csdnimg.cn/20201229151118863.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3VkYWhjaQ==,size_16,color_FFFFFF,t_70"><br>跳转成功<br><img src="https://img-blog.csdnimg.cn/20201229151151317.png"></p>
-<p><img src="https://img-blog.csdnimg.cn/20201229151226638.png"></p>
+<p>硬盘设置好后如图，hdisk文件夹中就是hd.img磁盘镜像中的内容，修改hdisk即可修改磁盘</p>
+<p><img src="https://pic.innnovation.cn//img/20210625231753.png" alt="image-20210625231752977"></p>
+<p>然后将hd.img复制到物理机，通过StarWindConverter软件转换img磁盘格式为vmdk格式（让VMware可以加载）</p>
 
                 
             </div>
@@ -559,7 +658,7 @@ BOOL WINAPI <span class="token function">DllMain</span><span class="token punctu
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://blog.innnovation.cn/2020/12/29/detour-hook-functions/">https://blog.innnovation.cn/2020/12/29/detour-hook-functions/</a>
+                    <a href="https://blog.innnovation.cn/2021/06/25/cao-zuo-xi-tong-qi-dong-chu-shi-hua-1/">https://blog.innnovation.cn/2021/06/25/cao-zuo-xi-tong-qi-dong-chu-shi-hua-1/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -597,12 +696,8 @@ BOOL WINAPI <span class="token function">DllMain</span><span class="token punctu
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/%E9%80%86%E5%90%91/">
-                                    <span class="chip bg-color">逆向</span>
-                                </a>
-                            
-                                <a href="/tags/Detour-Hook/">
-                                    <span class="chip bg-color">Detour Hook</span>
+                                <a href="/tags/OS/">
+                                    <span class="chip bg-color">OS</span>
                                 </a>
                             
                         </div>
@@ -1040,9 +1135,59 @@ BOOL WINAPI <span class="token function">DllMain</span><span class="token punctu
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2021/06/25/cao-zuo-xi-tong-qi-dong-chu-shi-hua-1/">
+                    <div class="card-image">
+                        
+                        <img src="https://pic.innnovation.cn//img/20210625223502.png" class="responsive-img" alt="操作系统-硬件到软件启动初始化-设置工作模式与环境">
+                        
+                        <span class="card-title">操作系统-硬件到软件启动初始化-设置工作模式与环境</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-06-25
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="post-category">
+                                    操作系统
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/OS/">
+                        <span class="chip bg-color">OS</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
             <div class="card">
                 <a href="/2021/03/15/huo-rong-an-quan-yi-mian-bing-du-yang-ben-fen-xi/">
                     <div class="card-image">
@@ -1059,9 +1204,9 @@ BOOL WINAPI <span class="token function">DllMain</span><span class="token punctu
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2021-03-15
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-03-15
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -1085,43 +1230,6 @@ BOOL WINAPI <span class="token function">DllMain</span><span class="token punctu
                         <span class="chip bg-color">病毒分析</span>
                     </a>
                     
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2020/05/01/encryption/">
-                    <div class="card-image">
-                        
-                        
-                        <img src="/medias/featureimages/15.jpg" class="responsive-img" alt="test encrytion">
-                        
-                        <span class="card-title">test encrytion</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            有东西被加密了, 请输入密码查看.
-                        
-                    </div>
-                    <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2020-05-01
-                            </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-user fa-fw"></i>
-                            InnovationLou
-                            
-                        </span>
-                    </div>
                 </div>
                 
             </div>
@@ -1188,6 +1296,100 @@ BOOL WINAPI <span class="token function">DllMain</span><span class="token punctu
 
 <script type="text/javascript" src="/libs/codeBlock/codeShrink.js"></script>
 
+
+    </div>
+    <div id="toc-aside" class="expanded col l3 hide-on-med-and-down">
+        <div class="toc-widget card" style="background-color: white;">
+            <div class="toc-title"><i class="far fa-list-alt"></i>&nbsp;&nbsp;目录</div>
+            <div id="toc-content"></div>
+        </div>
+    </div>
+</div>
+
+<!-- TOC 悬浮按钮. -->
+
+<div id="floating-toc-btn" class="hide-on-med-and-down">
+    <a class="btn-floating btn-large bg-color">
+        <i class="fas fa-list-ul"></i>
+    </a>
+</div>
+
+
+<script src="/libs/tocbot/tocbot.min.js"></script>
+<script>
+    $(function () {
+        tocbot.init({
+            tocSelector: '#toc-content',
+            contentSelector: '#articleContent',
+            headingsOffset: -($(window).height() * 0.4 - 45),
+            collapseDepth: Number('0'),
+            headingSelector: 'h2, h3, h4'
+        });
+
+        // modify the toc link href to support Chinese.
+        let i = 0;
+        let tocHeading = 'toc-heading-';
+        $('#toc-content a').each(function () {
+            $(this).attr('href', '#' + tocHeading + (++i));
+        });
+
+        // modify the heading title id to support Chinese.
+        i = 0;
+        $('#articleContent').children('h2, h3, h4').each(function () {
+            $(this).attr('id', tocHeading + (++i));
+        });
+
+        // Set scroll toc fixed.
+        let tocHeight = parseInt($(window).height() * 0.4 - 64);
+        let $tocWidget = $('.toc-widget');
+        $(window).scroll(function () {
+            let scroll = $(window).scrollTop();
+            /* add post toc fixed. */
+            if (scroll > tocHeight) {
+                $tocWidget.addClass('toc-fixed');
+            } else {
+                $tocWidget.removeClass('toc-fixed');
+            }
+        });
+
+        
+        /* 修复文章卡片 div 的宽度. */
+        let fixPostCardWidth = function (srcId, targetId) {
+            let srcDiv = $('#' + srcId);
+            if (srcDiv.length === 0) {
+                return;
+            }
+
+            let w = srcDiv.width();
+            if (w >= 450) {
+                w = w + 21;
+            } else if (w >= 350 && w < 450) {
+                w = w + 18;
+            } else if (w >= 300 && w < 350) {
+                w = w + 16;
+            } else {
+                w = w + 14;
+            }
+            $('#' + targetId).width(w);
+        };
+
+        // 切换TOC目录展开收缩的相关操作.
+        const expandedClass = 'expanded';
+        let $tocAside = $('#toc-aside');
+        let $mainContent = $('#main-content');
+        $('#floating-toc-btn .btn-floating').click(function () {
+            if ($tocAside.hasClass(expandedClass)) {
+                $tocAside.removeClass(expandedClass).hide();
+                $mainContent.removeClass('l9');
+            } else {
+                $tocAside.addClass(expandedClass).show();
+                $mainContent.addClass('l9');
+            }
+            fixPostCardWidth('artDetail', 'prenext-posts');
+        });
+        
+    });
+</script>
 
     
 
