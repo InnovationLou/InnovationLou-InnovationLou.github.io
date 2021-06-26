@@ -130,6 +130,127 @@ BOOL WINAPI <span class="token function">DllMain</span><span class="token punctu
 <script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">]]></content>
   </entry>
   <entry>
+    <title>操作系统-硬件到软件启动初始化-设置工作模式与环境</title>
+    <url>/2021/06/25/cao-zuo-xi-tong-she-zhi-gong-zuo-mo-shi-yu-huan-jing/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><blockquote>
+<p>部分代码来源于极客时间《操作系统45讲》，这里记录了我自己操作的过程和思路</p>
+</blockquote>
+<h1 id="建立计算机（磁盘）"><a href="#建立计算机（磁盘）" class="headerlink" title="建立计算机（磁盘）"></a>建立计算机（磁盘）</h1><p>一个常规操作系统的启动如下图：</p>
+<p><img src="https://pic.innnovation.cn//img/20210625225319.jpeg" alt="HelloOS引导流程"></p>
+<p>而这里的helloOS中的文件我们称之为内核镜像文件，我们可以引导GRUB加载一个或者多个文件</p>
+<p>多文件加载时grub会解析如下图的文件然后加载：</p>
+<p><img src="https://pic.innnovation.cn//img/20210625225827.png" alt="内核映像文件格式"></p>
+<p>映像文件头描述符和文件描述符如下：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">
+<span class="token comment">//映像文件头描述符</span>
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">s_mlosrddsc</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">u64_t</span> mdc_mgic<span class="token punctuation">;</span> <span class="token comment">//映像文件标识</span>
+    <span class="token class-name">u64_t</span> mdc_sfsum<span class="token punctuation">;</span><span class="token comment">//未使用</span>
+    <span class="token class-name">u64_t</span> mdc_sfsoff<span class="token punctuation">;</span><span class="token comment">//未使用</span>
+    <span class="token class-name">u64_t</span> mdc_sfeoff<span class="token punctuation">;</span><span class="token comment">//未使用</span>
+    <span class="token class-name">u64_t</span> mdc_sfrlsz<span class="token punctuation">;</span><span class="token comment">//未使用</span>
+    <span class="token class-name">u64_t</span> mdc_ldrbk_s<span class="token punctuation">;</span><span class="token comment">//映像文件中二级引导器的开始偏移</span>
+    <span class="token class-name">u64_t</span> mdc_ldrbk_e<span class="token punctuation">;</span><span class="token comment">//映像文件中二级引导器的结束偏移</span>
+    <span class="token class-name">u64_t</span> mdc_ldrbk_rsz<span class="token punctuation">;</span><span class="token comment">//映像文件中二级引导器的实际大小</span>
+    <span class="token class-name">u64_t</span> mdc_ldrbk_sum<span class="token punctuation">;</span><span class="token comment">//映像文件中二级引导器的校验和</span>
+    <span class="token class-name">u64_t</span> mdc_fhdbk_s<span class="token punctuation">;</span><span class="token comment">//映像文件中文件头描述的开始偏移</span>
+    <span class="token class-name">u64_t</span> mdc_fhdbk_e<span class="token punctuation">;</span><span class="token comment">//映像文件中文件头描述的结束偏移</span>
+    <span class="token class-name">u64_t</span> mdc_fhdbk_rsz<span class="token punctuation">;</span><span class="token comment">//映像文件中文件头描述的实际大小</span>
+    <span class="token class-name">u64_t</span> mdc_fhdbk_sum<span class="token punctuation">;</span><span class="token comment">//映像文件中文件头描述的校验和</span>
+    <span class="token class-name">u64_t</span> mdc_filbk_s<span class="token punctuation">;</span><span class="token comment">//映像文件中文件数据的开始偏移</span>
+    <span class="token class-name">u64_t</span> mdc_filbk_e<span class="token punctuation">;</span><span class="token comment">//映像文件中文件数据的结束偏移</span>
+    <span class="token class-name">u64_t</span> mdc_filbk_rsz<span class="token punctuation">;</span><span class="token comment">//映像文件中文件数据的实际大小</span>
+    <span class="token class-name">u64_t</span> mdc_filbk_sum<span class="token punctuation">;</span><span class="token comment">//映像文件中文件数据的校验和</span>
+    <span class="token class-name">u64_t</span> mdc_ldrcodenr<span class="token punctuation">;</span><span class="token comment">//映像文件中二级引导器的文件头描述符的索引号</span>
+    <span class="token class-name">u64_t</span> mdc_fhdnr<span class="token punctuation">;</span><span class="token comment">//映像文件中文件头描述符有多少个</span>
+    <span class="token class-name">u64_t</span> mdc_filnr<span class="token punctuation">;</span><span class="token comment">//映像文件中文件头有多少个</span>
+    <span class="token class-name">u64_t</span> mdc_endgic<span class="token punctuation">;</span><span class="token comment">//映像文件结束标识</span>
+    <span class="token class-name">u64_t</span> mdc_rv<span class="token punctuation">;</span><span class="token comment">//映像文件版本</span>
+<span class="token punctuation">&#125;</span><span class="token class-name">mlosrddsc_t</span><span class="token punctuation">;</span>
+
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">FHDSC_NMAX</span> <span class="token expression"><span class="token number">192</span> </span><span class="token comment">//文件名长度</span></span>
+<span class="token comment">//文件头描述符</span>
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">s_fhdsc</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">u64_t</span> fhd_type<span class="token punctuation">;</span><span class="token comment">//文件类型</span>
+    <span class="token class-name">u64_t</span> fhd_subtype<span class="token punctuation">;</span><span class="token comment">//文件子类型</span>
+    <span class="token class-name">u64_t</span> fhd_stuts<span class="token punctuation">;</span><span class="token comment">//文件状态</span>
+    <span class="token class-name">u64_t</span> fhd_id<span class="token punctuation">;</span><span class="token comment">//文件id</span>
+    <span class="token class-name">u64_t</span> fhd_intsfsoff<span class="token punctuation">;</span><span class="token comment">//文件在映像文件位置开始偏移</span>
+    <span class="token class-name">u64_t</span> fhd_intsfend<span class="token punctuation">;</span><span class="token comment">//文件在映像文件的结束偏移</span>
+    <span class="token class-name">u64_t</span> fhd_frealsz<span class="token punctuation">;</span><span class="token comment">//文件实际大小</span>
+    <span class="token class-name">u64_t</span> fhd_fsum<span class="token punctuation">;</span><span class="token comment">//文件校验和</span>
+    <span class="token keyword">char</span>   fhd_name<span class="token punctuation">[</span>FHDSC_NMAX<span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token comment">//文件名</span>
+<span class="token punctuation">&#125;</span><span class="token class-name">fhdsc_t</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>我用的是windows10+VMware的方式进行开发：</p>
+<p>我在VMware中先建立了虚拟机：</p>
+<ul>
+<li>1GB</li>
+<li>1CPU</li>
+<li>100MB硬盘</li>
+<li>其他64位</li>
+</ul>
+<p>在Ubuntu64bit下生产硬盘</p>
+<p>在虚拟机中开辟一块全0的100MB的虚拟磁盘</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">
+dd bs&#x3D;512 if&#x3D;&#x2F;dev&#x2F;zero of&#x3D;hd.img count&#x3D;204800
+
+;bs:表示块大小，这里是512字节
+;if：表示输入文件，&#x2F;dev&#x2F;zero就是Linux下专门返回0数据的设备文件，读取它就返回0
+;of：表示输出文件，即我们的硬盘文件。
+;count：表示输出多少块<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>然后将这个文件转换为可识别的虚拟磁盘：</p>
+<ul>
+<li>将文件转为设备并设置回环设备</li>
+<li>格式化为EXT4文件系统</li>
+<li>挂在虚拟磁盘到目录下</li>
+<li>安装GRUB</li>
+</ul>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sudo losetup -a #查看所有设备，我的机器上已经有十几个设备了，不能使用这些设备的名称
+sudo losetup &#x2F;dev&#x2F;loop15 hd.img #0-14都被占用了
+sudo mkfs.ext4 -q &#x2F;dev&#x2F;loop15
+sudo mount -o loop .&#x2F;hd.img .&#x2F;hdisk&#x2F; ;挂载硬盘文件
+sudo mkdir .&#x2F;hdisk&#x2F;boot&#x2F; ;建立boot目录
+第一步挂载虚拟硬盘文件为loop0回环设备
+sudo losetup &#x2F;dev&#x2F;loop15 hd.img
+sudo mount -o loop .&#x2F;hd.img .&#x2F;hdisk&#x2F; ;挂载硬盘文件
+第二步安装GRUB
+sudo grub-install --boot-directory&#x3D;.&#x2F;hdisk&#x2F;boot&#x2F; --force --allow-floppy &#x2F;dev&#x2F;loop15
+；--boot-directory 指向先前我们在虚拟硬盘中建立的boot目录。
+；--force --allow-floppy ：指向我们的虚拟硬盘设备文件&#x2F;dev&#x2F;loop0<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>安装完毕后用sudo在**/hdisk/boot/grub/** 目录下建立一个<strong>grub.cfg 文本文件</strong>,grub会通过该文件找到系统镜像</p>
+<p>grub.cfg</p>
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">
+menuentry &#39;HelloOS&#39; &#123; #名字随意
+insmod part_msdos
+insmod ext2
+set root&#x3D;&#39;hd0&#39; #我的机器只能指定hd0，表示第一块磁盘引导启动
+multiboot2 &#x2F;boot&#x2F;HelloOS.eki #加载boot目录下的HelloOS.eki文件
+boot #引导启动
+&#125;
+set timeout_style&#x3D;menu
+if [ &quot;$&#123;timeout&#125;&quot; &#x3D; 0 ]; then
+  set timeout&#x3D;10 #等待10秒钟自动启动
+fi<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>硬盘设置好后如图，hdisk文件夹中就是hd.img磁盘镜像中的内容，修改hdisk即可修改磁盘</p>
+<p><img src="https://pic.innnovation.cn//img/20210625231753.png" alt="image-20210625231752977"></p>
+<p>然后将hd.img复制到物理机，通过StarWindConverter软件转换img磁盘格式为vmdk格式（让VMware可以加载）</p>
+]]></content>
+      <categories>
+        <category>操作系统</category>
+      </categories>
+      <tags>
+        <tag>OS</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>记一次用python做的多元线性回归分析</title>
     <url>/2020/01/24/python-duo-yuan-xian-xing-hui-gui-fen-xi/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h2 id="相关背景"><a href="#相关背景" class="headerlink" title="相关背景"></a>相关背景</h2><p>调查分析某鱼主播收到付费礼物收入和免费礼物收入<br>模型如下：<br><img src="https://img-blog.csdnimg.cn/20200124123603196.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3VkYWhjaQ==,size_16,color_FFFFFF,t_70"></p>
@@ -261,127 +382,6 @@ plt<span class="token punctuation">.</span>show<span class="token punctuation">(
       <tags>
         <tag>python</tag>
         <tag>线性回归</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>操作系统-硬件到软件启动初始化-设置工作模式与环境</title>
-    <url>/2021/06/25/cao-zuo-xi-tong-qi-dong-chu-shi-hua/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><blockquote>
-<p>部分代码来源于极客时间《操作系统45讲》，这里记录了我自己操作的过程和思路</p>
-</blockquote>
-<p>一个常规操作系统的启动如下图：</p>
-<p><img src="https://pic.innnovation.cn//img/20210625225319.jpeg" alt="HelloOS引导流程"></p>
-<p>而这里的helloOS中的文件我们称之为内核镜像文件，我们可以引导GRUB加载一个或者多个文件</p>
-<p>多文件加载时grub会解析如下图的文件然后加载：</p>
-<p><img src="https://pic.innnovation.cn//img/20210625225827.png" alt="内核映像文件格式"></p>
-<p>映像文件头描述符和文件描述符如下：</p>
-<pre class="line-numbers language-c" data-language="c"><code class="language-c">
-<span class="token comment">//映像文件头描述符</span>
-<span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">s_mlosrddsc</span>
-<span class="token punctuation">&#123;</span>
-    <span class="token class-name">u64_t</span> mdc_mgic<span class="token punctuation">;</span> <span class="token comment">//映像文件标识</span>
-    <span class="token class-name">u64_t</span> mdc_sfsum<span class="token punctuation">;</span><span class="token comment">//未使用</span>
-    <span class="token class-name">u64_t</span> mdc_sfsoff<span class="token punctuation">;</span><span class="token comment">//未使用</span>
-    <span class="token class-name">u64_t</span> mdc_sfeoff<span class="token punctuation">;</span><span class="token comment">//未使用</span>
-    <span class="token class-name">u64_t</span> mdc_sfrlsz<span class="token punctuation">;</span><span class="token comment">//未使用</span>
-    <span class="token class-name">u64_t</span> mdc_ldrbk_s<span class="token punctuation">;</span><span class="token comment">//映像文件中二级引导器的开始偏移</span>
-    <span class="token class-name">u64_t</span> mdc_ldrbk_e<span class="token punctuation">;</span><span class="token comment">//映像文件中二级引导器的结束偏移</span>
-    <span class="token class-name">u64_t</span> mdc_ldrbk_rsz<span class="token punctuation">;</span><span class="token comment">//映像文件中二级引导器的实际大小</span>
-    <span class="token class-name">u64_t</span> mdc_ldrbk_sum<span class="token punctuation">;</span><span class="token comment">//映像文件中二级引导器的校验和</span>
-    <span class="token class-name">u64_t</span> mdc_fhdbk_s<span class="token punctuation">;</span><span class="token comment">//映像文件中文件头描述的开始偏移</span>
-    <span class="token class-name">u64_t</span> mdc_fhdbk_e<span class="token punctuation">;</span><span class="token comment">//映像文件中文件头描述的结束偏移</span>
-    <span class="token class-name">u64_t</span> mdc_fhdbk_rsz<span class="token punctuation">;</span><span class="token comment">//映像文件中文件头描述的实际大小</span>
-    <span class="token class-name">u64_t</span> mdc_fhdbk_sum<span class="token punctuation">;</span><span class="token comment">//映像文件中文件头描述的校验和</span>
-    <span class="token class-name">u64_t</span> mdc_filbk_s<span class="token punctuation">;</span><span class="token comment">//映像文件中文件数据的开始偏移</span>
-    <span class="token class-name">u64_t</span> mdc_filbk_e<span class="token punctuation">;</span><span class="token comment">//映像文件中文件数据的结束偏移</span>
-    <span class="token class-name">u64_t</span> mdc_filbk_rsz<span class="token punctuation">;</span><span class="token comment">//映像文件中文件数据的实际大小</span>
-    <span class="token class-name">u64_t</span> mdc_filbk_sum<span class="token punctuation">;</span><span class="token comment">//映像文件中文件数据的校验和</span>
-    <span class="token class-name">u64_t</span> mdc_ldrcodenr<span class="token punctuation">;</span><span class="token comment">//映像文件中二级引导器的文件头描述符的索引号</span>
-    <span class="token class-name">u64_t</span> mdc_fhdnr<span class="token punctuation">;</span><span class="token comment">//映像文件中文件头描述符有多少个</span>
-    <span class="token class-name">u64_t</span> mdc_filnr<span class="token punctuation">;</span><span class="token comment">//映像文件中文件头有多少个</span>
-    <span class="token class-name">u64_t</span> mdc_endgic<span class="token punctuation">;</span><span class="token comment">//映像文件结束标识</span>
-    <span class="token class-name">u64_t</span> mdc_rv<span class="token punctuation">;</span><span class="token comment">//映像文件版本</span>
-<span class="token punctuation">&#125;</span><span class="token class-name">mlosrddsc_t</span><span class="token punctuation">;</span>
-
-<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">FHDSC_NMAX</span> <span class="token expression"><span class="token number">192</span> </span><span class="token comment">//文件名长度</span></span>
-<span class="token comment">//文件头描述符</span>
-<span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">s_fhdsc</span>
-<span class="token punctuation">&#123;</span>
-    <span class="token class-name">u64_t</span> fhd_type<span class="token punctuation">;</span><span class="token comment">//文件类型</span>
-    <span class="token class-name">u64_t</span> fhd_subtype<span class="token punctuation">;</span><span class="token comment">//文件子类型</span>
-    <span class="token class-name">u64_t</span> fhd_stuts<span class="token punctuation">;</span><span class="token comment">//文件状态</span>
-    <span class="token class-name">u64_t</span> fhd_id<span class="token punctuation">;</span><span class="token comment">//文件id</span>
-    <span class="token class-name">u64_t</span> fhd_intsfsoff<span class="token punctuation">;</span><span class="token comment">//文件在映像文件位置开始偏移</span>
-    <span class="token class-name">u64_t</span> fhd_intsfend<span class="token punctuation">;</span><span class="token comment">//文件在映像文件的结束偏移</span>
-    <span class="token class-name">u64_t</span> fhd_frealsz<span class="token punctuation">;</span><span class="token comment">//文件实际大小</span>
-    <span class="token class-name">u64_t</span> fhd_fsum<span class="token punctuation">;</span><span class="token comment">//文件校验和</span>
-    <span class="token keyword">char</span>   fhd_name<span class="token punctuation">[</span>FHDSC_NMAX<span class="token punctuation">]</span><span class="token punctuation">;</span><span class="token comment">//文件名</span>
-<span class="token punctuation">&#125;</span><span class="token class-name">fhdsc_t</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>我用的是windows10+VMware的方式进行开发：</p>
-<p>我在VMware中先建立了虚拟机：</p>
-<ul>
-<li>1GB</li>
-<li>1CPU</li>
-<li>100MB硬盘</li>
-<li>其他64位</li>
-</ul>
-<p>在Ubuntu64bit下生产硬盘</p>
-<p>在虚拟机中开辟一块全0的100MB的虚拟磁盘</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">
-dd bs&#x3D;512 if&#x3D;&#x2F;dev&#x2F;zero of&#x3D;hd.img count&#x3D;204800
-
-;bs:表示块大小，这里是512字节
-;if：表示输入文件，&#x2F;dev&#x2F;zero就是Linux下专门返回0数据的设备文件，读取它就返回0
-;of：表示输出文件，即我们的硬盘文件。
-;count：表示输出多少块<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>然后将这个文件转换为可识别的虚拟磁盘：</p>
-<ul>
-<li>将文件转为设备并设置回环设备</li>
-<li>格式化为EXT4文件系统</li>
-<li>挂在虚拟磁盘到目录下</li>
-<li>安装GRUB</li>
-</ul>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sudo losetup -a #查看所有设备，我的机器上已经有十几个设备了，不能使用这些设备的名称
-sudo losetup &#x2F;dev&#x2F;loop15 hd.img #0-14都被占用了
-sudo mkfs.ext4 -q &#x2F;dev&#x2F;loop15
-sudo mount -o loop .&#x2F;hd.img .&#x2F;hdisk&#x2F; ;挂载硬盘文件
-sudo mkdir .&#x2F;hdisk&#x2F;boot&#x2F; ;建立boot目录
-第一步挂载虚拟硬盘文件为loop0回环设备
-sudo losetup &#x2F;dev&#x2F;loop15 hd.img
-sudo mount -o loop .&#x2F;hd.img .&#x2F;hdisk&#x2F; ;挂载硬盘文件
-第二步安装GRUB
-sudo grub-install --boot-directory&#x3D;.&#x2F;hdisk&#x2F;boot&#x2F; --force --allow-floppy &#x2F;dev&#x2F;loop15
-；--boot-directory 指向先前我们在虚拟硬盘中建立的boot目录。
-；--force --allow-floppy ：指向我们的虚拟硬盘设备文件&#x2F;dev&#x2F;loop0<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>安装完毕后用sudo在**/hdisk/boot/grub/** 目录下建立一个<strong>grub.cfg 文本文件</strong>,grub会通过该文件找到系统镜像</p>
-<p>grub.cfg</p>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">
-menuentry &#39;HelloOS&#39; &#123; #名字随意
-insmod part_msdos
-insmod ext2
-set root&#x3D;&#39;hd0&#39; #我的机器只能指定hd0，表示第一块磁盘引导启动
-multiboot2 &#x2F;boot&#x2F;HelloOS.eki #加载boot目录下的HelloOS.eki文件
-boot #引导启动
-&#125;
-set timeout_style&#x3D;menu
-if [ &quot;$&#123;timeout&#125;&quot; &#x3D; 0 ]; then
-  set timeout&#x3D;10 #等待10秒钟自动启动
-fi<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-
-
-<p>硬盘设置好后如图，hdisk文件夹中就是hd.img磁盘镜像中的内容，修改hdisk即可修改磁盘</p>
-<p><img src="https://pic.innnovation.cn//img/20210625231753.png" alt="image-20210625231752977"></p>
-<p>然后将hd.img复制到物理机，通过StarWindConverter软件转换img磁盘格式为vmdk格式（让VMware可以加载）</p>
-]]></content>
-      <categories>
-        <category>操作系统</category>
-      </categories>
-      <tags>
-        <tag>OS</tag>
       </tags>
   </entry>
   <entry>
