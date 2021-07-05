@@ -485,21 +485,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2021-06-26
+                    2021-07-05
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    1.1k
+                    6.9k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    4 分
+                    30 分
                 </div>
                 
 
@@ -632,6 +632,865 @@ fi<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><
 <p>硬盘设置好后如图，hdisk文件夹中就是hd.img磁盘镜像中的内容，修改hdisk即可修改磁盘</p>
 <p><img src="https://pic.innnovation.cn//img/20210625231753.png" alt="image-20210625231752977"></p>
 <p>然后将hd.img复制到物理机，通过StarWindConverter软件转换img磁盘格式为vmdk格式（让VMware可以加载）</p>
+<h1 id="建造二级引导器"><a href="#建造二级引导器" class="headerlink" title="建造二级引导器"></a>建造二级引导器</h1><p>课程开源代码<a target="_blank" rel="noopener" href="https://gitee.com/lmos/cosmos">https://gitee.com/lmos/cosmos</a></p>
+<p>先设计一个数据结构存放机器信息</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">s_MACHBSTART</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">u64_t</span>   mb_krlinitstack<span class="token punctuation">;</span><span class="token comment">//内核栈地址</span>
+    <span class="token class-name">u64_t</span>   mb_krlitstacksz<span class="token punctuation">;</span><span class="token comment">//内核栈大小</span>
+    <span class="token class-name">u64_t</span>   mb_imgpadr<span class="token punctuation">;</span><span class="token comment">//操作系统映像</span>
+    <span class="token class-name">u64_t</span>   mb_imgsz<span class="token punctuation">;</span><span class="token comment">//操作系统映像大小</span>
+    <span class="token class-name">u64_t</span>   mb_bfontpadr<span class="token punctuation">;</span><span class="token comment">//操作系统字体地址</span>
+    <span class="token class-name">u64_t</span>   mb_bfontsz<span class="token punctuation">;</span><span class="token comment">//操作系统字体大小</span>
+    <span class="token class-name">u64_t</span>   mb_fvrmphyadr<span class="token punctuation">;</span><span class="token comment">//机器显存地址</span>
+    <span class="token class-name">u64_t</span>   mb_fvrmsz<span class="token punctuation">;</span><span class="token comment">//机器显存大小</span>
+    <span class="token class-name">u64_t</span>   mb_cpumode<span class="token punctuation">;</span><span class="token comment">//机器CPU工作模式</span>
+    <span class="token class-name">u64_t</span>   mb_memsz<span class="token punctuation">;</span><span class="token comment">//机器内存大小</span>
+    <span class="token class-name">u64_t</span>   mb_e820padr<span class="token punctuation">;</span><span class="token comment">//机器e820数组地址</span>
+    <span class="token class-name">u64_t</span>   mb_e820nr<span class="token punctuation">;</span><span class="token comment">//机器e820数组元素个数</span>
+    <span class="token class-name">u64_t</span>   mb_e820sz<span class="token punctuation">;</span><span class="token comment">//机器e820数组大小</span>
+    <span class="token comment">//……</span>
+    <span class="token class-name">u64_t</span>   mb_pml4padr<span class="token punctuation">;</span><span class="token comment">//机器页表数据地址</span>
+    <span class="token class-name">u64_t</span>   mb_subpageslen<span class="token punctuation">;</span><span class="token comment">//机器页表个数</span>
+    <span class="token class-name">u64_t</span>   mb_kpmapphymemsz<span class="token punctuation">;</span><span class="token comment">//操作系统映射空间大小</span>
+    <span class="token comment">//……</span>
+    <span class="token class-name">graph_t</span> mb_ghparm<span class="token punctuation">;</span><span class="token comment">//图形信息</span>
+<span class="token punctuation">&#125;</span><span class="token keyword">__attribute__</span><span class="token punctuation">(</span><span class="token punctuation">(</span>packed<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token class-name">machbstart_t</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>下图为课程插图</p>
+<p><img src="https://static001.geekbang.org/resource/image/31/1e/3169e9db4549ab036c2de269788a281e.jpg?wh=1636*846" alt="二级引导器功能规划图"></p>
+<p>接着实现GRUB头</p>
+<p>流程：初始化 CPU 的寄存器，加载 GDT，切换到 CPU 的保护模式</p>
+<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">
+MBT_HDR_FLAGS  EQU 0x00010003
+MBT_HDR_MAGIC  EQU 0x1BADB002
+MBT2_MAGIC  EQU 0xe85250d6
+global _start
+extern inithead_entry
+[section .text]
+[bits 32]
+_start:
+  jmp _entry
+align 4
+mbt_hdr:
+  dd MBT_HDR_MAGIC
+  dd MBT_HDR_FLAGS
+  dd -(MBT_HDR_MAGIC+MBT_HDR_FLAGS)
+  dd mbt_hdr
+  dd _start
+  dd 0
+  dd 0
+  dd _entry
+ALIGN 8
+mbhdr:
+  DD  0xE85250D6
+  DD  0
+  DD  mhdrend - mbhdr
+  DD  -(0xE85250D6 + 0 + (mhdrend - mbhdr))
+  DW  2, 0
+  DD  24
+  DD  mbhdr
+  DD  _start
+  DD  0
+  DD  0
+  DW  3, 0
+  DD  12
+  DD  _entry 
+  DD  0  
+  DW  0, 0
+  DD  8
+mhdrend:<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>关中断，加载GDT</p>
+<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">
+_entry:
+  cli           ；关中断
+  in al, 0x70 
+  or al, 0x80  
+  out 0x70,al  ；关掉不可屏蔽中断   
+  lgdt [GDT_PTR] ；加载GDT地址到GDTR寄存器
+  jmp dword 0x8 :_32bits_mode ；长跳转刷新CS影子寄存器
+  ;………………
+;GDT全局段描述符表
+GDT_START:
+knull_dsc: dq 0
+kcode_dsc: dq 0x00cf9e000000ffff
+kdata_dsc: dq 0x00cf92000000ffff
+k16cd_dsc: dq 0x00009e000000ffff ；16位代码段描述符
+k16da_dsc: dq 0x000092000000ffff ；16位数据段描述符
+GDT_END:
+GDT_PTR:
+GDTLEN  dw GDT_END-GDT_START-1  ;GDT界限
+GDTBASE  dd GDT_ST  <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>初始化段寄存器和通用寄存器、栈寄存器，为C函数做准备</p>
+<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">
+_32bits_mode：
+  mov ax, 0x10
+  mov ds, ax
+  mov ss, ax
+  mov es, ax
+  mov fs, ax
+  mov gs, ax
+  xor eax,eax
+  xor ebx,ebx
+  xor ecx,ecx
+  xor edx,edx
+  xor edi,edi
+  xor esi,esi
+  xor ebp,ebp
+  xor esp,esp
+  mov esp,0x7c00 ；设置栈顶为0x7c00
+  call inithead_entry ；调用inithead_entry函数在inithead.c中实现
+  jmp 0x200000  ；跳转到0x200000地址<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>于是实现inithead_entry函数</p>
+<p>函数中调用write_realintsvefile write_ldrkrlfile主要作用就是把映像文件中的 initldrsve.bin 文件和 initldrkrl.bin 文件写入到特定的内存地址空间中加载地址在宏中定义</p>
+<p>而加载时又依赖find_file 和 m2mcopy函数</p>
+<p>find_file 函数负责扫描映像文件中的文件头描述符，对比其中的文件名，然后返回对应的文件头描述符的地址，这样就可以得到文件在映像文件中的位置和大小了。</p>
+<p>m2mcopy就是复制镜像到内存空间操作。</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">MDC_ENDGIC</span> <span class="token expression"><span class="token number">0xaaffaaffaaffaaff</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">MDC_RVGIC</span> <span class="token expression"><span class="token number">0xffaaffaaffaaffaa</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">REALDRV_PHYADR</span> <span class="token expression"><span class="token number">0x1000</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">IMGFILE_PHYADR</span> <span class="token expression"><span class="token number">0x4000000</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">IMGKRNL_PHYADR</span> <span class="token expression"><span class="token number">0x2000000</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">LDRFILEADR</span> <span class="token expression">IMGFILE_PHYADR</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">MLOSDSC_OFF</span> <span class="token expression"><span class="token punctuation">(</span><span class="token number">0x1000</span><span class="token punctuation">)</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">MRDDSC_ADR</span> <span class="token expression"><span class="token punctuation">(</span><span class="token class-name">mlosrddsc_t</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>LDRFILEADR<span class="token operator">+</span><span class="token number">0x1000</span><span class="token punctuation">)</span></span></span>
+
+<span class="token keyword">void</span> <span class="token function">inithead_entry</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token function">write_realintsvefile</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">write_ldrkrlfile</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">//写initldrsve.bin文件到特定的内存中</span>
+<span class="token keyword">void</span> <span class="token function">write_realintsvefile</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">fhdsc_t</span> <span class="token operator">*</span>fhdscstart <span class="token operator">=</span> <span class="token function">find_file</span><span class="token punctuation">(</span><span class="token string">"initldrsve.bin"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>fhdscstart <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"not file initldrsve.bin"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token function">m2mcopy</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token class-name">u32_t</span><span class="token punctuation">)</span><span class="token punctuation">(</span>fhdscstart<span class="token operator">-></span>fhd_intsfsoff<span class="token punctuation">)</span> <span class="token operator">+</span> LDRFILEADR<span class="token punctuation">)</span><span class="token punctuation">,</span>
+            <span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span>REALDRV_PHYADR<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token class-name">sint_t</span><span class="token punctuation">)</span>fhdscstart<span class="token operator">-></span>fhd_frealsz<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">//写initldrkrl.bin文件到特定的内存中</span>
+<span class="token keyword">void</span> <span class="token function">write_ldrkrlfile</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">fhdsc_t</span> <span class="token operator">*</span>fhdscstart <span class="token operator">=</span> <span class="token function">find_file</span><span class="token punctuation">(</span><span class="token string">"initldrkrl.bin"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>fhdscstart <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"not file initldrkrl.bin"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token function">m2mcopy</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token class-name">u32_t</span><span class="token punctuation">)</span><span class="token punctuation">(</span>fhdscstart<span class="token operator">-></span>fhd_intsfsoff<span class="token punctuation">)</span> <span class="token operator">+</span> LDRFILEADR<span class="token punctuation">)</span><span class="token punctuation">,</span>
+            <span class="token punctuation">(</span><span class="token keyword">void</span> <span class="token operator">*</span><span class="token punctuation">)</span>ILDRKRL_PHYADR<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token class-name">sint_t</span><span class="token punctuation">)</span>fhdscstart<span class="token operator">-></span>fhd_frealsz<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">//在映像文件中查找对应的文件</span>
+<span class="token class-name">fhdsc_t</span> <span class="token operator">*</span><span class="token function">find_file</span><span class="token punctuation">(</span><span class="token class-name">char_t</span> <span class="token operator">*</span>fname<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">mlosrddsc_t</span> <span class="token operator">*</span>mrddadrs <span class="token operator">=</span> MRDDSC_ADR<span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>mrddadrs<span class="token operator">-></span>mdc_endgic <span class="token operator">!=</span> MDC_ENDGIC <span class="token operator">||</span>
+        mrddadrs<span class="token operator">-></span>mdc_rv <span class="token operator">!=</span> MDC_RVGIC <span class="token operator">||</span>
+        mrddadrs<span class="token operator">-></span>mdc_fhdnr <span class="token operator">&lt;</span> <span class="token number">2</span> <span class="token operator">||</span>
+        mrddadrs<span class="token operator">-></span>mdc_filnr <span class="token operator">&lt;</span> <span class="token number">2</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"no mrddsc"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token class-name">s64_t</span> rethn <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token class-name">fhdsc_t</span> <span class="token operator">*</span>fhdscstart <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">fhdsc_t</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token class-name">u32_t</span><span class="token punctuation">)</span><span class="token punctuation">(</span>mrddadrs<span class="token operator">-></span>mdc_fhdbk_s<span class="token punctuation">)</span> <span class="token operator">+</span> LDRFILEADR<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">u64_t</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> mrddadrs<span class="token operator">-></span>mdc_fhdnr<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">strcmpl</span><span class="token punctuation">(</span>fname<span class="token punctuation">,</span> fhdscstart<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">.</span>fhd_name<span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+        <span class="token punctuation">&#123;</span>
+            rethn <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">s64_t</span><span class="token punctuation">)</span>i<span class="token punctuation">;</span>
+            <span class="token keyword">goto</span> ok_l<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    rethn <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">;</span>
+ok_l<span class="token operator">:</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>rethn <span class="token operator">&lt;</span> <span class="token number">0</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token function">error</span><span class="token punctuation">(</span><span class="token string">"not find file"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> <span class="token operator">&amp;</span>fhdscstart<span class="token punctuation">[</span>rethn<span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>在前面的GRUB头部分最后一行代码jmp 0x200000</p>
+<p>跳转地址正好是initldrkrl.bin内存中的地址，该模块即为二级引导器主模块</p>
+<p>由于模块改变，还需要加载 GDTR 和 IDTR 寄存器，然后初始化 CPU 相关的寄存器</p>
+<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">
+_entry:
+  cli
+  lgdt [GDT_PTR]；加载GDT地址到GDTR寄存器
+  lidt [IDT_PTR]；加载IDT地址到IDTR寄存器
+  jmp dword 0x8 :_32bits_mode；长跳转刷新CS影子寄存器
+_32bits_mode:
+  mov ax, 0x10  ; 数据段选择子(目的)
+  mov ds, ax
+  mov ss, ax
+  mov es, ax
+  mov fs, ax
+  mov gs, ax
+  xor eax,eax
+  xor ebx,ebx
+  xor ecx,ecx
+  xor edx,edx
+  xor edi,edi
+  xor esi,esi
+  xor ebp,ebp
+  xor esp,esp
+  mov esp,0x90000 ；使得栈底指向了0x90000
+  call ldrkrl_entry ；调用ldrkrl_entry函数
+  xor ebx,ebx
+  jmp 0x2000000 ；跳转到0x2000000的内存地址
+  jmp $
+GDT_START:
+knull_dsc: dq 0
+kcode_dsc: dq 0x00cf9a000000ffff ;a-e
+kdata_dsc: dq 0x00cf92000000ffff
+k16cd_dsc: dq 0x00009a000000ffff ；16位代码段描述符
+k16da_dsc: dq 0x000092000000ffff ；16位数据段描述符
+GDT_END:
+GDT_PTR:
+GDTLEN  dw GDT_END-GDT_START-1  ;GDT界限
+GDTBASE  dd GDT_START
+
+IDT_PTR:
+IDTLEN  dw 0x3ff
+IDTBAS  dd 0  ；这是BIOS中断表的地址和长度<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h2 id="如何调用bios中断"><a href="#如何调用bios中断" class="headerlink" title="如何调用bios中断"></a>如何调用bios中断</h2><p>C语言运行在32位保护模式下，而中断在16位实模式下工作</p>
+<p>于是需要实现一个切换运行模式的功能，流程如下：</p>
+<ol>
+<li>保存 C 语言环境下的 CPU 上下文 ，即保护模式下的所有通用寄存器、段寄存器、程序指针寄存器，栈寄存器，把它们都保存在内存中。</li>
+<li>切换回实模式，调用 BIOS 中断，把 BIOS 中断返回的相关结果，保存在内存中。</li>
+<li>切换回保护模式，重新加载第 1 步中保存的寄存器。这样 C 语言代码才能重新恢复执行。</li>
+</ol>
+<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">
+realadr_call_entry:
+  pushad     ;保存通用寄存器
+  push    ds
+  push    es
+  push    fs ;保存4个段寄存器
+  push    gs
+  call save_eip_jmp ；调用save_eip_jmp 
+  pop  gs
+  pop  fs
+  pop  es      ;恢复4个段寄存器
+  pop  ds
+  popad       ;恢复通用寄存器
+  ret
+save_eip_jmp:
+  pop esi  ；弹出call save_eip_jmp时保存的eip到esi寄存器中， 
+  mov [PM32_EIP_OFF],esi ；把eip保存到特定的内存空间中
+  mov [PM32_ESP_OFF],esp ；把esp保存到特定的内存空间中
+  jmp dword far [cpmty_mode]；长跳转这里表示把cpmty_mode处的第一个4字节装入eip，把其后的2字节装入cs
+cpmty_mode:
+  dd 0x1000
+  dw 0x18
+  jmp $<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>jmp dword far [cpmty_mode]后面的0x18正是GDT 中的 16 位代码段描述符，偏址0x1000是要运行的代码</p>
+<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">
+[bits 16]
+_start:
+_16_mode:
+  mov  bp,0x20 ;0x20是指向GDT中的16位数据段描述符 
+  mov  ds, bp
+  mov  es, bp
+  mov  ss, bp
+  mov  ebp, cr0
+  and  ebp, 0xfffffffe
+  mov  cr0, ebp ；CR0.P&#x3D;0 关闭保护模式
+  jmp  0:real_entry ；刷新CS影子寄存器，真正进入实模式
+real_entry:
+  mov bp, cs
+  mov ds, bp
+  mov es, bp
+  mov ss, bp ；重新设置实模式下的段寄存器 都是CS中值，即为0 
+  mov sp, 08000h ；设置栈
+  mov bp,func_table
+  add bp,ax
+  call [bp] ；调用函数表中的汇编函数，ax是C函数中传递进来的
+  cli
+  call disable_nmi
+  mov  ebp, cr0
+  or  ebp, 1
+  mov  cr0, ebp ；CR0.P&#x3D;1 开启保护模式
+  jmp dword 0x8 :_32bits_mode
+[BITS 32]
+_32bits_mode:
+  mov bp, 0x10
+  mov ds, bp
+  mov ss, bp；重新设置保护模式下的段寄存器0x10是32位数据段描述符的索引
+  mov esi,[PM32_EIP_OFF]；加载先前保存的EIP
+  mov esp,[PM32_ESP_OFF]；加载先前保存的ESP
+  jmp esi ；eip&#x3D;esi 回到了realadr_call_entry函数中
+
+func_table:  ;函数表
+  dw _getmmap ；获取内存布局视图的函数
+  dw _read ；读取硬盘的函数
+    dw _getvbemode ；获取显卡VBE模式 
+    dw _getvbeonemodeinfo ；获取显卡VBE模式的数据
+    dw _setvbemode ；设置显卡VBE模式<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h2 id="进入二级引导器主函数"><a href="#进入二级引导器主函数" class="headerlink" title="进入二级引导器主函数"></a>进入二级引导器主函数</h2><pre class="line-numbers language-c" data-language="c"><code class="language-c">
+<span class="token keyword">void</span> <span class="token function">ldrkrl_entry</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token function">init_bstartparm</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//收集机器环境信息的主函数</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><pre class="line-numbers language-tex" data-language="tex"><code class="language-tex">1、grub启动后，选择对应的启动菜单项，grub会通过自带文件系统驱动，定位到对应的eki文件
+
+2、grub会尝试加载eki文件【eki文件需要满足grub多协议引导头的格式要求】
+这些是在imginithead.asm中实现的，所以要包括：
+A、grub文件头，包括魔数、grub1和grub2支持等
+B、定位的_start符号等
+
+3、grub校验成功后，会调用_start，然跳转到_entry
+A、_entry中:关闭中断
+B、加载GDT
+C、然后进入_32bits_mode，清理寄存器，设置栈顶
+D、调用inithead_entry【C】
+
+4、inithead_entry.c
+A、从imginithead.asm进入后，首先进入函数调用inithead_entry
+B、初始化光标，清屏
+C、从eki文件内部，找到initldrsve.bin文件，并分别拷贝到内存的指定物理地址
+D、从eki文件内部，找到initldrkrl.bin文件，并分别拷贝到内存的指定物理地址
+E、返回imginithead.asm
+
+5、imginithead.asm中继续执行
+jmp 0x200000
+而这个位置，就是initldrkrl.bin在内存的位置ILDRKRL_PHYADR
+所以后面要执行initldrkrl.bin的内容
+
+6、这样就到了ldrkrl32.asm的_entry
+A、将GDT加载到GDTR寄存器【内存】
+B、将IDT加载到IDTR寄存器【中断】
+C、跳转到_32bits_mode
+初始寄存器
+初始化栈
+调用ldrkrl_entry【C】
+
+7、ldrkrlentry.c
+A、初始化光标，清屏
+B、收集机器参数init_bstartparm【C】
+
+8、bstartparm.c
+A、初始化machbstart_t
+B、各类初始化函数，填充machbstart_t的内容
+C、返回
+
+9、ldrkrlentry.c
+A、返回
+
+10、ldrkrl32.asm
+A、跳转到0x2000000地址继续执行<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h1 id="探查和搜集信息"><a href="#探查和搜集信息" class="headerlink" title="探查和搜集信息"></a>探查和搜集信息</h1><p>在引导器主函数中，需要检查 CPU 是否支持 64 位的工作模式、收集内存布局信息，看看是不是合乎我们操作系统的最低运行要求，还要设置操作系统需要的 MMU 页表、设置显卡模式、释放中文字体文件</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">ldrkrl_entry</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token function">init_bstartparm</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//收集机器环境信息的主函数</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">//=========================================================</span>
+
+<span class="token comment">//初始化machbstart_t结构体，清0,并设置一个标志</span>
+<span class="token keyword">void</span> <span class="token function">machbstart_t_init</span><span class="token punctuation">(</span><span class="token class-name">machbstart_t</span><span class="token operator">*</span> initp<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token function">memset</span><span class="token punctuation">(</span>initp<span class="token punctuation">,</span><span class="token number">0</span><span class="token punctuation">,</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token class-name">machbstart_t</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    initp<span class="token operator">-></span>mb_migc<span class="token operator">=</span>MBS_MIGC<span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">void</span> <span class="token function">init_bstartparm</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">machbstart_t</span><span class="token operator">*</span> mbsp <span class="token operator">=</span> MBSPADR<span class="token punctuation">;</span><span class="token comment">//1MB的内存地址</span>
+    <span class="token function">machbstart_t_init</span><span class="token punctuation">(</span>mbsp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>上述代码中的结构体为1MB包含机器基本信息的结构体</p>
+<h2 id="检查cpu"><a href="#检查cpu" class="headerlink" title="检查cpu"></a>检查cpu</h2><p>chk_cpuid、chk_cpu_longmode 来干两件事，一个是检查 CPU 否支持 CPUID 指令，然后另一个用 CPUID 指令检查 CPU 支持 64 位长模式</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">
+<span class="token comment">//通过改写Eflags寄存器的第21位，观察其位的变化判断是否支持CPUID</span>
+<span class="token keyword">int</span> <span class="token function">chk_cpuid</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token keyword">int</span> rets <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    __asm__ <span class="token function">__volatile__</span><span class="token punctuation">(</span>
+        <span class="token string">"pushfl \n\t"</span>
+        <span class="token string">"popl %%eax \n\t"</span>
+        <span class="token string">"movl %%eax,%%ebx \n\t"</span>
+        <span class="token string">"xorl $0x0200000,%%eax \n\t"</span>
+        <span class="token string">"pushl %%eax \n\t"</span>
+        <span class="token string">"popfl \n\t"</span>
+        <span class="token string">"pushfl \n\t"</span>
+        <span class="token string">"popl %%eax \n\t"</span>
+        <span class="token string">"xorl %%ebx,%%eax \n\t"</span>
+        <span class="token string">"jz 1f \n\t"</span>
+        <span class="token string">"movl $1,%0 \n\t"</span>
+        <span class="token string">"jmp 2f \n\t"</span>
+        <span class="token string">"1: movl $0,%0 \n\t"</span>
+        <span class="token string">"2: \n\t"</span>
+        <span class="token operator">:</span> <span class="token string">"=c"</span><span class="token punctuation">(</span>rets<span class="token punctuation">)</span>
+        <span class="token operator">:</span>
+        <span class="token operator">:</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> rets<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">//检查CPU是否支持长模式</span>
+<span class="token keyword">int</span> <span class="token function">chk_cpu_longmode</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token keyword">int</span> rets <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    __asm__ <span class="token function">__volatile__</span><span class="token punctuation">(</span>
+        <span class="token string">"movl $0x80000000,%%eax \n\t"</span>
+        <span class="token string">"cpuid \n\t"</span> <span class="token comment">//把eax中放入0x80000000调用CPUID指令</span>
+        <span class="token string">"cmpl $0x80000001,%%eax \n\t"</span><span class="token comment">//看eax中返回结果</span>
+        <span class="token string">"setnb %%al \n\t"</span> <span class="token comment">//不为0x80000001,则不支持0x80000001号功能</span>
+        <span class="token string">"jb 1f \n\t"</span>
+        <span class="token string">"movl $0x80000001,%%eax \n\t"</span>
+        <span class="token string">"cpuid \n\t"</span><span class="token comment">//把eax中放入0x800000001调用CPUID指令，检查edx中的返回数据</span>
+        <span class="token string">"bt $29,%%edx  \n\t"</span> <span class="token comment">//长模式 支持位  是否为1</span>
+        <span class="token string">"setcb %%al \n\t"</span>
+        <span class="token string">"1: \n\t"</span>
+        <span class="token string">"movzx %%al,%%eax \n\t"</span>
+        <span class="token operator">:</span> <span class="token string">"=a"</span><span class="token punctuation">(</span>rets<span class="token punctuation">)</span>
+        <span class="token operator">:</span>
+        <span class="token operator">:</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> rets<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">//检查CPU主函数</span>
+<span class="token keyword">void</span> <span class="token function">init_chkcpu</span><span class="token punctuation">(</span><span class="token class-name">machbstart_t</span> <span class="token operator">*</span>mbsp<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">chk_cpuid</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token function">kerror</span><span class="token punctuation">(</span><span class="token string">"Your CPU is not support CPUID sys is die!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">CLI_HALT</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token function">chk_cpu_longmode</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token function">kerror</span><span class="token punctuation">(</span><span class="token string">"Your CPU is not support 64bits mode sys is die!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">CLI_HALT</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    mbsp<span class="token operator">-></span>mb_cpumode <span class="token operator">=</span> <span class="token number">0x40</span><span class="token punctuation">;</span><span class="token comment">//如果成功则设置机器信息结构的cpu模式为64位</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="获取内存布局"><a href="#获取内存布局" class="headerlink" title="获取内存布局"></a>获取内存布局</h2><p>init_mem函数</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">ETYBAK_ADR</span> <span class="token expression"><span class="token number">0x2000</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">PM32_EIP_OFF</span> <span class="token expression"><span class="token punctuation">(</span>ETYBAK_ADR<span class="token punctuation">)</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">PM32_ESP_OFF</span> <span class="token expression"><span class="token punctuation">(</span>ETYBAK_ADR<span class="token operator">+</span><span class="token number">4</span><span class="token punctuation">)</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">E80MAP_NR</span> <span class="token expression"><span class="token punctuation">(</span>ETYBAK_ADR<span class="token operator">+</span><span class="token number">64</span><span class="token punctuation">)</span></span><span class="token comment">//保存e820map_t结构数组元素个数的地址</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">E80MAP_ADRADR</span> <span class="token expression"><span class="token punctuation">(</span>ETYBAK_ADR<span class="token operator">+</span><span class="token number">68</span><span class="token punctuation">)</span> </span><span class="token comment">//保存e820map_t结构数组的开始地址</span></span>
+<span class="token keyword">void</span> <span class="token function">init_mem</span><span class="token punctuation">(</span><span class="token class-name">machbstart_t</span> <span class="token operator">*</span>mbsp<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">e820map_t</span> <span class="token operator">*</span>retemp<span class="token punctuation">;</span>
+    <span class="token class-name">u32_t</span> retemnr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token function">mmap</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>retemp<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retemnr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>retemnr <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token function">kerror</span><span class="token punctuation">(</span><span class="token string">"no e820map\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">//根据e820map_t结构数据检查内存大小</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">chk_memsize</span><span class="token punctuation">(</span>retemp<span class="token punctuation">,</span> retemnr<span class="token punctuation">,</span> <span class="token number">0x100000</span><span class="token punctuation">,</span> <span class="token number">0x8000000</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token constant">NULL</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token function">kerror</span><span class="token punctuation">(</span><span class="token string">"Your computer is low on memory, the memory cannot be less than 128MB!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    mbsp<span class="token operator">-></span>mb_e820padr <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">u64_t</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token class-name">u32_t</span><span class="token punctuation">)</span><span class="token punctuation">(</span>retemp<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//把e820map_t结构数组的首地址传给mbsp->mb_e820padr </span>
+    mbsp<span class="token operator">-></span>mb_e820nr <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">u64_t</span><span class="token punctuation">)</span>retemnr<span class="token punctuation">;</span><span class="token comment">//把e820map_t结构数组元素个数传给mbsp->mb_e820nr </span>
+    mbsp<span class="token operator">-></span>mb_e820sz <span class="token operator">=</span> retemnr <span class="token operator">*</span> <span class="token punctuation">(</span><span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token class-name">e820map_t</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//把e820map_t结构数组大小传给mbsp->mb_e820sz </span>
+    mbsp<span class="token operator">-></span>mb_memsz <span class="token operator">=</span> <span class="token function">get_memsize</span><span class="token punctuation">(</span>retemp<span class="token punctuation">,</span> retemnr<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//根据e820map_t结构数据计算内存大小。</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+
+<span class="token keyword">void</span> <span class="token function">mmap</span><span class="token punctuation">(</span><span class="token class-name">e820map_t</span> <span class="token operator">*</span><span class="token operator">*</span>retemp<span class="token punctuation">,</span> <span class="token class-name">u32_t</span> <span class="token operator">*</span>retemnr<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token function">realadr_call_entry</span><span class="token punctuation">(</span><span class="token function">RLINTNR</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">*</span>retemnr <span class="token operator">=</span> <span class="token operator">*</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token class-name">u32_t</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>E80MAP_NR<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">*</span>retemp <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">e820map_t</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token class-name">u32_t</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>E80MAP_ADRADR<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>内存信息结构体</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">RAM_USABLE</span> <span class="token expression"><span class="token number">1</span> </span><span class="token comment">//可用内存</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">RAM_RESERV</span> <span class="token expression"><span class="token number">2</span> </span><span class="token comment">//保留内存不可使用</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">RAM_ACPIREC</span> <span class="token expression"><span class="token number">3</span> </span><span class="token comment">//ACPI表相关的</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">RAM_ACPINVS</span> <span class="token expression"><span class="token number">4</span> </span><span class="token comment">//ACPI NVS空间</span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">RAM_AREACON</span> <span class="token expression"><span class="token number">5</span> </span><span class="token comment">//包含坏内存</span></span>
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">s_e820</span><span class="token punctuation">&#123;</span>
+    <span class="token class-name">u64_t</span> saddr<span class="token punctuation">;</span>    <span class="token comment">/* 内存开始地址 */</span>
+    <span class="token class-name">u64_t</span> lsize<span class="token punctuation">;</span>    <span class="token comment">/* 内存大小 */</span>
+    <span class="token class-name">u32_t</span> type<span class="token punctuation">;</span>    <span class="token comment">/* 内存类型 */</span>
+<span class="token punctuation">&#125;</span><span class="token class-name">e820map_t</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>mmap函数中调用了bios中断原因是，通过调中断获取e820map结构数组</p>
+<p>其调用了实模式下的_getmmap函数来获取，代码如下</p>
+<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">
+_getmmap:
+  push ds
+  push es
+  push ss
+  mov esi,0
+  mov dword[E80MAP_NR],esi
+  mov dword[E80MAP_ADRADR],E80MAP_ADR ;e820map结构体开始地址
+  xor ebx,ebx
+  mov edi,E80MAP_ADR
+loop:
+  mov eax,0e820h ;获取e820map结构参数
+  mov ecx,20    ;e820map结构大小
+  mov edx,0534d4150h ;获取e820map结构参数必须是这个数据
+  int 15h  ;BIOS的15h中断
+  jc .1
+  add edi,20
+  cmp edi,E80MAP_ADR+0x1000
+  jg .1
+  inc esi
+  cmp ebx,0
+  jne loop ;循环获取e820map结构
+  jmp .2
+.1:
+  mov esi,0    ;出错处理，e820map结构数组元素个数为0
+.2:
+  mov dword[E80MAP_NR],esi ;e820map结构数组元素个数
+  pop ss
+  pop es
+  pop ds
+  ret<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="初始化内核栈"><a href="#初始化内核栈" class="headerlink" title="初始化内核栈"></a>初始化内核栈</h2><pre class="line-numbers language-c" data-language="c"><code class="language-c">
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">IKSTACK_PHYADR</span> <span class="token expression"><span class="token punctuation">(</span><span class="token number">0x90000</span><span class="token operator">-</span><span class="token number">0x10</span><span class="token punctuation">)</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">IKSTACK_SIZE</span> <span class="token expression"><span class="token number">0x1000</span></span></span>
+<span class="token comment">//初始化内核栈</span>
+<span class="token keyword">void</span> <span class="token function">init_krlinitstack</span><span class="token punctuation">(</span><span class="token class-name">machbstart_t</span> <span class="token operator">*</span>mbsp<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">></span> <span class="token function">move_krlimg</span><span class="token punctuation">(</span>mbsp<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token class-name">u64_t</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token number">0x8f000</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">0x1001</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token function">kerror</span><span class="token punctuation">(</span><span class="token string">"iks_moveimg err"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    mbsp<span class="token operator">-></span>mb_krlinitstack <span class="token operator">=</span> IKSTACK_PHYADR<span class="token punctuation">;</span><span class="token comment">//栈顶地址</span>
+    mbsp<span class="token operator">-></span>mb_krlitstacksz <span class="token operator">=</span> IKSTACK_SIZE<span class="token punctuation">;</span> <span class="token comment">//栈大小是4KB</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>内核空间为：0x8f000～（0x8f000+0x1001）</p>
+<p>检查他们于其他空间是否有冲突即可</p>
+<h2 id="放置内核文件与字库文件"><a href="#放置内核文件与字库文件" class="headerlink" title="放置内核文件与字库文件"></a>放置内核文件与字库文件</h2><pre class="line-numbers language-c" data-language="c"><code class="language-c">
+<span class="token comment">//放置内核文件</span>
+<span class="token keyword">void</span> <span class="token function">init_krlfile</span><span class="token punctuation">(</span><span class="token class-name">machbstart_t</span> <span class="token operator">*</span>mbsp<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+<span class="token comment">//在映像中查找相应的文件，并复制到对应的地址，并返回文件的大小，这里是查找kernel.bin文件</span>
+    <span class="token class-name">u64_t</span> sz <span class="token operator">=</span> <span class="token function">r_file_to_padr</span><span class="token punctuation">(</span>mbsp<span class="token punctuation">,</span> IMGKRNL_PHYADR<span class="token punctuation">,</span> <span class="token string">"kernel.bin"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token number">0</span> <span class="token operator">==</span> sz<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token function">kerror</span><span class="token punctuation">(</span><span class="token string">"r_file_to_padr err"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">//放置完成后更新机器信息结构中的数据</span>
+    mbsp<span class="token operator">-></span>mb_krlimgpadr <span class="token operator">=</span> IMGKRNL_PHYADR<span class="token punctuation">;</span>
+    mbsp<span class="token operator">-></span>mb_krlsz <span class="token operator">=</span> sz<span class="token punctuation">;</span>
+    <span class="token comment">//mbsp->mb_nextwtpadr始终要保持指向下一段空闲内存的首地址 </span>
+    mbsp<span class="token operator">-></span>mb_nextwtpadr <span class="token operator">=</span> <span class="token function">P4K_ALIGN</span><span class="token punctuation">(</span>mbsp<span class="token operator">-></span>mb_krlimgpadr <span class="token operator">+</span> mbsp<span class="token operator">-></span>mb_krlsz<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    mbsp<span class="token operator">-></span>mb_kalldendpadr <span class="token operator">=</span> mbsp<span class="token operator">-></span>mb_krlimgpadr <span class="token operator">+</span> mbsp<span class="token operator">-></span>mb_krlsz<span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">//放置字库文件</span>
+<span class="token keyword">void</span> <span class="token function">init_defutfont</span><span class="token punctuation">(</span><span class="token class-name">machbstart_t</span> <span class="token operator">*</span>mbsp<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">u64_t</span> sz <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token comment">//获取下一段空闲内存空间的首地址 </span>
+    <span class="token class-name">u32_t</span> dfadr <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">u32_t</span><span class="token punctuation">)</span>mbsp<span class="token operator">-></span>mb_nextwtpadr<span class="token punctuation">;</span>
+<span class="token comment">//在映像中查找相应的文件，并复制到对应的地址，并返回文件的大小，这里是查找font.fnt文件</span>
+    sz <span class="token operator">=</span> <span class="token function">r_file_to_padr</span><span class="token punctuation">(</span>mbsp<span class="token punctuation">,</span> dfadr<span class="token punctuation">,</span> <span class="token string">"font.fnt"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token number">0</span> <span class="token operator">==</span> sz<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token function">kerror</span><span class="token punctuation">(</span><span class="token string">"r_file_to_padr err"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">//放置完成后更新机器信息结构中的数据</span>
+    mbsp<span class="token operator">-></span>mb_bfontpadr <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">u64_t</span><span class="token punctuation">)</span><span class="token punctuation">(</span>dfadr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    mbsp<span class="token operator">-></span>mb_bfontsz <span class="token operator">=</span> sz<span class="token punctuation">;</span>
+    <span class="token comment">//更新机器信息结构中下一段空闲内存的首地址  </span>
+    mbsp<span class="token operator">-></span>mb_nextwtpadr <span class="token operator">=</span> <span class="token function">P4K_ALIGN</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token class-name">u32_t</span><span class="token punctuation">)</span><span class="token punctuation">(</span>dfadr<span class="token punctuation">)</span> <span class="token operator">+</span> sz<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    mbsp<span class="token operator">-></span>mb_kalldendpadr <span class="token operator">=</span> mbsp<span class="token operator">-></span>mb_bfontpadr <span class="token operator">+</span> mbsp<span class="token operator">-></span>mb_bfontsz<span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>调用 r_file_to_padr 函数在映像中查找 kernel.bin 和 font.fnt 文件，并复制到对应的空闲内存空间中</p>
+<h2 id="建立-MMU-页表数据"><a href="#建立-MMU-页表数据" class="headerlink" title="建立 MMU 页表数据"></a>建立 MMU 页表数据</h2><p>内核虚拟地址空间从 0xffff800000000000 开始，所以我们这个虚拟地址映射到从物理地址 0 开始，大小都是 0x400000000 即 16GB，也就是说我们要虚拟地址空间：0xffff800000000000～0xffff800400000000 映射到物理地址空间 0～0x400000000。</p>
+<p>采用长模式下的 2MB 分页方式</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">KINITPAGE_PHYADR</span> <span class="token expression"><span class="token number">0x1000000</span></span></span>
+<span class="token keyword">void</span> <span class="token function">init_bstartpages</span><span class="token punctuation">(</span><span class="token class-name">machbstart_t</span> <span class="token operator">*</span>mbsp<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token comment">//顶级页目录</span>
+    <span class="token class-name">u64_t</span> <span class="token operator">*</span>p <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">u64_t</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>KINITPAGE_PHYADR<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//16MB地址处</span>
+    <span class="token comment">//页目录指针</span>
+    <span class="token class-name">u64_t</span> <span class="token operator">*</span>pdpte <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">u64_t</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>KINITPAGE_PHYADR <span class="token operator">+</span> <span class="token number">0x1000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//页目录</span>
+    <span class="token class-name">u64_t</span> <span class="token operator">*</span>pde <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">u64_t</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span>KINITPAGE_PHYADR <span class="token operator">+</span> <span class="token number">0x2000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//物理地址从0开始</span>
+    <span class="token class-name">u64_t</span> adr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">></span> <span class="token function">move_krlimg</span><span class="token punctuation">(</span>mbsp<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token class-name">u64_t</span><span class="token punctuation">)</span><span class="token punctuation">(</span>KINITPAGE_PHYADR<span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token number">0x1000</span> <span class="token operator">*</span> <span class="token number">16</span> <span class="token operator">+</span> <span class="token number">0x2000</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token function">kerror</span><span class="token punctuation">(</span><span class="token string">"move_krlimg err"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">//将顶级页目录、页目录指针的空间清0</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">uint_t</span> mi <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> mi <span class="token operator">&lt;</span> PGENTY_SIZE<span class="token punctuation">;</span> mi<span class="token operator">++</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        p<span class="token punctuation">[</span>mi<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        pdpte<span class="token punctuation">[</span>mi<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">//映射</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">uint_t</span> pdei <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> pdei <span class="token operator">&lt;</span> <span class="token number">16</span><span class="token punctuation">;</span> pdei<span class="token operator">++</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        pdpte<span class="token punctuation">[</span>pdei<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">u64_t</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token class-name">u32_t</span><span class="token punctuation">)</span>pde <span class="token operator">|</span> KPDPTE_RW <span class="token operator">|</span> KPDPTE_P<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">uint_t</span> pdeii <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> pdeii <span class="token operator">&lt;</span> PGENTY_SIZE<span class="token punctuation">;</span> pdeii<span class="token operator">++</span><span class="token punctuation">)</span>
+        <span class="token punctuation">&#123;</span><span class="token comment">//大页KPDE_PS 2MB，可读写KPDE_RW，存在KPDE_P</span>
+            pde<span class="token punctuation">[</span>pdeii<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token number">0</span> <span class="token operator">|</span> adr <span class="token operator">|</span> KPDE_PS <span class="token operator">|</span> KPDE_RW <span class="token operator">|</span> KPDE_P<span class="token punctuation">;</span>
+            adr <span class="token operator">+=</span> <span class="token number">0x200000</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        pde <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">u64_t</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token class-name">u32_t</span><span class="token punctuation">)</span>pde <span class="token operator">+</span> <span class="token number">0x1000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">//让顶级页目录中第0项和第((KRNL_VIRTUAL_ADDRESS_START) >> KPML4_SHIFT) &amp; 0x1ff项，指向同一个页目录指针页  </span>
+    p<span class="token punctuation">[</span><span class="token punctuation">(</span><span class="token punctuation">(</span>KRNL_VIRTUAL_ADDRESS_START<span class="token punctuation">)</span> <span class="token operator">>></span> KPML4_SHIFT<span class="token punctuation">)</span> <span class="token operator">&amp;</span> <span class="token number">0x1ff</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">u64_t</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token class-name">u32_t</span><span class="token punctuation">)</span>pdpte <span class="token operator">|</span> KPML4_RW <span class="token operator">|</span> KPML4_P<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    p<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">u64_t</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token class-name">u32_t</span><span class="token punctuation">)</span>pdpte <span class="token operator">|</span> KPML4_RW <span class="token operator">|</span> KPML4_P<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//把页表首地址保存在机器信息结构中</span>
+    mbsp<span class="token operator">-></span>mb_pml4padr <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">u64_t</span><span class="token punctuation">)</span><span class="token punctuation">(</span>KINITPAGE_PHYADR<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    mbsp<span class="token operator">-></span>mb_subpageslen <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">u64_t</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token number">0x1000</span> <span class="token operator">*</span> <span class="token number">16</span> <span class="token operator">+</span> <span class="token number">0x2000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    mbsp<span class="token operator">-></span>mb_kpmapphymemsz <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">u64_t</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token number">0x400000000</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>映射的核心逻辑由<strong>两重循环控制</strong>，外层循环控制页目录指针顶，只有 16 项，其中每一项都指向一个页目录，每个页目录中有 512 个物理页地址</p>
+<p>物理地址每次增加 2MB，这是由 26～30 行的内层循环控制，每执行一次外层循环就要执行 512 次内层循环。<br>顶级页目录中第 0 项和第 ((KRNL_VIRTUAL_ADDRESS_START) &gt;&gt; KPML4_SHIFT) &amp; 0x1ff 项，指向同一个页目录指针页，这样的话就能让虚拟地址：0xffff800000000000～0xffff800400000000 和虚拟地址：0～0x400000000，访问到同一个物理地址空间 0～0x400000000，这样做是有目的，内核在启动初期，<strong>虚拟地址和物理地址要保持相同</strong>。</p>
+<h2 id="设置图形模式"><a href="#设置图形模式" class="headerlink" title="设置图形模式"></a>设置图形模式</h2><pre class="line-numbers language-c" data-language="c"><code class="language-c">
+<span class="token keyword">void</span> <span class="token function">init_graph</span><span class="token punctuation">(</span><span class="token class-name">machbstart_t</span><span class="token operator">*</span> mbsp<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token comment">//初始化图形数据结构</span>
+    <span class="token function">graph_t_init</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>mbsp<span class="token operator">-></span>mb_ghparm<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//获取VBE模式，通过BIOS中断</span>
+    <span class="token function">get_vbemode</span><span class="token punctuation">(</span>mbsp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//获取一个具体VBE模式的信息，通过BIOS中断</span>
+    <span class="token function">get_vbemodeinfo</span><span class="token punctuation">(</span>mbsp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//设置VBE模式，通过BIOS中断</span>
+    <span class="token function">set_vbemodeinfo</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>VBE 是显卡的一个图形规范标准，它定义了显卡的几种图形模式，每个模式包括屏幕分辨率，像素格式与大小，显存大小。调用 BIOS 10h 中断可以返回这些数据结构。</p>
+<p>我们选择使用了 VBE 的 118h 模式，该模式下屏幕分辨率为 1024x768，显存大小是 16.8MB。显存开始地址一般为 0xe0000000</p>
+<p>屏幕分辨率为 1024x768，即把屏幕分成 768 行，每行 1024 个像素点，但每个像素点占用显存的 32 位数据（4 字节，红、绿、蓝、透明各占 8 位）。我们只要往对应的显存地址写入相应的像素数据，屏幕对应的位置就能显示了。</p>
+<p>像素点结构体如下</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">s_PIXCL</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">u8_t</span> cl_b<span class="token punctuation">;</span> <span class="token comment">//蓝</span>
+    <span class="token class-name">u8_t</span> cl_g<span class="token punctuation">;</span> <span class="token comment">//绿</span>
+    <span class="token class-name">u8_t</span> cl_r<span class="token punctuation">;</span> <span class="token comment">//红</span>
+    <span class="token class-name">u8_t</span> cl_a<span class="token punctuation">;</span> <span class="token comment">//透明</span>
+<span class="token punctuation">&#125;</span><span class="token keyword">__attribute__</span><span class="token punctuation">(</span><span class="token punctuation">(</span>packed<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token class-name">pixcl_t</span><span class="token punctuation">;</span>
+
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name function">BGRA</span><span class="token expression"><span class="token punctuation">(</span>r<span class="token punctuation">,</span>g<span class="token punctuation">,</span>b<span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token operator">|</span><span class="token punctuation">(</span>r<span class="token operator">&lt;&lt;</span><span class="token number">16</span><span class="token punctuation">)</span><span class="token operator">|</span><span class="token punctuation">(</span>g<span class="token operator">&lt;&lt;</span><span class="token number">8</span><span class="token punctuation">)</span><span class="token operator">|</span>b<span class="token punctuation">)</span><span class="token punctuation">)</span></span></span>
+<span class="token comment">//通常情况下用pixl_t 和 BGRA宏</span>
+<span class="token keyword">typedef</span> <span class="token class-name">u32_t</span> <span class="token class-name">pixl_t</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>像素点和显存位置对应如下</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token class-name">u32_t</span><span class="token operator">*</span> dispmem <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">u32_t</span><span class="token operator">*</span><span class="token punctuation">)</span>mbsp<span class="token operator">-></span>mb_ghparm<span class="token punctuation">.</span>gh_framphyadr<span class="token punctuation">;</span>
+dispmem<span class="token punctuation">[</span>x <span class="token operator">+</span> <span class="token punctuation">(</span>y <span class="token operator">*</span> <span class="token number">1024</span><span class="token punctuation">)</span><span class="token punctuation">]</span> <span class="token operator">=</span> pix<span class="token punctuation">;</span>
+<span class="token comment">//x，y是像素的位置</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h2 id="连结操作"><a href="#连结操作" class="headerlink" title="连结操作"></a>连结操作</h2><pre class="line-numbers language-c" data-language="c"><code class="language-c">
+<span class="token keyword">void</span> <span class="token function">init_bstartparm</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">machbstart_t</span> <span class="token operator">*</span>mbsp <span class="token operator">=</span> MBSPADR<span class="token punctuation">;</span>
+    <span class="token function">machbstart_t_init</span><span class="token punctuation">(</span>mbsp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//检查CPU</span>
+    <span class="token function">init_chkcpu</span><span class="token punctuation">(</span>mbsp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//获取内存布局</span>
+    <span class="token function">init_mem</span><span class="token punctuation">(</span>mbsp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//初始化内核栈</span>
+    <span class="token function">init_krlinitstack</span><span class="token punctuation">(</span>mbsp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//放置内核文件</span>
+    <span class="token function">init_krlfile</span><span class="token punctuation">(</span>mbsp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//放置字库文件</span>
+    <span class="token function">init_defutfont</span><span class="token punctuation">(</span>mbsp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">init_meme820</span><span class="token punctuation">(</span>mbsp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//建立MMU页表</span>
+    <span class="token function">init_bstartpages</span><span class="token punctuation">(</span>mbsp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//设置图形模式</span>
+    <span class="token function">init_graph</span><span class="token punctuation">(</span>mbsp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="显示logo"><a href="#显示logo" class="headerlink" title="显示logo"></a>显示logo</h2><pre class="line-numbers language-c" data-language="c"><code class="language-c">
+<span class="token keyword">void</span> <span class="token function">logo</span><span class="token punctuation">(</span><span class="token class-name">machbstart_t</span><span class="token operator">*</span> mbsp<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">u32_t</span> retadr<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">,</span>sz<span class="token operator">=</span><span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token comment">//在映像文件中获取logo.bmp文件</span>
+    <span class="token function">get_file_rpadrandsz</span><span class="token punctuation">(</span><span class="token string">"logo.bmp"</span><span class="token punctuation">,</span>mbsp<span class="token punctuation">,</span><span class="token operator">&amp;</span>retadr<span class="token punctuation">,</span><span class="token operator">&amp;</span>sz<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token operator">==</span>retadr<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token function">kerror</span><span class="token punctuation">(</span><span class="token string">"logo getfilerpadrsz err"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">//显示logo文件中的图像数据</span>
+    <span class="token function">bmp_print</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span><span class="token punctuation">)</span>retadr<span class="token punctuation">,</span>mbsp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">void</span> <span class="token function">init_graph</span><span class="token punctuation">(</span><span class="token class-name">machbstart_t</span><span class="token operator">*</span> mbsp<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>    
+    <span class="token comment">//……前面代码省略</span>
+    <span class="token comment">//显示</span>
+    <span class="token function">logo</span><span class="token punctuation">(</span>mbsp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>logo为24位位图文件</p>
+<p>在图格式的文件中，除了文件头的数据就是图形像素点的数据，只不过 24 位的位图每个像素占用 3 字节，并且位置是倒排的，即第一个像素的数据是在文件的最后，依次类推。我们只要依次将位图文件的数据，按照倒排次序写入显存中，这样就可以显示了</p>
+<p>把二级引导器的文件和 logo 文件打包成映像文件，然后放在虚拟硬盘中。复制文件到虚拟硬盘中得先 mount，然后复制，最后转换成 VDI 格式的虚拟硬盘，再挂载到虚拟机上启动就行了。这也是为什么要手动建立硬盘的原因，打包命令如下</p>
+<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash">lmoskrlimg -m k -lhf initldrimh.bin -o Cosmos.eki -f initldrsve.bin initldrkrl.bin font.fnt logo.bmp<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+<h2 id="进入OS"><a href="#进入OS" class="headerlink" title="进入OS"></a>进入OS</h2><p>调用 Cosmos 第一个 C 函数之前，我们依然要写一小段汇编代码，切换 CPU 到长模式，初始化 CPU 寄存器和 C 语言要用的栈。因为目前代码执行流在二级引导器中，进入到 Cosmos 中这样在二级引导器中初始过的东西都不能用了。因为 CPU 进入了长模式，寄存器的位宽都变了，所以需要重新初始化</p>
+<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">
+[section .start.text]
+[BITS 32]
+_start:
+    cli
+    mov ax,0x10
+    mov ds,ax
+    mov es,ax
+    mov ss,ax
+    mov fs,ax
+    mov gs,ax
+    lgdt [eGdtPtr]        
+    ;开启 PAE
+    mov eax, cr4
+    bts eax, 5                      ; CR4.PAE &#x3D; 1
+    mov cr4, eax
+    mov eax, PML4T_BADR             ;加载MMU顶级页目录
+    mov cr3, eax  
+    ;开启 64bits long-mode
+    mov ecx, IA32_EFER
+    rdmsr
+    bts eax, 8                      ; IA32_EFER.LME &#x3D;1
+    wrmsr
+    ;开启 PE 和 paging
+    mov eax, cr0
+    bts eax, 0                      ; CR0.PE &#x3D;1
+    bts eax, 31
+    ;开启 CACHE       
+    btr eax,29                    ; CR0.NW&#x3D;0
+    btr eax,30                    ; CR0.CD&#x3D;0  CACHE
+    mov cr0, eax                    ; IA32_EFER.LMA &#x3D; 1
+    jmp 08:entry64
+[BITS 64]
+entry64:
+    mov ax,0x10
+    mov ds,ax
+    mov es,ax
+    mov ss,ax
+    mov fs,ax
+    mov gs,ax
+    xor rax,rax
+    xor rbx,rbx
+    xor rbp,rbp
+    xor rcx,rcx
+    xor rdx,rdx
+    xor rdi,rdi
+    xor rsi,rsi
+    xor r8,r8
+    xor r9,r9
+    xor r10,r10
+    xor r11,r11
+    xor r12,r12
+    xor r13,r13
+    xor r14,r14
+    xor r15,r15
+    mov rbx,MBSP_ADR
+    mov rax,KRLVIRADR
+    mov rcx,[rbx+KINITSTACK_OFF]
+    add rax,rcx
+    xor rcx,rcx
+    xor rbx,rbx
+    mov rsp,rax
+    push 0
+    push 0x8
+    mov rax,hal_start                 ;调用内核主函数
+    push rax
+    dw 0xcb48
+    jmp $
+[section .start.data]
+[BITS 32]
+x64_GDT:
+enull_x64_dsc:  dq 0  
+ekrnl_c64_dsc:  dq 0x0020980000000000   ; 64-bit 内核代码段
+ekrnl_d64_dsc:  dq 0x0000920000000000   ; 64-bit 内核数据段
+euser_c64_dsc:  dq 0x0020f80000000000   ; 64-bit 用户代码段
+euser_d64_dsc:  dq 0x0000f20000000000   ; 64-bit 用户数据段
+eGdtLen      equ  $ - enull_x64_dsc   ; GDT长度
+eGdtPtr:    dw eGdtLen - 1      ; GDT界限
+        dq ex64_GDT<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>1～11 行表示加载 70～75 行的 GDT，13～17 行是设置 MMU 并加载在二级引导器中准备好的 MMU 页表，19～30 行是开启长模式并打开 Cache，34～54 行则是初始化长模式下的寄存器，55～61 行是读取二级引导器准备的机器信息结构中的栈地址，并用这个数据设置 RSP 寄存器。</p>
+<p>最关键的是 63～66 行，它开始把 8 和 hal_start 函数的地址压入栈中。dw 0xcb48 是直接写一条指令的机器码——0xcb48，这是一条返回指令。这个返回指令有点特殊，它会把栈中的数据分别弹出到 RIP，CS 寄存器，这正是为了调用我们 os 的第一个 C 函数 hal_start。</p>
+<h2 id="小结2"><a href="#小结2" class="headerlink" title="小结2"></a>小结2</h2><pre class="line-numbers language-tex" data-language="tex"><code class="language-tex">11、返回到bstartparm.c
+调用了chkcpmm.c的init_bstartpages
+
+12、然后调用到了fs.c的move_krlimg函数申请了内存，建立了MMU页表：
+顶级页目录，开始于0x1000000
+页目录指针目录，开始于0x1001000，，共16项 ，其中每一项都指向一个页目录
+页目录，开始于0x1002000， 每页指向512 个物理页，每页2MB【 0x200000】
+
+让物理地址p[0]和虚拟地址p[((KRNL_VIRTUAL_ADDRESS_START) &gt;&gt; KPML4_SHIFT) &amp; 0x1ff]，指向同一个页目录指针页，确保内核在启动初期，虚拟地址和物理地址要保持相同
+没搞清楚为什么虚拟地址是这个，也暂时没搞清楚为何要指向(u64_t)((u32_t)pdpte | KPML4_RW | KPML4_P)
+
+最后，把页表首地址保存在机器信息结构中
+
+13、返回到bstartparm.c
+调用了graph.c的init_graph
+A、初始化了数据结构
+
+B、调用init_bgadevice
+首先获取GBA设备ID
+检查设备最大分辨率
+设置显示参数，并将参数保存到mbsp结构中
+
+C、如果不是图形模式，要通过BIOS中断进行切换，设置显示参数，并将参数保存到mbsp结构中：
+获取VBE模式，通过BIOS中断
+获取一个具体VBE模式的信息，通过BIOS中断
+设置VBE模式，通过BIOS中断
+这三个方法同样用到了realadr_call_entry，调用路径与上面_getmmap类似，不再展开
+
+D、初始化了一块儿内存
+感觉会与物理地址与虚拟地址之间转换由一定关系
+
+E、进行logo显示
+调用get_file_rpadrandsz定位到位图文件
+调用bmp_print，读入像素点，BGRA转换
+最后调用write_pixcolor，写入到mbsp-&gt;mb_ghparm正确的位置，图像就显示出来了
+
+14、然后一路返回
+到bstartparm.c的init_bstartparm
+到ldrkrlentry.c的ldrkrl_entry
+到ldrkrl32.asm的call ldrkrl_entry
+再往下是jmp 0x2000000
+这个地址就是IMGKRNL_PHYADR，就是刚才放Cosmos.eki的位置<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
 
                 
             </div>
