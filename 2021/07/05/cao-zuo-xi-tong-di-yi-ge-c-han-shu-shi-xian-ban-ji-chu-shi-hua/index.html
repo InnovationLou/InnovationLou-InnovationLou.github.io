@@ -485,21 +485,21 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2021-07-05
+                    2021-07-08
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    278
+                    4.6k
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    1 分
+                    19 分
                 </div>
                 
 
@@ -569,9 +569,603 @@
     <span class="token comment">//初始化图形显示驱动</span>
     <span class="token function">init_bdvideo</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
     <span class="token keyword">return</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>kmachbsp结构体类型是 machbstart_t，这个结构和二级引导器所使用的一样</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">//全局变量定义变量放在data段</span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name function">HAL_DEFGLOB_VARIABLE</span><span class="token expression"><span class="token punctuation">(</span>vartype<span class="token punctuation">,</span>varname<span class="token punctuation">)</span> </span><span class="token punctuation">\</span>
+<span class="token expression">EXTERN  <span class="token keyword">__attribute__</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token function">section</span><span class="token punctuation">(</span></span><span class="token string">".data"</span><span class="token expression"><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> vartype varname</span></span>
+
+<span class="token function">HAL_DEFGLOB_VARIABLE</span><span class="token punctuation">(</span><span class="token class-name">machbstart_t</span><span class="token punctuation">,</span>kmachbsp<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>init_bdvideo函数</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">init_bdvideo</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">dftgraph_t</span> <span class="token operator">*</span>kghp <span class="token operator">=</span> <span class="token operator">&amp;</span>kdftgh<span class="token punctuation">;</span>
+    <span class="token comment">//初始化图形数据结构，里面放有图形模式，分辨率，图形驱动函数指针</span>
+    <span class="token function">init_dftgraph</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//初始bga图形显卡的函数指针</span>
+    <span class="token function">init_bga</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//初始vbe图形显卡的函数指针</span>
+    <span class="token function">init_vbe</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//清空屏幕 为黑色</span>
+    <span class="token function">fill_graph</span><span class="token punctuation">(</span>kghp<span class="token punctuation">,</span> <span class="token function">BGRA</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//显示背景图片 </span>
+    <span class="token function">set_charsdxwflush</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">hal_background</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>dftgraph_t结构体</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">s_DFTGRAPH</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">u64_t</span> gh_mode<span class="token punctuation">;</span>         <span class="token comment">//图形模式</span>
+    <span class="token class-name">u64_t</span> gh_x<span class="token punctuation">;</span>            <span class="token comment">//水平像素点</span>
+    <span class="token class-name">u64_t</span> gh_y<span class="token punctuation">;</span>            <span class="token comment">//垂直像素点</span>
+    <span class="token class-name">u64_t</span> gh_framphyadr<span class="token punctuation">;</span>   <span class="token comment">//显存物理地址 </span>
+    <span class="token class-name">u64_t</span> gh_fvrmphyadr<span class="token punctuation">;</span>   <span class="token comment">//显存虚拟地址</span>
+    <span class="token class-name">u64_t</span> gh_fvrmsz<span class="token punctuation">;</span>       <span class="token comment">//显存大小</span>
+    <span class="token class-name">u64_t</span> gh_onepixbits<span class="token punctuation">;</span>   <span class="token comment">//一个像素字占用的数据位数</span>
+    <span class="token class-name">u64_t</span> gh_onepixbyte<span class="token punctuation">;</span>
+    <span class="token class-name">u64_t</span> gh_vbemodenr<span class="token punctuation">;</span>    <span class="token comment">//vbe模式号</span>
+    <span class="token class-name">u64_t</span> gh_bank<span class="token punctuation">;</span>         <span class="token comment">//显存的bank数</span>
+    <span class="token class-name">u64_t</span> gh_curdipbnk<span class="token punctuation">;</span>    <span class="token comment">//当前bank</span>
+    <span class="token class-name">u64_t</span> gh_nextbnk<span class="token punctuation">;</span>      <span class="token comment">//下一个bank</span>
+    <span class="token class-name">u64_t</span> gh_banksz<span class="token punctuation">;</span>       <span class="token comment">//bank大小</span>
+    <span class="token class-name">u64_t</span> gh_fontadr<span class="token punctuation">;</span>      <span class="token comment">//字库地址</span>
+    <span class="token class-name">u64_t</span> gh_fontsz<span class="token punctuation">;</span>       <span class="token comment">//字库大小</span>
+    <span class="token class-name">u64_t</span> gh_fnthight<span class="token punctuation">;</span>     <span class="token comment">//字体高度</span>
+    <span class="token class-name">u64_t</span> gh_nxtcharsx<span class="token punctuation">;</span>    <span class="token comment">//下一字符显示的x坐标</span>
+    <span class="token class-name">u64_t</span> gh_nxtcharsy<span class="token punctuation">;</span>    <span class="token comment">//下一字符显示的y坐标</span>
+    <span class="token class-name">u64_t</span> gh_linesz<span class="token punctuation">;</span>       <span class="token comment">//字符行高</span>
+    <span class="token class-name">pixl_t</span> gh_deffontpx<span class="token punctuation">;</span>   <span class="token comment">//默认字体大小</span>
+    <span class="token class-name">u64_t</span> gh_chardxw<span class="token punctuation">;</span>
+    <span class="token class-name">u64_t</span> gh_flush<span class="token punctuation">;</span>
+    <span class="token class-name">u64_t</span> gh_framnr<span class="token punctuation">;</span>
+    <span class="token class-name">u64_t</span> gh_fshdata<span class="token punctuation">;</span>      <span class="token comment">//刷新相关的</span>
+    <span class="token class-name">dftghops_t</span> gh_opfun<span class="token punctuation">;</span>   <span class="token comment">//图形驱动操作函数指针结构体</span>
+<span class="token punctuation">&#125;</span><span class="token class-name">dftgraph_t</span><span class="token punctuation">;</span>
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">s_DFTGHOPS</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token comment">//读写显存数据</span>
+    <span class="token class-name">size_t</span> <span class="token punctuation">(</span><span class="token operator">*</span>dgo_read<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span> ghpdev<span class="token punctuation">,</span><span class="token keyword">void</span><span class="token operator">*</span> outp<span class="token punctuation">,</span><span class="token class-name">size_t</span> rdsz<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token class-name">size_t</span> <span class="token punctuation">(</span><span class="token operator">*</span>dgo_write<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span> ghpdev<span class="token punctuation">,</span><span class="token keyword">void</span><span class="token operator">*</span> inp<span class="token punctuation">,</span><span class="token class-name">size_t</span> wesz<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token class-name">sint_t</span> <span class="token punctuation">(</span><span class="token operator">*</span>dgo_ioctrl<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span> ghpdev<span class="token punctuation">,</span><span class="token keyword">void</span><span class="token operator">*</span> outp<span class="token punctuation">,</span><span class="token class-name">uint_t</span> iocode<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//刷新</span>
+    <span class="token keyword">void</span>   <span class="token punctuation">(</span><span class="token operator">*</span>dgo_flush<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span> ghpdev<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token class-name">sint_t</span> <span class="token punctuation">(</span><span class="token operator">*</span>dgo_set_bank<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span> ghpdev<span class="token punctuation">,</span> <span class="token class-name">sint_t</span> bnr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//读写像素</span>
+    <span class="token class-name">pixl_t</span> <span class="token punctuation">(</span><span class="token operator">*</span>dgo_readpix<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span> ghpdev<span class="token punctuation">,</span><span class="token class-name">uint_t</span> x<span class="token punctuation">,</span><span class="token class-name">uint_t</span> y<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">void</span>   <span class="token punctuation">(</span><span class="token operator">*</span>dgo_writepix<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span> ghpdev<span class="token punctuation">,</span><span class="token class-name">pixl_t</span> pix<span class="token punctuation">,</span><span class="token class-name">uint_t</span> x<span class="token punctuation">,</span><span class="token class-name">uint_t</span> y<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//直接读写像素 </span>
+    <span class="token class-name">pixl_t</span> <span class="token punctuation">(</span><span class="token operator">*</span>dgo_dxreadpix<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span> ghpdev<span class="token punctuation">,</span><span class="token class-name">uint_t</span> x<span class="token punctuation">,</span><span class="token class-name">uint_t</span> y<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">void</span>   <span class="token punctuation">(</span><span class="token operator">*</span>dgo_dxwritepix<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span> ghpdev<span class="token punctuation">,</span><span class="token class-name">pixl_t</span> pix<span class="token punctuation">,</span><span class="token class-name">uint_t</span> x<span class="token punctuation">,</span><span class="token class-name">uint_t</span> y<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//设置x，y坐标和偏移</span>
+    <span class="token class-name">sint_t</span> <span class="token punctuation">(</span><span class="token operator">*</span>dgo_set_xy<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span> ghpdev<span class="token punctuation">,</span><span class="token class-name">uint_t</span> x<span class="token punctuation">,</span><span class="token class-name">uint_t</span> y<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token class-name">sint_t</span> <span class="token punctuation">(</span><span class="token operator">*</span>dgo_set_vwh<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span> ghpdev<span class="token punctuation">,</span><span class="token class-name">uint_t</span> vwt<span class="token punctuation">,</span><span class="token class-name">uint_t</span> vhi<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token class-name">sint_t</span> <span class="token punctuation">(</span><span class="token operator">*</span>dgo_set_xyoffset<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span> ghpdev<span class="token punctuation">,</span><span class="token class-name">uint_t</span> xoff<span class="token punctuation">,</span><span class="token class-name">uint_t</span> yoff<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//获取x，y坐标和偏移</span>
+    <span class="token class-name">sint_t</span> <span class="token punctuation">(</span><span class="token operator">*</span>dgo_get_xy<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span> ghpdev<span class="token punctuation">,</span><span class="token class-name">uint_t</span><span class="token operator">*</span> rx<span class="token punctuation">,</span><span class="token class-name">uint_t</span><span class="token operator">*</span> ry<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token class-name">sint_t</span> <span class="token punctuation">(</span><span class="token operator">*</span>dgo_get_vwh<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span> ghpdev<span class="token punctuation">,</span><span class="token class-name">uint_t</span><span class="token operator">*</span> rvwt<span class="token punctuation">,</span><span class="token class-name">uint_t</span><span class="token operator">*</span> rvhi<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token class-name">sint_t</span> <span class="token punctuation">(</span><span class="token operator">*</span>dgo_get_xyoffset<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">void</span><span class="token operator">*</span> ghpdev<span class="token punctuation">,</span><span class="token class-name">uint_t</span><span class="token operator">*</span> rxoff<span class="token punctuation">,</span><span class="token class-name">uint_t</span><span class="token operator">*</span> ryoff<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token class-name">dftghops_t</span><span class="token punctuation">;</span>
+<span class="token comment">//刷新显存</span>
+<span class="token keyword">void</span> <span class="token function">flush_videoram</span><span class="token punctuation">(</span><span class="token class-name">dftgraph_t</span> <span class="token operator">*</span>kghp<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    kghp<span class="token operator">-></span>gh_opfun<span class="token punctuation">.</span><span class="token function">dgo_flush</span><span class="token punctuation">(</span>kghp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>最后调用函数</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">//在halinit.c文件中</span>
+<span class="token keyword">void</span> <span class="token function">init_hal</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token function">init_halplaltform</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">//在hal_start.c文件中</span>
+<span class="token keyword">void</span> <span class="token function">hal_start</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token function">init_hal</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//初始化hal层，其中会调用初始化平台函数，在那里会调用初始化图形驱动</span>
+    <span class="token keyword">for</span><span class="token punctuation">(</span><span class="token punctuation">;</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre></li>
 </ol>
-<h3 id="初始化内存"><a href="#初始化内存" class="headerlink" title="初始化内存"></a>初始化内存</h3><h3 id="初始化中断"><a href="#初始化中断" class="headerlink" title="初始化中断"></a>初始化中断</h3>
+<h3 id="初始化内存"><a href="#初始化内存" class="headerlink" title="初始化内存"></a>初始化内存</h3><p>相比较二级引导器的内存布局信息，内存管理器需要保存更多的信息，最好是顺序的内存布局信息，这样可以增加额外的功能属性，同时降低代码的复杂度。</p>
+<p>定义结构<code>s_PHYMMARGE</code></p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">PMR_T_OSAPUSERRAM</span> <span class="token expression"><span class="token number">1</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">PMR_T_RESERVRAM</span> <span class="token expression"><span class="token number">2</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">PMR_T_HWUSERRAM</span> <span class="token expression"><span class="token number">8</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">PMR_T_ARACONRAM</span> <span class="token expression"><span class="token number">0xf</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">PMR_T_BUGRAM</span> <span class="token expression"><span class="token number">0xff</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">PMR_F_X86_32</span> <span class="token expression"><span class="token punctuation">(</span><span class="token number">1</span><span class="token operator">&lt;&lt;</span><span class="token number">0</span><span class="token punctuation">)</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">PMR_F_X86_64</span> <span class="token expression"><span class="token punctuation">(</span><span class="token number">1</span><span class="token operator">&lt;&lt;</span><span class="token number">1</span><span class="token punctuation">)</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">PMR_F_ARM_32</span> <span class="token expression"><span class="token punctuation">(</span><span class="token number">1</span><span class="token operator">&lt;&lt;</span><span class="token number">2</span><span class="token punctuation">)</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">PMR_F_ARM_64</span> <span class="token expression"><span class="token punctuation">(</span><span class="token number">1</span><span class="token operator">&lt;&lt;</span><span class="token number">3</span><span class="token punctuation">)</span></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">define</span> <span class="token macro-name">PMR_F_HAL_MASK</span> <span class="token expression"><span class="token number">0xff</span></span></span>
+
+<span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">s_PHYMMARGE</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">spinlock_t</span> pmr_lock<span class="token punctuation">;</span><span class="token comment">//保护这个结构是自旋锁</span>
+    <span class="token class-name">u32_t</span> pmr_type<span class="token punctuation">;</span>     <span class="token comment">//内存地址空间类型</span>
+    <span class="token class-name">u32_t</span> pmr_stype<span class="token punctuation">;</span>
+    <span class="token class-name">u32_t</span> pmr_dtype<span class="token punctuation">;</span>    <span class="token comment">//内存地址空间的子类型，见上面的宏</span>
+    <span class="token class-name">u32_t</span> pmr_flgs<span class="token punctuation">;</span>     <span class="token comment">//结构的标志与状态</span>
+    <span class="token class-name">u32_t</span> pmr_stus<span class="token punctuation">;</span>
+    <span class="token class-name">u64_t</span> pmr_saddr<span class="token punctuation">;</span>    <span class="token comment">//内存空间的开始地址</span>
+    <span class="token class-name">u64_t</span> pmr_lsize<span class="token punctuation">;</span>    <span class="token comment">//内存空间的大小</span>
+    <span class="token class-name">u64_t</span> pmr_end<span class="token punctuation">;</span>      <span class="token comment">//内存空间的结束地址</span>
+    <span class="token class-name">u64_t</span> pmr_rrvmsaddr<span class="token punctuation">;</span><span class="token comment">//内存保留空间的开始地址</span>
+    <span class="token class-name">u64_t</span> pmr_rrvmend<span class="token punctuation">;</span>  <span class="token comment">//内存保留空间的结束地址</span>
+    <span class="token keyword">void</span><span class="token operator">*</span> pmr_prip<span class="token punctuation">;</span>     <span class="token comment">//结构的私有数据指针，以后扩展所用</span>
+    <span class="token keyword">void</span><span class="token operator">*</span> pmr_extp<span class="token punctuation">;</span>     <span class="token comment">//结构的扩展数据指针，以后扩展所用</span>
+<span class="token punctuation">&#125;</span><span class="token class-name">phymmarge_t</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>有些情况下内核要另起炉灶，不想把所有的内存空间都交给内存管理器去管理，所以要保留一部分内存空间，这就是上面结构中那两个 pmr_rrvmsaddr、pmr_rrvmend 字段的作用。</p>
+<p>有了数据结构，我们还要写代码来操作它：</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token class-name">u64_t</span> <span class="token function">initpmrge_core</span><span class="token punctuation">(</span><span class="token class-name">e820map_t</span> <span class="token operator">*</span>e8sp<span class="token punctuation">,</span> <span class="token class-name">u64_t</span> e8nr<span class="token punctuation">,</span> <span class="token class-name">phymmarge_t</span> <span class="token operator">*</span>pmargesp<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">u64_t</span> retnr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">u64_t</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> e8nr<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token comment">//根据一个e820map_t结构建立一个phymmarge_t结构</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">init_one_pmrge</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>e8sp<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>pmargesp<span class="token punctuation">[</span>i<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">==</span> FALSE<span class="token punctuation">)</span>
+        <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> retnr<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        retnr<span class="token operator">++</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> retnr<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">void</span> <span class="token function">init_phymmarge</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">machbstart_t</span> <span class="token operator">*</span>mbsp <span class="token operator">=</span> <span class="token operator">&amp;</span>kmachbsp<span class="token punctuation">;</span>
+    <span class="token class-name">phymmarge_t</span> <span class="token operator">*</span>pmarge_adr <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+    <span class="token class-name">u64_t</span> pmrgesz <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token comment">//根据machbstart_t机器信息结构计算获得phymmarge_t结构的开始地址和大小</span>
+    <span class="token function">ret_phymmarge_adrandsz</span><span class="token punctuation">(</span>mbsp<span class="token punctuation">,</span> <span class="token operator">&amp;</span>pmarge_adr<span class="token punctuation">,</span> <span class="token operator">&amp;</span>pmrgesz<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token class-name">u64_t</span> tmppmrphyadr <span class="token operator">=</span> mbsp<span class="token operator">-></span>mb_nextwtpadr<span class="token punctuation">;</span>
+    <span class="token class-name">e820map_t</span> <span class="token operator">*</span>e8p <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">e820map_t</span> <span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token class-name">adr_t</span><span class="token punctuation">)</span><span class="token punctuation">(</span>mbsp<span class="token operator">-></span>mb_e820padr<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//建立phymmarge_t结构</span>
+    <span class="token class-name">u64_t</span> ipmgnr <span class="token operator">=</span> <span class="token function">initpmrge_core</span><span class="token punctuation">(</span>e8p<span class="token punctuation">,</span> mbsp<span class="token operator">-></span>mb_e820nr<span class="token punctuation">,</span> pmarge_adr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//把phymmarge_t结构的地址大小个数保存machbstart_t机器信息结构中</span>
+    mbsp<span class="token operator">-></span>mb_e820expadr <span class="token operator">=</span> tmppmrphyadr<span class="token punctuation">;</span>
+    mbsp<span class="token operator">-></span>mb_e820exnr <span class="token operator">=</span> ipmgnr<span class="token punctuation">;</span>
+    mbsp<span class="token operator">-></span>mb_e820exsz <span class="token operator">=</span> ipmgnr <span class="token operator">*</span> <span class="token keyword">sizeof</span><span class="token punctuation">(</span><span class="token class-name">phymmarge_t</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    mbsp<span class="token operator">-></span>mb_nextwtpadr <span class="token operator">=</span> <span class="token function">PAGE_ALIGN</span><span class="token punctuation">(</span>mbsp<span class="token operator">-></span>mb_e820expadr <span class="token operator">+</span> mbsp<span class="token operator">-></span>mb_e820exsz<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//phymmarge_t结构中地址空间从低到高进行排序，我已经帮你写好了</span>
+    <span class="token function">phymmarge_sort</span><span class="token punctuation">(</span>pmarge_adr<span class="token punctuation">,</span> ipmgnr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>根据 e820map_t 结构数组，建立了一个 phymmarge_t 结构数组，init_one_pmrge 函数正是把 e820map_t 结构中的信息复制到 phymmarge_t 结构中来。</p>
+<p>调用</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">init_halmm</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token function">init_phymmarge</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//init_memmgr();</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<h3 id="初始化中断"><a href="#初始化中断" class="headerlink" title="初始化中断"></a>初始化中断</h3><p>在 x86 CPU 上，最多支持 256 个中断，还记得前面所说的中断表和中断门描述符吗，这意味着我们要准备 256 个中断门描述符和 256 个中断处理程序的入口。</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">s_GATE</span>
+<span class="token punctuation">&#123;</span>
+        <span class="token class-name">u16_t</span>   offset_low<span class="token punctuation">;</span>     <span class="token comment">/* 偏移 */</span>
+        <span class="token class-name">u16_t</span>   selector<span class="token punctuation">;</span>       <span class="token comment">/* 段选择子 */</span>
+        <span class="token class-name">u8_t</span>    dcount<span class="token punctuation">;</span>         <span class="token comment">/* 该字段只在调用门描述符中有效。如果在利用调用门调用子程序时引起特权级的转换和堆栈的改变，需要将外层堆栈中的参数复制到内层堆栈。该双字计数字段就是用于说明这种情况发生时，要复制的双字参数的数量。*/</span>
+        <span class="token class-name">u8_t</span>    attr<span class="token punctuation">;</span>           <span class="token comment">/* P(1) DPL(2) DT(1) TYPE(4) */</span>
+        <span class="token class-name">u16_t</span>   offset_high<span class="token punctuation">;</span>    <span class="token comment">/* 偏移的高位段 */</span>
+        <span class="token class-name">u32_t</span>   offset_high_h<span class="token punctuation">;</span>
+        <span class="token class-name">u32_t</span>   offset_resv<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token keyword">__attribute__</span><span class="token punctuation">(</span><span class="token punctuation">(</span>packed<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token class-name">gate_t</span><span class="token punctuation">;</span>
+<span class="token comment">//定义中断表</span>
+<span class="token function">HAL_DEFGLOB_VARIABLE</span><span class="token punctuation">(</span><span class="token class-name">gate_t</span><span class="token punctuation">,</span>x64_idt<span class="token punctuation">)</span><span class="token punctuation">[</span>IDTMAX<span class="token punctuation">]</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>中断表其实是个 gate_t 结构的数组，由 CPU 的 IDTR 寄存器指向，IDTMAX 为 256</p>
+<p>定义函数给中断表设置数据</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">//vector 向量也是中断号</span>
+<span class="token comment">//desc_type 中断门类型，中断门，陷阱门</span>
+<span class="token comment">//handler 中断处理程序的入口地址</span>
+<span class="token comment">//privilege 中断门的权限级别</span>
+<span class="token keyword">void</span> <span class="token function">set_idt_desc</span><span class="token punctuation">(</span><span class="token class-name">u8_t</span> vector<span class="token punctuation">,</span> <span class="token class-name">u8_t</span> desc_type<span class="token punctuation">,</span> <span class="token class-name">inthandler_t</span> handler<span class="token punctuation">,</span> <span class="token class-name">u8_t</span> privilege<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">gate_t</span> <span class="token operator">*</span>p_gate <span class="token operator">=</span> <span class="token operator">&amp;</span>x64_idt<span class="token punctuation">[</span>vector<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token class-name">u64_t</span> base <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">u64_t</span><span class="token punctuation">)</span>handler<span class="token punctuation">;</span>
+    p_gate<span class="token operator">-></span>offset_low <span class="token operator">=</span> base <span class="token operator">&amp;</span> <span class="token number">0xFFFF</span><span class="token punctuation">;</span>
+    p_gate<span class="token operator">-></span>selector <span class="token operator">=</span> SELECTOR_KERNEL_CS<span class="token punctuation">;</span>
+    p_gate<span class="token operator">-></span>dcount <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    p_gate<span class="token operator">-></span>attr <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">u8_t</span><span class="token punctuation">)</span><span class="token punctuation">(</span>desc_type <span class="token operator">|</span> <span class="token punctuation">(</span>privilege <span class="token operator">&lt;&lt;</span> <span class="token number">5</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    p_gate<span class="token operator">-></span>offset_high <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">u16_t</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">(</span>base <span class="token operator">>></span> <span class="token number">16</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span> <span class="token number">0xFFFF</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    p_gate<span class="token operator">-></span>offset_high_h <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">u32_t</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">(</span>base <span class="token operator">>></span> <span class="token number">32</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span> <span class="token number">0xffffffff</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    p_gate<span class="token operator">-></span>offset_resv <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>上面的代码，正是按照要求，把这些数据填入中断门描述符中的。有了中断门之后，还差中断处理程序，中断处理程序只负责这三件事：</p>
+<ol>
+<li>保护 CPU 寄存器，即中断发生时的程序运行的上下文。</li>
+<li>调用中断处理程序，这个程序可以是修复异常的，可以是设备驱动程序中对设备响应的程序。</li>
+<li>恢复 CPU 寄存器，即恢复中断时程序运行的上下文，使程序继续运行。</li>
+</ol>
+<p>先来写好完成以上三个功能的汇编宏代码，避免写 256 遍同样的代码，代码如下</p>
+<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">&#x2F;&#x2F;保存中断后的寄存器
+%macro  SAVEALL  0
+  push rax
+  push rbx
+  push rcx
+  push rdx
+  push rbp
+  push rsi
+  push rdi
+  push r8
+  push r9
+  push r10
+  push r11
+  push r12
+  push r13
+  push r14
+  push r15
+  xor r14,r14
+  mov r14w,ds
+  push r14
+  mov r14w,es
+  push r14
+  mov r14w,fs
+  push r14
+  mov r14w,gs
+  push r14
+%endmacro
+&#x2F;&#x2F;恢复中断后寄存器
+%macro  RESTOREALL  0
+  pop r14
+  mov gs,r14w
+  pop r14 
+  mov fs,r14w
+  pop r14
+  mov es,r14w
+  pop r14
+  mov ds,r14w
+  pop r15
+  pop r14
+  pop r13
+  pop r12
+  pop r11
+  pop r10
+  pop r9
+  pop r8
+  pop rdi
+  pop rsi
+  pop rbp
+  pop rdx
+  pop rcx
+  pop rbx
+  pop rax
+  iretq
+%endmacro
+&#x2F;&#x2F;保存异常下的寄存器
+%macro  SAVEALLFAULT 0
+  push rax
+  push rbx
+  push rcx
+  push rdx
+  push rbp
+  push rsi
+  push rdi
+  push r8
+  push r9
+  push r10
+  push r11
+  push r12
+  push r13
+  push r14
+  push r15
+  xor r14,r14
+  mov r14w,ds
+  push r14
+  mov r14w,es
+  push r14
+  mov r14w,fs
+  push r14
+  mov r14w,gs
+  push r14
+%endmacro
+&#x2F;&#x2F;恢复异常下寄存器
+%macro  RESTOREALLFAULT  0
+  pop r14
+  mov gs,r14w
+  pop r14 
+  mov fs,r14w
+  pop r14
+  mov es,r14w
+  pop r14
+  mov ds,r14w
+  pop r15
+  pop r14
+  pop r13
+  pop r12
+  pop r11
+  pop r10
+  pop r9
+  pop r8
+  pop rdi
+  pop rsi
+  pop rbp
+  pop rdx
+  pop rcx
+  pop rbx
+  pop rax
+  add rsp,8
+  iretq
+%endmacro
+&#x2F;&#x2F;没有错误码CPU异常
+%macro  SRFTFAULT 1
+  push    _NOERRO_CODE
+  SAVEALLFAULT
+  mov r14w,0x10
+  mov ds,r14w
+  mov es,r14w
+  mov fs,r14w
+  mov gs,r14w
+  mov   rdi,%1 ;rdi, rsi
+  mov   rsi,rsp
+  call   hal_fault_allocator
+  RESTOREALLFAULT
+%endmacro
+&#x2F;&#x2F;CPU异常
+%macro  SRFTFAULT_ECODE 1
+  SAVEALLFAULT
+  mov r14w,0x10
+  mov ds,r14w
+  mov es,r14w
+  mov fs,r14w
+  mov gs,r14w
+  mov   rdi,%1
+  mov   rsi,rsp
+  call   hal_fault_allocator
+  RESTOREALLFAULT
+%endmacro
+&#x2F;&#x2F;硬件中断
+%macro  HARWINT  1
+  SAVEALL
+  mov r14w,0x10
+  mov ds,r14w
+  mov es,r14w
+  mov fs,r14w
+  mov gs,r14w
+  mov  rdi, %1
+  mov   rsi,rsp
+  call    hal_intpt_allocator
+  RESTOREALL
+%endmacro<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>有的 CPU 异常，CPU 自动把异常码压入到栈中，而有的 CPU 异常没有异常码，为了统一，我们对没有异常码的<strong>手动压入一个常数，维持栈的平衡</strong>。</p>
+<p>有了中断异常处理的宏，我们还要它们变成中断异常的处理程序入口点函数。汇编函数其实就是一个标号加一段汇编代码，C 编译器把 C 语言函数编译成汇编代码后，也是标号加汇编代码，函数名就是标号</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">
+<span class="token comment">//除法错误异常 比如除0</span>
+exc_divide_error<span class="token operator">:</span>
+  SRFTFAULT <span class="token number">0</span>
+<span class="token comment">//单步执行异常</span>
+exc_single_step_exception<span class="token operator">:</span>
+  SRFTFAULT <span class="token number">1</span>
+exc_nmi<span class="token operator">:</span>
+  SRFTFAULT <span class="token number">2</span>
+<span class="token comment">//调试断点异常</span>
+exc_breakpoint_exception<span class="token operator">:</span>
+  SRFTFAULT <span class="token number">3</span>
+<span class="token comment">//溢出异常</span>
+exc_overflow<span class="token operator">:</span>
+  SRFTFAULT <span class="token number">4</span>
+<span class="token comment">//段不存在异常</span>
+exc_segment_not_present<span class="token operator">:</span>
+  SRFTFAULT_ECODE <span class="token number">11</span>
+<span class="token comment">//栈异常</span>
+exc_stack_exception<span class="token operator">:</span>
+  SRFTFAULT_ECODE <span class="token number">12</span>
+<span class="token comment">//通用异常</span>
+exc_general_protection<span class="token operator">:</span>
+  SRFTFAULT_ECODE <span class="token number">13</span>
+<span class="token comment">//缺页异常</span>
+exc_page_fault<span class="token operator">:</span>
+  SRFTFAULT_ECODE <span class="token number">14</span>
+hxi_exc_general_intpfault<span class="token operator">:</span>
+  SRFTFAULT <span class="token number">256</span>
+<span class="token comment">//硬件1～7号中断</span>
+hxi_hwint00<span class="token operator">:</span>
+  <span class="token function">HARWINT</span>  <span class="token punctuation">(</span>INT_VECTOR_IRQ0<span class="token operator">+</span><span class="token number">0</span><span class="token punctuation">)</span>
+hxi_hwint01<span class="token operator">:</span>
+  <span class="token function">HARWINT</span>  <span class="token punctuation">(</span>INT_VECTOR_IRQ0<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span>
+hxi_hwint02<span class="token operator">:</span>
+  <span class="token function">HARWINT</span>  <span class="token punctuation">(</span>INT_VECTOR_IRQ0<span class="token operator">+</span><span class="token number">2</span><span class="token punctuation">)</span>
+hxi_hwint03<span class="token operator">:</span>
+  <span class="token function">HARWINT</span>  <span class="token punctuation">(</span>INT_VECTOR_IRQ0<span class="token operator">+</span><span class="token number">3</span><span class="token punctuation">)</span>
+hxi_hwint04<span class="token operator">:</span>
+  <span class="token function">HARWINT</span>  <span class="token punctuation">(</span>INT_VECTOR_IRQ0<span class="token operator">+</span><span class="token number">4</span><span class="token punctuation">)</span>
+hxi_hwint05<span class="token operator">:</span>
+  <span class="token function">HARWINT</span>  <span class="token punctuation">(</span>INT_VECTOR_IRQ0<span class="token operator">+</span><span class="token number">5</span><span class="token punctuation">)</span>
+hxi_hwint06<span class="token operator">:</span>
+  <span class="token function">HARWINT</span>  <span class="token punctuation">(</span>INT_VECTOR_IRQ0<span class="token operator">+</span><span class="token number">6</span><span class="token punctuation">)</span>
+hxi_hwint07<span class="token operator">:</span>
+  <span class="token function">HARWINT</span>  <span class="token punctuation">(</span>INT_VECTOR_IRQ0<span class="token operator">+</span><span class="token number">7</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>有了中断程序入口地址，就可以设置中断门描述符</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">init_idt_descriptor</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+<span class="token comment">//一开始把所有中断的处理程序设置为保留的通用处理程序</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">u16_t</span> intindx <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> intindx <span class="token operator">&lt;=</span> <span class="token number">255</span><span class="token punctuation">;</span> intindx<span class="token operator">++</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token function">set_idt_desc</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token class-name">u8_t</span><span class="token punctuation">)</span>intindx<span class="token punctuation">,</span> DA_386IGate<span class="token punctuation">,</span> hxi_exc_general_intpfault<span class="token punctuation">,</span> PRIVILEGE_KRNL<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token function">set_idt_desc</span><span class="token punctuation">(</span>INT_VECTOR_DIVIDE<span class="token punctuation">,</span> DA_386IGate<span class="token punctuation">,</span> exc_divide_error<span class="token punctuation">,</span> PRIVILEGE_KRNL<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">set_idt_desc</span><span class="token punctuation">(</span>INT_VECTOR_DEBUG<span class="token punctuation">,</span> DA_386IGate<span class="token punctuation">,</span> exc_single_step_exception<span class="token punctuation">,</span> PRIVILEGE_KRNL<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">set_idt_desc</span><span class="token punctuation">(</span>INT_VECTOR_NMI<span class="token punctuation">,</span> DA_386IGate<span class="token punctuation">,</span> exc_nmi<span class="token punctuation">,</span> PRIVILEGE_KRNL<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">set_idt_desc</span><span class="token punctuation">(</span>INT_VECTOR_BREAKPOINT<span class="token punctuation">,</span> DA_386IGate<span class="token punctuation">,</span> exc_breakpoint_exception<span class="token punctuation">,</span> PRIVILEGE_USER<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">set_idt_desc</span><span class="token punctuation">(</span>INT_VECTOR_OVERFLOW<span class="token punctuation">,</span> DA_386IGate<span class="token punctuation">,</span> exc_overflow<span class="token punctuation">,</span> PRIVILEGE_USER<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">//篇幅所限，未全部展示</span>
+    <span class="token function">set_idt_desc</span><span class="token punctuation">(</span>INT_VECTOR_PAGE_FAULT<span class="token punctuation">,</span> DA_386IGate<span class="token punctuation">,</span> exc_page_fault<span class="token punctuation">,</span> PRIVILEGE_KRNL<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">set_idt_desc</span><span class="token punctuation">(</span>INT_VECTOR_IRQ0 <span class="token operator">+</span> <span class="token number">0</span><span class="token punctuation">,</span> DA_386IGate<span class="token punctuation">,</span> hxi_hwint00<span class="token punctuation">,</span> PRIVILEGE_KRNL<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">set_idt_desc</span><span class="token punctuation">(</span>INT_VECTOR_IRQ0 <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span> DA_386IGate<span class="token punctuation">,</span> hxi_hwint01<span class="token punctuation">,</span> PRIVILEGE_KRNL<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">set_idt_desc</span><span class="token punctuation">(</span>INT_VECTOR_IRQ0 <span class="token operator">+</span> <span class="token number">2</span><span class="token punctuation">,</span> DA_386IGate<span class="token punctuation">,</span> hxi_hwint02<span class="token punctuation">,</span> PRIVILEGE_KRNL<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">set_idt_desc</span><span class="token punctuation">(</span>INT_VECTOR_IRQ0 <span class="token operator">+</span> <span class="token number">3</span><span class="token punctuation">,</span> DA_386IGate<span class="token punctuation">,</span> hxi_hwint03<span class="token punctuation">,</span> PRIVILEGE_KRNL<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//篇幅所限，未全部展示</span>
+     <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>调用</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">init_halintupt</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token function">init_idt_descriptor</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token function">init_intfltdsc</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>但是，前面我们只是解决了中断的 CPU 相关部分，而 CPU 只是响应中断，但是并不能解决产生中断的问题。比如缺页中断来了，我们要解决内存地址映射关系，程序才可以继续运行。再比如硬盘中断来了，我们要读取硬盘的数据，要处理这问题，就要写好相应的处理函数。</p>
+<p><img src="https://static001.geekbang.org/resource/image/fd/7a/fd2cd9e5b63cd7e52cd68b65e81aee7a.jpg" alt="中断框架设计图"></p>
+<p>中断异常描述符</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">typedef</span> <span class="token keyword">struct</span> <span class="token class-name">s_INTFLTDSC</span><span class="token punctuation">&#123;</span>    
+    <span class="token class-name">spinlock_t</span>  i_lock<span class="token punctuation">;</span>    
+    <span class="token class-name">u32_t</span>       i_flg<span class="token punctuation">;</span>    
+    <span class="token class-name">u32_t</span>       i_stus<span class="token punctuation">;</span>    
+    <span class="token class-name">uint_t</span>      i_prity<span class="token punctuation">;</span>        <span class="token comment">//中断优先级    </span>
+    <span class="token class-name">uint_t</span>      i_irqnr<span class="token punctuation">;</span>        <span class="token comment">//中断号    </span>
+    <span class="token class-name">uint_t</span>      i_deep<span class="token punctuation">;</span>         <span class="token comment">//中断嵌套深度    </span>
+    <span class="token class-name">u64_t</span>       i_indx<span class="token punctuation">;</span>         <span class="token comment">//中断计数    </span>
+    <span class="token class-name">list_h_t</span>    i_serlist<span class="token punctuation">;</span>      <span class="token comment">//也可以使用中断回调函数的方式</span>
+    <span class="token class-name">uint_t</span>      i_sernr<span class="token punctuation">;</span>        <span class="token comment">//中断回调函数个数   </span>
+    <span class="token class-name">list_h_t</span>    i_serthrdlst<span class="token punctuation">;</span>   <span class="token comment">//中断线程链表头    </span>
+    <span class="token class-name">uint_t</span>      i_serthrdnr<span class="token punctuation">;</span>    <span class="token comment">//中断线程个数    </span>
+    <span class="token keyword">void</span><span class="token operator">*</span>       i_onethread<span class="token punctuation">;</span>    <span class="token comment">//只有一个中断线程时直接用指针    </span>
+    <span class="token keyword">void</span><span class="token operator">*</span>       i_rbtreeroot<span class="token punctuation">;</span>   <span class="token comment">//如果中断线程太多则按优先级组成红黑树</span>
+    <span class="token class-name">list_h_t</span>    i_serfisrlst<span class="token punctuation">;</span>      
+    <span class="token class-name">uint_t</span>      i_serfisrnr<span class="token punctuation">;</span>       
+    <span class="token keyword">void</span><span class="token operator">*</span>       i_msgmpool<span class="token punctuation">;</span>     <span class="token comment">//可能的中断消息池    </span>
+    <span class="token keyword">void</span><span class="token operator">*</span>       i_privp<span class="token punctuation">;</span>    
+    <span class="token keyword">void</span><span class="token operator">*</span>       i_extp<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span class="token class-name">intfltdsc_t</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>如果内核或者设备驱动程序要安装一个中断处理函数，就要先申请一个 intserdsc_t 结构体，然后把中断函数的地址写入其中，最后把这个结构挂载到对应的 intfltdsc_t 结构中的 i_serfisrlst 链表中。</p>
+<p>为什么不能直接把中断处理函数放在 intfltdsc_t 结构中呢，还要多此一举搞个 intserdsc_t 结构体呢？</p>
+<p>因为我们的计算机中可能有很多设备，每个设备都可能产生中断，但是中断控制器的中断信号线是有限的。你可以这样理解：中断控制器最多只能产生几十号中断号，而设备不止几十个，所以会有多个设备共享一根中断信号线。这就导致一个中断发生后，无法确定是哪个设备产生的中断，所以我们干脆让设备驱动程序来决定，因为它是最了解设备的。这里我们让这个 intfltdsc_t 结构上的所有中断处理函数都依次执行，查看是不是自己的设备产生了中断，如果是就处理，不是则略过。</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">//定义intfltdsc_t结构数组大小为256</span>
+<span class="token function">HAL_DEFGLOB_VARIABLE</span><span class="token punctuation">(</span><span class="token class-name">intfltdsc_t</span><span class="token punctuation">,</span>machintflt<span class="token punctuation">)</span><span class="token punctuation">[</span>IDTMAX<span class="token punctuation">]</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+
+
+<p>实现中断异常分发函数</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token comment">//中断处理函数</span>
+<span class="token keyword">void</span> <span class="token function">hal_do_hwint</span><span class="token punctuation">(</span><span class="token class-name">uint_t</span> intnumb<span class="token punctuation">,</span> <span class="token keyword">void</span> <span class="token operator">*</span>krnlsframp<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>    
+    <span class="token class-name">intfltdsc_t</span> <span class="token operator">*</span>ifdscp <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>    
+    <span class="token class-name">cpuflg_t</span> cpuflg<span class="token punctuation">;</span>
+    <span class="token comment">//根据中断号获取中断异常描述符地址    </span>
+    ifdscp <span class="token operator">=</span> <span class="token function">hal_retn_intfltdsc</span><span class="token punctuation">(</span>intnumb<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//对断异常描述符加锁并中断    </span>
+    <span class="token function">hal_spinlock_saveflg_cli</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>ifdscp<span class="token operator">-></span>i_lock<span class="token punctuation">,</span> <span class="token operator">&amp;</span>cpuflg<span class="token punctuation">)</span><span class="token punctuation">;</span>    
+    ifdscp<span class="token operator">-></span>i_indx<span class="token operator">++</span><span class="token punctuation">;</span>    
+    ifdscp<span class="token operator">-></span>i_deep<span class="token operator">++</span><span class="token punctuation">;</span>
+    <span class="token comment">//运行中断处理的回调函数</span>
+    <span class="token function">hal_run_intflthandle</span><span class="token punctuation">(</span>intnumb<span class="token punctuation">,</span> krnlsframp<span class="token punctuation">)</span><span class="token punctuation">;</span>    
+    ifdscp<span class="token operator">-></span>i_deep<span class="token operator">--</span><span class="token punctuation">;</span>
+    <span class="token comment">//解锁并恢复中断状态    </span>
+    <span class="token function">hal_spinunlock_restflg_sti</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>ifdscp<span class="token operator">-></span>i_lock<span class="token punctuation">,</span> <span class="token operator">&amp;</span>cpuflg<span class="token punctuation">)</span><span class="token punctuation">;</span>    
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">//异常分发器</span>
+<span class="token keyword">void</span> <span class="token function">hal_fault_allocator</span><span class="token punctuation">(</span><span class="token class-name">uint_t</span> faultnumb<span class="token punctuation">,</span> <span class="token keyword">void</span> <span class="token operator">*</span>krnlsframp<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token comment">//我们的异常处理回调函数也是放在中断异常描述符中的</span>
+    <span class="token function">hal_do_hwint</span><span class="token punctuation">(</span>faultnumb<span class="token punctuation">,</span> krnlsframp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">//中断分发器</span>
+<span class="token keyword">void</span> <span class="token function">hal_hwint_allocator</span><span class="token punctuation">(</span><span class="token class-name">uint_t</span> intnumb<span class="token punctuation">,</span> <span class="token keyword">void</span> <span class="token operator">*</span>krnlsframp<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token function">hal_do_hwint</span><span class="token punctuation">(</span>intnumb<span class="token punctuation">,</span> krnlsframp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>hal_run_intflthandle负责调用中断处理函数</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">hal_run_intflthandle</span><span class="token punctuation">(</span><span class="token class-name">uint_t</span> ifdnr<span class="token punctuation">,</span> <span class="token keyword">void</span> <span class="token operator">*</span>sframe<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>    
+    <span class="token class-name">intserdsc_t</span> <span class="token operator">*</span>isdscp<span class="token punctuation">;</span>    
+    <span class="token class-name">list_h_t</span> <span class="token operator">*</span>lst<span class="token punctuation">;</span>
+    <span class="token comment">//根据中断号获取中断异常描述符地址    </span>
+    <span class="token class-name">intfltdsc_t</span> <span class="token operator">*</span>ifdscp <span class="token operator">=</span> <span class="token function">hal_retn_intfltdsc</span><span class="token punctuation">(</span>ifdnr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//遍历i_serlist链表    </span>
+    <span class="token function">list_for_each</span><span class="token punctuation">(</span>lst<span class="token punctuation">,</span> <span class="token operator">&amp;</span>ifdscp<span class="token operator">-></span>i_serlist<span class="token punctuation">)</span>    
+    <span class="token punctuation">&#123;</span>   
+        <span class="token comment">//获取i_serlist链表上对象即intserdsc_t结构</span>
+        isdscp <span class="token operator">=</span> <span class="token function">list_entry</span><span class="token punctuation">(</span>lst<span class="token punctuation">,</span> <span class="token class-name">intserdsc_t</span><span class="token punctuation">,</span> s_list<span class="token punctuation">)</span><span class="token punctuation">;</span>  
+        <span class="token comment">//调用中断处理回调函数      </span>
+        isdscp<span class="token operator">-></span><span class="token function">s_handle</span><span class="token punctuation">(</span>ifdnr<span class="token punctuation">,</span> isdscp<span class="token operator">-></span>s_device<span class="token punctuation">,</span> sframe<span class="token punctuation">)</span><span class="token punctuation">;</span>    
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="初始化中断控制器"><a href="#初始化中断控制器" class="headerlink" title="初始化中断控制器"></a>初始化中断控制器</h3><p>把 CPU 端的中断搞定了以后，还有设备端的中断，这个可以交给设备驱动程序，但是 CPU 和设备之间的中断控制器，还需要我们出面解决。</p>
+<p>多个设备的中断信号线都会连接到中断控制器上，中断控制器可以决定启用或者屏蔽哪些设备的中断，还可以决定设备中断之间的优先线，所以它才叫中断控制器</p>
+<p>x86 平台上的中断控制器有多种，最开始是 8259A，然后是 IOAPIC，最新的是 MSI-X。为了简单的说明原理，我们选择了 8259A 中断控制器。</p>
+<p>8259A 在任何 x86 平台上都可以使用，x86 平台使用了两片 8259A 芯片，以级联的方式存在。它拥有 15 个中断源（即可以有 15 个中断信号接入）。</p>
+<p><img src="https://static001.geekbang.org/resource/image/4d/09/4d81f7feb668abf30c5cced619549709.jpg" alt="8259A控制器框架图"></p>
+<p>上面直接和 CPU 连接的是主 8259A，下面的是从 8259A，每一个 8259A 芯片都有两个 I/O 端口，我们可以通过它们对 8259A 进行编程。</p>
+<p>主 8259A 的端口地址是 0x20，0x21；从 8259A 的端口地址是 0xA0，0xA1</p>
+<p>下面我们来做代码初始化，我们程序员可以向 8259A 写两种命令字： ICW 和 OCW；ICW 这种命令字用来实现 8259a 芯片的初始化。而 OCW 这种命令用来向 8259A 发布命令，以对其进行控制。OCW 可以在 8259A 被初始化之后的任何时候被使用</p>
+<p>8259.c</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">init_i8259</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token comment">//初始化主从8259a</span>
+    <span class="token function">out_u8_p</span><span class="token punctuation">(</span>ZIOPT<span class="token punctuation">,</span> ICW1<span class="token punctuation">)</span><span class="token punctuation">;</span>    
+    <span class="token function">out_u8_p</span><span class="token punctuation">(</span>SIOPT<span class="token punctuation">,</span> ICW1<span class="token punctuation">)</span><span class="token punctuation">;</span>    
+    <span class="token function">out_u8_p</span><span class="token punctuation">(</span>ZIOPT1<span class="token punctuation">,</span> ZICW2<span class="token punctuation">)</span><span class="token punctuation">;</span>    
+    <span class="token function">out_u8_p</span><span class="token punctuation">(</span>SIOPT1<span class="token punctuation">,</span> SICW2<span class="token punctuation">)</span><span class="token punctuation">;</span>    
+    <span class="token function">out_u8_p</span><span class="token punctuation">(</span>ZIOPT1<span class="token punctuation">,</span> ZICW3<span class="token punctuation">)</span><span class="token punctuation">;</span>    
+    <span class="token function">out_u8_p</span><span class="token punctuation">(</span>SIOPT1<span class="token punctuation">,</span> SICW3<span class="token punctuation">)</span><span class="token punctuation">;</span>    
+    <span class="token function">out_u8_p</span><span class="token punctuation">(</span>ZIOPT1<span class="token punctuation">,</span> ICW4<span class="token punctuation">)</span><span class="token punctuation">;</span>    
+    <span class="token function">out_u8_p</span><span class="token punctuation">(</span>SIOPT1<span class="token punctuation">,</span> ICW4<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//屏蔽全部中断源</span>
+    <span class="token function">out_u8_p</span><span class="token punctuation">(</span>ZIOPT1<span class="token punctuation">,</span> <span class="token number">0xff</span><span class="token punctuation">)</span><span class="token punctuation">;</span>    
+    <span class="token function">out_u8_p</span><span class="token punctuation">(</span>SIOPT1<span class="token punctuation">,</span> <span class="token number">0xff</span><span class="token punctuation">)</span><span class="token punctuation">;</span>        
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h3 id="进入内核层"><a href="#进入内核层" class="headerlink" title="进入内核层"></a>进入内核层</h3><p>由于内核层是从 hal 层进入的，必须在 hal_start() 函数中被调用，所以在此完成这个函数——init_krl()</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">init_krl</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span> 
+    <span class="token comment">//禁止函数返回    </span>
+    <span class="token function">die</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">;</span>    
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>调用</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">hal_start</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>   
+    <span class="token comment">//初始化hal层 </span>
+    <span class="token function">init_hal</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//初始化内核层    </span>
+    <span class="token function">init_krl</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>    
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><blockquote>
+<p>一、HAL层调用链<br>hal_start()</p>
+<p>A、先去处理HAL层的初始化<br>-&gt;init_hal()</p>
+<p>-&gt;-&gt;init_halplaltform()初始化平台<br>-&gt;-&gt;-&gt;init_machbstart()<br>主要是把二级引导器建立的机器信息结构，复制到了hal层一份给内核使用，同时也为释放二级引导器占用内存做好准备。<br>其做法就是拷贝了一份mbsp到kmbsp，其中用到了虚拟地址转换hyadr_to_viradr<br>-&gt;-&gt;-&gt;init_bdvideo()<br>初始化图形机构<br>初始化BGA显卡 或 VBE图形显卡信息【函数指针的使用】<br>清空屏幕<br>找到”background.bmp”，并显示背景图片<br>-&gt;-&gt;-&gt;-&gt;hal_dspversion（）<br>输出版本号等信息【vsprintfk】<br>其中，用ret_charsinfo根据字体文件获取字符像素信息</p>
+<p>-&gt;-&gt;move_img2maxpadr()<br>将移动initldrsve.bin到最大地址</p>
+<p>-&gt;-&gt;init_halmm()初始化内存<br>-&gt;-&gt;-&gt;init_phymmarge<br>申请phymmarge_t内存<br>根据 e820map_t 结构数组，复制数据到phymmarge_t 结构数组<br>按内存开始地址进行排序</p>
+<p>-&gt;-&gt;init_halintupt();初始化中断<br>-&gt;-&gt;-&gt;init_descriptor();初始化GDT描述符x64_gdt<br>-&gt;-&gt;-&gt;init_idt_descriptor();初始化IDT描述符x64_idt，绑定了中断编号及中断处理函数<br>-&gt;-&gt;-&gt;init_intfltdsc();初始化中断异常表machintflt，拷贝了中断相关信息<br>-&gt;-&gt;-&gt;init_i8259();初始化8529芯片中断<br>-&gt;-&gt;-&gt;i8259_enabled_line(0);好像是取消mask，开启中断请求</p>
+<p>最后，跳转去处理内核初始化<br>-&gt;init_krl()</p>
+<p>二、中断调用链，以硬件中断为例<br>A、kernel.inc中，通过宏定义，进行了中断定义。以硬件中断为例，可以在kernel.inc中看到：<br>宏为HARWINT，硬件中断分发器函数为hal_hwint_allocator<br>%macro HARWINT 1<br>  保存现场……<br>  mov rdi, %1<br>  mov rsi,rsp<br>  call hal_hwint_allocator<br>  恢复现场……<br>%endmacro</p>
+<p>B、而在kernel.asm中，定义了各种硬件中断编号，比如hxi_hwint00，作为中断处理入口<br>ALIGN 16<br>hxi_hwint00:<br>  HARWINT (INT_VECTOR_IRQ0+0)</p>
+<p>C、有硬件中断时，会先到达中断处理入口，然后调用到硬件中断分发器函数hal_hwint_allocator<br>第一个参数为中断编号，在rdi<br>第二个参数为中断发生时的栈指针，在rsi<br>然后调用异常处理函数hal_do_hwint</p>
+<p>D、hal_do_hwint<br>加锁<br>调用中断回调函数hal_run_intflthandle<br>释放锁</p>
+<p>E、hal_run_intflthandle<br>先获取中断异常表machintflt<br>然后调用i_serlist 链表上所有挂载intserdsc_t 结构中的中断处理的回调函数，是否处理由函数自己判断</p>
+<p>F、中断处理完毕</p>
+<p>G、异常处理类似，只是触发源头不太一样而已</p>
+</blockquote>
+
                 
             </div>
             <hr/>
