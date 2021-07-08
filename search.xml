@@ -324,246 +324,6 @@ plt<span class="token punctuation">.</span>show<span class="token punctuation">(
       </tags>
   </entry>
   <entry>
-    <title>git复习进阶及命令速查</title>
-    <url>/2021/07/07/git-shi-yong-fu-xi-jin-jie-su-cha-shou-ce/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><h2 id="主要操作流程图"><a href="#主要操作流程图" class="headerlink" title="主要操作流程图"></a>主要操作流程图</h2><p><img src="https://upload-images.jianshu.io/upload_images/1348523-078d252254ae8e5c.png" alt="git原理图"></p>
-<h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><p>版本控制系统主要分为中央式和分布式</p>
-<ul>
-<li>中央式：将代码保存在中央服务器，加入编码的成员均与服务器通讯，在本地完成代码，上传/同步他人代码，代码由服务器统一管理</li>
-<li>分布式：所有参与开发的人员都维护自己的本地仓库，对自己本地仓库提交切换分支等操作均在本地完成，远程仓库由仓库管理员管理分配权限，本地仓库和远程仓库有时候会各自维护自己的分支，而远程仓库更多只是起到团队同步代码的作用</li>
-</ul>
-<p>git本地存在：本地仓库，暂存区和工作目录，git init时所在的目录就是工作目录，暂存区和本地仓库都存在.git隐藏文件中。</p>
-<p>git文件有两种状态：是否被跟踪，未被跟踪的文件就和资源文件管理器中的普通文件一样，可以随意修改删除，但是被git add 添加到git追踪的文件本地仓库就会对他们负责，通过git status查看他们的状态来进行相应的操作。</p>
-<p>一个项目中的gitignore文件指定了git要忽略的文件类型而不追踪他们。</p>
-<p><img src="https://pic.innnovation.cn//img/20210707202808.png" alt="image-20210707202756515"></p>
-<p>前面所提到的暂存区是当我们在工作目录中进行文件操作时，要先添加到暂存区，然后再将暂存区中的文件快照提交到本地仓库，这样就实现了各个快照之间可以随意的进行回滚操作。</p>
-<h3 id="git对象"><a href="#git对象" class="headerlink" title="git对象"></a>git对象</h3><p>从git设计者角度考虑，git存在一套内容寻址的文件系统，本质上是K-V键值对，通过key找value，从源码层面看，git将指针保存在git对象中，根据指针来找到需要的文件内容。git对象分为：commit tree blob对象。</p>
-<p><img src="https://img-blog.csdnimg.cn/20190318195449103.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3lhb185NA==,size_16,color_FFFFFF,t_70"></p>
-<p>commit结构体包含 tree_ptr,parent_ptr,author,time …</p>
-<p>tree结构记录文件列表list<E></p>
-<p>每个文件的内容为blob</p>
-<p>commit对象记录每次提交到本地快照，每次提交一个就会让上一个commit对象指向新的commit（本质就是一个链表），当我们进行恢复commit操作时，就通过id来找到我们需要恢复的commit节点即可。而HEAD对象其实就是指向最近一个提交的commit，也就是最后一个commit</p>
-<h3 id="引用（分支）"><a href="#引用（分支）" class="headerlink" title="引用（分支）"></a>引用（分支）</h3><p>在使用git log 命令时我们会看到一些HEAD-&gt;master,origin/master,origin/HEAD等字样，他们本质上就是指向commit的引用，如果理解了前面的commit对象，就知道引用其实就是该对象名的一个别名（可以简单理解为C++的引用）</p>
-<p>如果你想在某处创建 <code>branch</code> ，只需要输入一行 <code>git branch 名称</code></p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIyLzE1ZmUzMzU0YTFiODkyZjc?x-oss-process=image/format,png"></p>
-<p>切换分支 就是将HEAD指针指向别的分支</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIyLzE1ZmUzMzU0YTEzMGIzY2Q?x-oss-process=image/format,png"></p>
-<p>切换后同样可以commit新节点</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIyLzE1ZmUzMzU0YTJhMzI2OTI?x-oss-process=image/format,png"></p>
-<p>如果你再切换到 <code>master</code> 去 <code>commit</code>，就会真正地出现分叉了</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIyLzE1ZmUzMzU0YWIwODYxYTc?x-oss-process=image/format,png"></p>
-<p>各个commit之间会形成分支树(Tree),任意branch之间都是<strong>平等的</strong></p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIwLzE1ZmQ3NzlmZjM0NmZiZDc?x-oss-process=image/format,png"></p>
-<p>任意branch包含的节点一定是从（branch最开始的commit节点）头节点开始的——1234-&gt;12347;1256-&gt;12567</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIyLzE1ZmUzMzU0YTFkM2NkMjY?x-oss-process=image/format,png"></p>
-<p>每个commit有一个唯一SHA-1校验码用来区分，用户可以用过他们的引用（名字）来对他们进行操作</p>
-<h4 id="HEAD：当前commit引用"><a href="#HEAD：当前commit引用" class="headerlink" title="HEAD：当前commit引用"></a>HEAD：当前commit引用</h4><h4 id="branch：一个特别的引用，可以被HEAD指向，形象的理解为commit发生时会带着HEAD移动"><a href="#branch：一个特别的引用，可以被HEAD指向，形象的理解为commit发生时会带着HEAD移动" class="headerlink" title="branch：一个特别的引用，可以被HEAD指向，形象的理解为commit发生时会带着HEAD移动"></a>branch：一个特别的引用，可以被HEAD指向，形象的理解为commit发生时会带着HEAD移动</h4><p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIwLzE1ZmQ3NzlmNWQzZTZiNjM?x-oss-process=image/format,png"></p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIwLzE1ZmQ3NzlmOTgzYzgxZTc?x-oss-process=image/format,png"></p>
-<h4 id="master-main-默认branch"><a href="#master-main-默认branch" class="headerlink" title="master/main:默认branch"></a>master/main:默认branch</h4><p>1.新建时</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIwLzE1ZmQ3NzlmNWM2NmFjOWU?x-oss-process=image/format,png"></p>
-<p>2.clone时</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIwLzE1ZmQ3NzlmNWMxOTFhM2Y?x-oss-process=image/format,png"></p>
-<p>而删除分支时，仅仅是删除引用</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzI5LzE2MDA2YjdlM2QzNWZlNTQ?x-oss-process=image/format,png"></p>
-<h3 id="push的本质"><a href="#push的本质" class="headerlink" title="push的本质"></a>push的本质</h3><p>本质就是比较push过来的branch引用，从最后一个相同节点后面接上新的commit节点</p>
-<p>push会把当前分支上的commit节点上传到远程库，git push会推送本地的默认分支，不是默认分支时需要git push origin branch_name来指定</p>
-<p>远程库的HEAD引用不会因为push而改变，而是随着默认分支移动</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzI5LzE2MDA3MjVlOTk3M2Y3MWQ?x-oss-process=image/format,png"></p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzI5LzE2MDA3M2NjZGE1NmVmMDc?x-oss-process=image/format,png"></p>
-<h3 id="merge的本质"><a href="#merge的本质" class="headerlink" title="merge的本质"></a>merge的本质</h3><p>本质是将两个链表的最后一个节点合并成一个新节点，并让HEAD指向该节点</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIxLzE1ZmRkYzJhYWQ1YTAyNzk?x-oss-process=image/format,png"></p>
-<h3 id="特殊情况1：冲突"><a href="#特殊情况1：冲突" class="headerlink" title="特殊情况1：冲突"></a>特殊情况1：冲突</h3><p>merge合并commit时，如果修改了同一个文件，最终导致无法生成一个文件快照，这就是冲突（conflict）</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIxLzE1ZmRkYzJhOWQ3NTlkOGU?x-oss-process=image/format,png"></p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIxLzE1ZmRkYzJhOWMxNTFhNGM?x-oss-process=image/format,png"></p>
-<h4 id="解决方法：解决冲突（修改掉冲突的代码）-gt-手动commit-取消merge"><a href="#解决方法：解决冲突（修改掉冲突的代码）-gt-手动commit-取消merge" class="headerlink" title="解决方法：解决冲突（修改掉冲突的代码）-&gt;手动commit/取消merge"></a>解决方法：解决冲突（修改掉冲突的代码）-&gt;手动commit/取消merge</h4><p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIxLzE1ZmRkYzJhZjViMDZlZjY?x-oss-process=image/format,png"></p>
-<p>解决冲突时根据需要删除&lt;&lt;&lt;&lt;&lt; ========== &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;这些辅助性字符即可</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIxLzE1ZmRkYzJhZmZlOTdmNTA?x-oss-process=image/format,png"></p>
-<p>解决完后</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> <span class="token function">add</span> shopping<span class="token punctuation">\</span> list.txt <span class="token comment"># commit 前也需要先 add 一下</span>
-<span class="token function">git</span> commit<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p>当然 也可以放弃解决冲突</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> merge --abort<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-
-
-<h3 id="特殊情况2：HEAD领先于目标commit"><a href="#特殊情况2：HEAD领先于目标commit" class="headerlink" title="特殊情况2：HEAD领先于目标commit"></a>特殊情况2：HEAD领先于目标commit</h3><p>git默认不进行任何操作</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIxLzE1ZmRkYzJiMjM1N2I5ZDk?x-oss-process=image/format,png"></p>
-<h4 id="特殊情况3：HEAD落后"><a href="#特殊情况3：HEAD落后" class="headerlink" title="特殊情况3：HEAD落后"></a>特殊情况3：HEAD落后</h4><p>git默认进行fast-forward，将head移动到最近的commit</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIxLzE1ZmRkYzJiMjQ4Njc1OGE?x-oss-process=image/format,png"></p>
-<p>同样，当发生在本地库和远程库时，下图也正解释了为什么从远程库同步代码时只需要<code>git pull</code>命令即可</p>
-<p><code>git pull=git fetch + git merge(fast-forward)</code></p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIxLzE1ZmRkYzJiNDZjNjlkNDY?x-oss-process=image/format,png"></p>
-<h2 id="Feature-Branching-工作流"><a href="#Feature-Branching-工作流" class="headerlink" title="Feature Branching 工作流"></a>Feature Branching 工作流</h2><p>在最基本的团队工作模型中，所有人都工作在 <code>master</code> 上，写完了的 <code>commit</code> 可以通过 <code>push</code> 来发送到中央仓库，并且可以使用 <code>pull</code> 来获取到别人的最新 <code>commit</code>。这种工作模型解决了团队合作最基本的问题：<strong>多人并行开发和版本管理</strong>。</p>
-<p>但这种工作模型也有它的限制：使用这种工作模型时，每个人的代码在被大家看到的时候，就是它进入正式的生产库的时候。所有人的工作都会被直接 <code>push</code> 到 <code>master</code>，这导致每个人的代码在正式启用前无法被别人看到，这样就让代码在正式启用前的讨论和 review（审阅）非常不方便。现在的商业团队，开发项目多是采用「边开发边发布、边开发边更新、边开发边修复」的持续开发策略，所以代码分享的不便会极大地影响团队的开发效率。</p>
-<h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>工作流的核心内容可以总结为两点：</p>
-<ol>
-<li>任何新的功能（feature）或 bug 修复全都新建一个 <code>branch</code> 来写；</li>
-<li><code>branch</code> 写完后，合并到 <code>master</code>，然后删掉这个 <code>branch</code>。</li>
-</ol>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIxLzE1ZmRlNmVkYmZlMzYyYzQ?x-oss-process=image/format,png"></p>
-<h3 id="运行原理和流程"><a href="#运行原理和流程" class="headerlink" title="运行原理和流程"></a>运行原理和流程</h3><p>假设团队分配给我一个任务，开发一个新功能books</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> checkout -b books
-<span class="token function">git</span> push origin books<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p>于是我本地开发完成后push到远程库后产生books分支</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzI5LzE2MDA3YmIzMGRhNjE5YzU?x-oss-process=image/format,png"></p>
-<p>然后代码审计人员想要查看我写的怎么样</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> pull
-<span class="token function">git</span> chekcout books<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p>如果代码通过审核，于是审计人员同意<code>merge</code>到<code>master</code></p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> checkout master
-<span class="token function">git</span> pull <span class="token comment"># merge 之前 pull 一下，让 master 更新到和远程仓库同步</span>
-<span class="token function">git</span> merge books<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
-
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzI5LzE2MDA4N2NhNWE3ZDkwMWE?x-oss-process=image/format,png"></p>
-<p>最后把合并后的结果 <code>push</code> 到了中央仓库，并删掉了 <code>books</code> 这个 <code>branch</code></p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzI5LzE2MDA4NzdhYmM2M2E0ZDk?x-oss-process=image/format,png"></p>
-<p>如果代码审核不通过，审计人员通知到我，我只需要在books上面继续修改，然后push，继续回到上面的流程，直到审核通过。</p>
-<h3 id="Pull-Request"><a href="#Pull-Request" class="headerlink" title="Pull Request"></a>Pull Request</h3><p>Pull Request就是我们常说的PR，这是由Git仓库服务提供方提供的功能，方便团队讨论一个branch，并可以一键合并到master</p>
-<p><img src="https://pic.innnovation.cn//img/20210707214644.png" alt="image-20210707214644364"></p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzMwLzE2MDA4ODQxMDRlNWJiOTQ?x-oss-process=image/format,png"></p>
-<h2 id="Rebase——在新位置重新提交"><a href="#Rebase——在新位置重新提交" class="headerlink" title="Rebase——在新位置重新提交"></a>Rebase——在新位置重新提交</h2><p>本质上讲rebase就是将一个子树的根节点移动到另一个节点上，就是改变了他们的（子树）根节点。</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> rebase 目标基础点<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>例：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> checkout branch1
-<span class="token function">git</span> rebase master<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzMwLzE2MDBhYmQ2MjBhOGUyOGM?x-oss-process=image/format,png"></p>
-<p>可以看出，通过 <code>rebase</code>，<code>5</code> 和 <code>6</code> 两条 <code>commit</code>s 把基础点从 <code>2</code> 换成了 <code>4</code> 。通过这样的方式，就让本来分叉了的提交历史重新回到了一条线。这种「重新设置基础点」的操作，就是 <code>rebase</code> 的含义</p>
-<p>另外，在 <code>rebase</code> 之后，记得切回 <code>master</code> 再 <code>merge</code> 一下，把 <code>master</code> 移到最新的 <code>commit</code></p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> checkout master
-<span class="token function">git</span> merge branch1<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzEyLzIvMTYwMTQ5ZTA1NGZlNDg1Yw?x-oss-process=image/format,png"></p>
-<p><strong>注意</strong>：为了避免和远端仓库发生冲突，一般不要从 <code>master</code> 向其他 <code>branch</code> 执行 <code>rebase</code> 操作。而如果是 <code>master</code> 以外的 <code>branch</code> 之间的 <code>rebase</code>（比如 <code>branch1</code> 和 <code>branch2</code> 之间），就不必这么多费一步，直接 <code>rebase</code> 就好</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzEyLzIvMTYwMTRiNWE2OTE5YzBiNw?x-oss-process=image/format,png"></p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzEyLzIvMTYwMTRiYzY0ZDQzMzdmOA?x-oss-process=image/format,png"></p>
-<h2 id="rebase-i-交互式rebase"><a href="#rebase-i-交互式rebase" class="headerlink" title="rebase -i:交互式rebase"></a>rebase -i:交互式rebase</h2><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> rebase -i HEAD^^	//回到倒数第二个提交<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<blockquote>
-<p>说明：在 Git 中，有两个「偏移符号」： <code>^</code> 和 <code>~</code>。</p>
-<p><code>^</code> 的用法：在 <code>commit</code> 的后面加一个或多个 <code>^</code> 号，可以把 <code>commit</code> 往回偏移，偏移的数量是 <code>^</code> 的数量。例如：<code>master^</code> 表示 <code>master</code> 指向的 <code>commit</code> 之前的那个 <code>commit</code>； <code>HEAD^^</code> 表示 <code>HEAD</code> 所指向的 <code>commit</code> 往前数两个 <code>commit</code>。</p>
-<p><code>~</code> 的用法：在 <code>commit</code> 的后面加上 <code>~</code> 号和一个数，可以把 <code>commit</code> 往回偏移，偏移的数量是 <code>~</code> 号后面的数。例如：<code>HEAD~5</code> 表示 <code>HEAD</code> 指向的 <code>commit</code>往前数 5 个 <code>commit</code>。</p>
-</blockquote>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIyLzE1ZmRmNWZkMDA1MjIzODE?x-oss-process=image/format,png"></p>
-<h4 id="编辑界面：选择-commit-和对应的操作"><a href="#编辑界面：选择-commit-和对应的操作" class="headerlink" title="编辑界面：选择 commit 和对应的操作"></a>编辑界面：选择 commit 和对应的操作</h4><p>这两行指示了两个信息：</p>
-<ol>
-<li>需要处理哪些 <code>commit</code>；</li>
-<li>怎么处理它们。</li>
-</ol>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIyLzE1ZmRmNWZkMDIwYzg3ZjY?x-oss-process=image/format,png"></p>
-<p>把 <code>pick</code> 修改成 <code>edit</code> 后，就可以退出编辑界面了：</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIyLzE1ZmRmNWZkMDA3MTU5ZmE?x-oss-process=image/format,png"></p>
-<p>上图的提示信息说明，<code>rebase</code> 过程已经停在了第二个 <code>commit</code> 的位置，那么现在你就可以去修改你想修改的内容了。</p>
-<p>修改完成之后，和上节里的方法一样，用 <code>commit --amend</code> 来把修正应用到当前最新的 <code>commit</code>：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> <span class="token function">add</span> 笑声
-<span class="token function">git</span> commit --amend<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
-
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIyLzE1ZmRmNWZkMDRkZTBkNDA?x-oss-process=image/format,png" alt="img"></p>
-<h3 id="继续-rebase-过程"><a href="#继续-rebase-过程" class="headerlink" title="继续 rebase 过程"></a>继续 rebase 过程</h3><p>在修复完成之后，就可以用 <code>rebase --continue</code> 来继续 <code>rebase</code> 过程，把后面的 <code>commit</code> 直接应用上去。</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> rebase --continue<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIyLzE1ZmRmNWZkNTQ0NTVjMjk?x-oss-process=image/format,png" alt="img"></p>
-<p>然后，这次交互式 <code>rebase</code> 的过程就完美结束了，你的那个倒数第二个写错的 <code>commit</code> 就也被修正了</p>
-<h2 id="如果commit已经提交了发现错误，怎么优雅的改掉"><a href="#如果commit已经提交了发现错误，怎么优雅的改掉" class="headerlink" title="如果commit已经提交了发现错误，怎么优雅的改掉"></a>如果commit已经提交了发现错误，怎么优雅的改掉</h2><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> commit --amend<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>Git 会把你带到提交信息编辑界面。可以看到，提交信息默认是当前提交的提交信息。你可以修改或者保留它，然后保存退出。然后，你的最新 <code>commit</code> 就被更新了</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIxLzE1ZmRmMDE4N2YyZjRiMmQ?x-oss-process=image/format,png"></p>
-<h2 id="撤销Commit"><a href="#撤销Commit" class="headerlink" title="撤销Commit"></a>撤销Commit</h2><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> reset --hard 目标commit<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>通过前面原理可知，节点是不会被删除的，如果还需要，可以记住SHA-1码来找到对应commit</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> reset --hard HEAD^<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-
-
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIyLzE1ZmUxOWM4YTMyMzU4NTM?x-oss-process=image/format,png"></p>
-<h3 id="撤销不是最新的commit"><a href="#撤销不是最新的commit" class="headerlink" title="撤销不是最新的commit"></a>撤销不是最新的commit</h3><pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> rebase -i HEAD^^<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIyLzE1ZmUyNDNmYzdhYzExNTQ?x-oss-process=image/format,png" alt="img"></p>
-<p>然后就会跳到 <code>commit</code> 序列的编辑界面，需要修改这个序列来进行操作。不过不同的是，之前修正 <code>commit</code> 的方法是把要修改的 <code>commit</code> 左边的 <code>pick</code> 改成 <code>edit</code>，而如果你要撤销某个 <code>commit</code> ，直接删掉这一行就好。</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIyLzE1ZmUyNDNmY2Y1ZjY2MDc?x-oss-process=image/format,png" alt="img"></p>
-<p><code>pick</code> 的直接意思是「选取」，在这个界面的意思就是应用这个 <code>commit</code>。而如果把这一行删掉，那就相当于在 <code>rebase</code> 的过程中跳过了这个 <code>commit</code>，从而也就把这个 <code>commit</code> 撤销掉了。</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIyLzE1ZmUyNDNmY2U1ODA0ZmQ?x-oss-process=image/format,png" alt="img"></p>
-<h3 id="用-rebase-–onto-撤销提交"><a href="#用-rebase-–onto-撤销提交" class="headerlink" title="用 rebase –onto 撤销提交"></a>用 rebase –onto 撤销提交</h3><p>除了用交互式 <code>rebase</code> ，你还可以用 <code>rebase --onto</code> 来更简便地撤销提交。</p>
-<p><code>rebase</code> 加上 <code>--onto</code> 选项之后，可以指定 <code>rebase</code> 的「起点」。一般的 <code>rebase</code>，告诉 Git 的是「我要把当前 <code>commit</code> 以及它之前的 <code>commit</code>s 重新提交到目标 <code>commit</code> 上去，这其中，<code>rebase</code> 的「起点」是自动判定的：选取当前 <code>commit</code> 和目标 <code>commit</code> 在历史上的交叉点作为起点。</p>
-<p>例如下面这种情况：</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIyLzE1ZmUyNDQwMDUwOGUzYzg?x-oss-process=image/format,png" alt="img"></p>
-<p>如果在这里执行：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> rebase 第3个commit<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>那么 Git 会自动选取 <code>3</code> 和 <code>5</code> 的历史交叉点 <code>2</code> 作为 <code>rebase</code> 的起点，依次将 <code>4</code> 和 <code>5</code> 重新提交到 <code>3</code> 的路径上去。</p>
-<p>而 <code>--onto</code> 参数，就可以额外给 rebase 指定它的起点。例如同样以上图为例，如果我只想把 <code>5</code> 提交到 <code>3</code> 上，不想附带上 <code>4</code>，那么我可以执行：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> rebase --onto 第3个commit 第4个commit branch1<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p><code>--onto</code> 参数后面有三个附加参数：目标 <code>commit</code>、起点 <code>commit</code>（注意：rebase 的时候会把起点排除在外）、终点 <code>commit</code>。所以上面这行指令就会从 <code>4</code> 往下数，拿到 <code>branch1</code> 所指向的 <code>5</code>，然后把 <code>5</code> 重新提交到 <code>3</code> 上去。</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIyLzE1ZmUyNDQwMGQ3ZDczZDA?x-oss-process=image/format,png" alt="img"></p>
-<p>同样的，你也可以用 <code>rebase --onto</code> 来撤销提交：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> rebase --onto HEAD^^ HEAD^ branch1<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>上面这行代码的意思是：以倒数第二个 <code>commit</code> 为起点（起点不包含在 <code>rebase</code> 序列里哟），<code>branch1</code> 为终点，<code>rebase</code> 到倒数第三个 <code>commit</code> 上。</p>
-<p>也就是这样：</p>
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIyLzE1ZmUyNDNmY2U1ODA0ZmQ?x-oss-process=image/format,png" alt="img"></p>
-<h3 id="代码已经-push-上去了才发现写错？"><a href="#代码已经-push-上去了才发现写错？" class="headerlink" title="代码已经 push 上去了才发现写错？"></a>代码已经 push 上去了才发现写错？</h3><p>有的时候，代码 <code>push</code> 到了中央仓库，才发现有个 <code>commit</code> 写错了。这种问题的处理分两种情况：</p>
-<h4 id="1-出错的内容在你自己的-branch"><a href="#1-出错的内容在你自己的-branch" class="headerlink" title="1. 出错的内容在你自己的 branch"></a>1. 出错的内容在你自己的 branch</h4><p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIyLzE1ZmUyNjM4YWM1YzFkZDA?x-oss-process=image/format,png" alt="img"></p>
-<p>由于在本地对已有的 <code>commit</code> 做了修改，这时再 <code>push</code> 就会失败，因为中央仓库包含本地没有的 <code>commit</code>。但这个和前面讲过的情况不同，这次的冲突不是因为同事 <code>push</code> 了新的提交，而是因为你刻意修改了一些内容，这个冲突是你预料到的，你本来就希望用本地的内容覆盖掉中央仓库的内容</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> push origin branch1 -f<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p><img src="https://imgconvert.csdnimg.cn/aHR0cDovL3VzZXItZ29sZC1jZG4ueGl0dS5pby8yMDE3LzExLzIyLzE1ZmUyNjM4YWI3YjdlNmQ?x-oss-process=image/format,png" alt="img"></p>
-<p>这样，在本地修改了错误的 <code>commit</code>s，然后强制 <code>push</code> 上去，问题解决。</p>
-<h4 id="2-出错的内容已经合并到-master"><a href="#2-出错的内容已经合并到-master" class="headerlink" title="2. 出错的内容已经合并到 master"></a>2. 出错的内容已经合并到 master</h4><p>用法很简单，你希望撤销哪个 <code>commit</code>，就把它填在后面：</p>
-<pre class="line-numbers language-bash" data-language="bash"><code class="language-bash"><span class="token function">git</span> revert HEAD^<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
-
-<p>上面这行代码就会增加一条新的 <code>commit</code>，它的内容和倒数第二个 <code>commit</code> 是相反的，从而和倒数第二个 <code>commit</code> 相互抵消，达到撤销的效果。</p>
-<p>在 <code>revert</code> 完成之后，把新的 <code>commit</code> 再 <code>push</code> 上去，这个 <code>commit</code> 的内容就被撤销了。它和前面所介绍的撤销方式相比，最主要的区别是，这次改动只是被「反转」了，并没有在历史中消失掉，你的历史中会存在两条 <code>commit</code> ：一个原始 <code>commit</code> ，一个对它的反转 <code>commit</code>。</p>
-<h2 id="分支策略"><a href="#分支策略" class="headerlink" title="分支策略"></a>分支策略</h2><p>明白了git仓库和分支的概念和操作，下面介绍几种常见开发的分支策略，可以使得版本库的演进保持简洁，主干清晰，各个分支各司其职、井井有条。</p>
-<p><strong>主分支Master</strong></p>
-<p>首先，代码库应该有一个、且仅有一个主分支。所有提供给用户使用的正式版本，都在这个主分支上发布。</p>
-<p><img src="https://www.ruanyifeng.com/blogimg/asset/201207/bg2012070503.png" alt="img"></p>
-<p>Git主分支的名字，默认叫做Master。它是自动建立的，版本库初始化以后，默认就是在主分支在进行开发。</p>
-<p><strong>开发分支Develop</strong></p>
-<p>主分支只用来分布重大版本，日常开发应该在另一条分支上完成。我们把开发用的分支，叫做Develop。</p>
-<p><img src="https://www.ruanyifeng.com/blogimg/asset/201207/bg2012070504.png" alt="img"></p>
-<p>这个分支可以用来生成代码的最新隔夜版本（nightly）。如果想正式对外发布，就在Master分支上，对Develop分支进行”合并”（merge）。</p>
-<p><strong>临时性分支</strong></p>
-<p>前面讲到版本库的两条主要分支：Master和Develop。前者用于正式发布，后者用于日常开发。其实，常设分支只需要这两条就够了，不需要其他了。</p>
-<p>但是，除了常设分支以外，还有一些临时性分支，用于应对一些特定目的的版本开发。临时性分支主要有三种：</p>
-<blockquote>
-<p>　　* 功能（feature）分支</p>
-<p>　　* 预发布（release）分支</p>
-<p>　　* 修补bug（fixbug）分支</p>
-</blockquote>
-<p>这三种分支都属于临时性需要，使用完以后，应该删除，使得代码库的常设分支始终只有Master和Develop。</p>
-<p><strong>1.功能分支</strong></p>
-<p>它是为了开发某种特定功能，从Develop分支上面分出来的。开发完成后，要再并入Develop。</p>
-<p><img src="https://www.ruanyifeng.com/blogimg/asset/201207/bg2012070507.png" alt="img"></p>
-<p>功能分支的名字，可以采用feature-*的形式命名。</p>
-<p><strong>2.预发布分支</strong></p>
-<p>它是指发布正式版本之前（即合并到Master分支之前），我们可能需要有一个预发布的版本进行测试。</p>
-<p>预发布分支是从Develop分支上面分出来的，预发布结束以后，必须合并进Develop和Master分支。它的命名，可以采用release-*的形式。</p>
-<p><strong>3.修补bug分支</strong></p>
-<p>软件正式发布以后，难免会出现bug。这时就需要创建一个分支，进行bug修补。</p>
-<p>修补bug分支是从Master分支上面分出来的。修补结束以后，再合并进Master和Develop分支。它的命名，可以采用fixbug-*的形式。</p>
-<p><img src="https://www.ruanyifeng.com/blogimg/asset/201207/bg2012070508.png" alt="img"></p>
-<h2 id="IDEA操作"><a href="#IDEA操作" class="headerlink" title="IDEA操作"></a>IDEA操作</h2><p>git操作其实本不在乎用命令行还是界面，关键是理解分支和仓库的本质。新版idea的git操作非常非常方便，在IDE界面的右下角，和项目的右键GIT菜单都可以快捷打开所有常用命令，且均提供可视化操作界面，可谓老少皆宜，idea 永远滴神！</p>
-<p><img src="https://pic.innnovation.cn//img/20210707224142.png" alt="image-20210707224142108"></p>
-<p>可以用commit子窗口快速提交</p>
-<p><img src="https://pic.innnovation.cn//img/20210707224236.png" alt="image-20210707224236363"></p>
-<p>右下角可以快速checkout切换分支</p>
-<p><img src="https://pic.innnovation.cn//img/20210707224308.png" alt="image-20210707224308734"></p>
-<p>冲突处理界面也异常友好，除了显示两个冲突文件，还会显示前有一次正确提交的文件在中间以供参考</p>
-<h2 id="命令速查"><a href="#命令速查" class="headerlink" title="命令速查"></a>命令速查</h2><p><img src="https://images0.cnblogs.com/blog2015/685971/201506/011500266295799.jpg" alt="git命令速查表"></p>
-]]></content>
-      <categories>
-        <category>杂项</category>
-      </categories>
-      <tags>
-        <tag>杂项</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>火绒安全一面病毒样本分析</title>
     <url>/2021/03/15/huo-rong-an-quan-yi-mian-bing-du-yang-ben-fen-xi/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><p>Summary ：</p>
@@ -848,12 +608,12 @@ plt<span class="token punctuation">.</span>show<span class="token punctuation">(
 <p>在Ubuntu64bit下生产硬盘</p>
 <p>在虚拟机中开辟一块全0的100MB的虚拟磁盘</p>
 <pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">
-<span class="token function">dd</span> <span class="token assign-left variable">bs</span><span class="token operator">=</span><span class="token number">512</span> <span class="token assign-left variable">if</span><span class="token operator">=</span>/dev/zero <span class="token assign-left variable">of</span><span class="token operator">=</span>hd.img <span class="token assign-left variable">count</span><span class="token operator">=</span><span class="token number">204800</span>
+dd bs&#x3D;512 if&#x3D;&#x2F;dev&#x2F;zero of&#x3D;hd.img count&#x3D;204800
 
-<span class="token punctuation">;</span>bs:表示块大小，这里是512字节
-<span class="token punctuation">;</span>if：表示输入文件，/dev/zero就是Linux下专门返回0数据的设备文件，读取它就返回0
-<span class="token punctuation">;</span>of：表示输出文件，即我们的硬盘文件。
-<span class="token punctuation">;</span>count：表示输出多少块<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+;bs:表示块大小，这里是512字节
+;if：表示输入文件，&#x2F;dev&#x2F;zero就是Linux下专门返回0数据的设备文件，读取它就返回0
+;of：表示输出文件，即我们的硬盘文件。
+;count：表示输出多少块<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>然后将这个文件转换为可识别的虚拟磁盘：</p>
 <ul>
@@ -862,33 +622,33 @@ plt<span class="token punctuation">.</span>show<span class="token punctuation">(
 <li>挂在虚拟磁盘到目录下</li>
 <li>安装GRUB</li>
 </ul>
-<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell"><span class="token function">sudo</span> losetup -a <span class="token comment">#查看所有设备，我的机器上已经有十几个设备了，不能使用这些设备的名称</span>
-<span class="token function">sudo</span> losetup /dev/loop15 hd.img <span class="token comment">#0-14都被占用了</span>
-<span class="token function">sudo</span> mkfs.ext4 -q /dev/loop15
-<span class="token function">sudo</span> <span class="token function">mount</span> -o loop ./hd.img ./hdisk/ <span class="token punctuation">;</span>挂载硬盘文件
-<span class="token function">sudo</span> <span class="token function">mkdir</span> ./hdisk/boot/ <span class="token punctuation">;</span>建立boot目录
+<pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">sudo losetup -a #查看所有设备，我的机器上已经有十几个设备了，不能使用这些设备的名称
+sudo losetup &#x2F;dev&#x2F;loop15 hd.img #0-14都被占用了
+sudo mkfs.ext4 -q &#x2F;dev&#x2F;loop15
+sudo mount -o loop .&#x2F;hd.img .&#x2F;hdisk&#x2F; ;挂载硬盘文件
+sudo mkdir .&#x2F;hdisk&#x2F;boot&#x2F; ;建立boot目录
 第一步挂载虚拟硬盘文件为loop0回环设备
-<span class="token function">sudo</span> losetup /dev/loop15 hd.img
-<span class="token function">sudo</span> <span class="token function">mount</span> -o loop ./hd.img ./hdisk/ <span class="token punctuation">;</span>挂载硬盘文件
+sudo losetup &#x2F;dev&#x2F;loop15 hd.img
+sudo mount -o loop .&#x2F;hd.img .&#x2F;hdisk&#x2F; ;挂载硬盘文件
 第二步安装GRUB
-<span class="token function">sudo</span> grub-install --boot-directory<span class="token operator">=</span>./hdisk/boot/ --force --allow-floppy /dev/loop15
+sudo grub-install --boot-directory&#x3D;.&#x2F;hdisk&#x2F;boot&#x2F; --force --allow-floppy &#x2F;dev&#x2F;loop15
 ；--boot-directory 指向先前我们在虚拟硬盘中建立的boot目录。
-；--force --allow-floppy ：指向我们的虚拟硬盘设备文件/dev/loop0<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+；--force --allow-floppy ：指向我们的虚拟硬盘设备文件&#x2F;dev&#x2F;loop0<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>安装完毕后用sudo在**/hdisk/boot/grub/** 目录下建立一个<strong>grub.cfg 文本文件</strong>,grub会通过该文件找到系统镜像</p>
 <p>grub.cfg</p>
 <pre class="line-numbers language-shell" data-language="shell"><code class="language-shell">
-menuentry <span class="token string">'HelloOS'</span> <span class="token punctuation">&#123;</span> <span class="token comment">#名字随意</span>
+menuentry &#39;HelloOS&#39; &#123; #名字随意
 insmod part_msdos
 insmod ext2
-<span class="token builtin class-name">set</span> <span class="token assign-left variable">root</span><span class="token operator">=</span><span class="token string">'hd0'</span> <span class="token comment">#我的机器只能指定hd0，表示第一块磁盘引导启动</span>
-multiboot2 /boot/HelloOS.eki <span class="token comment">#加载boot目录下的HelloOS.eki文件</span>
-boot <span class="token comment">#引导启动</span>
-<span class="token punctuation">&#125;</span>
-<span class="token builtin class-name">set</span> <span class="token assign-left variable">timeout_style</span><span class="token operator">=</span>menu
-<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token string">"<span class="token variable">$&#123;timeout&#125;</span>"</span> <span class="token operator">=</span> <span class="token number">0</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
-  <span class="token builtin class-name">set</span> <span class="token assign-left variable">timeout</span><span class="token operator">=</span><span class="token number">10</span> <span class="token comment">#等待10秒钟自动启动</span>
-<span class="token keyword">fi</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+set root&#x3D;&#39;hd0&#39; #我的机器只能指定hd0，表示第一块磁盘引导启动
+multiboot2 &#x2F;boot&#x2F;HelloOS.eki #加载boot目录下的HelloOS.eki文件
+boot #引导启动
+&#125;
+set timeout_style&#x3D;menu
+if [ &quot;$&#123;timeout&#125;&quot; &#x3D; 0 ]; then
+  set timeout&#x3D;10 #等待10秒钟自动启动
+fi<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 
 
