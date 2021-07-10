@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>test encrytion</title>
+    <url>/2020/05/01/encryption/</url>
+    <content><![CDATA[<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="抱歉, 这个密码看着不太对, 请再试试." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
+  <script id="hbeData" type="hbeData" data-hmacdigest="b7a9444bdf9ec67159fa957423d5943978cc67273067e801e38bb4ad457a9203">10d79030e8222445804370796b90fca14b3382df4730eb0fe3a9f1aa6acbfdf977f308135c251cf4014cb9472e5eb4c7010efd08fb0e3bdf1ebef1844b47b7bbdce99f87d5af857ca0ff659bfd7ff8403889b6c438821c099230c528e1e072086db67c3268f0c3fbef4285ecdfb74d10c44a10a54b42bc087ce2562c8b1b0d82c747e40ef6687175228e1aa7de665ca0630685dfdfd49a11eb58a99d311c252752a333719030d038bb8d865dd3e440bff3cd209fe3ca3a26fb5772705760421ee28b997bb286ef46d1032c18074a8e246f2b089c181f769c3ff273587971e21fb48c46d1068c2933cce24d3f3220cc3682f130f26d5e47aa28d728332b46e808627eb02d3a45d7ff8ef7c9018b3a38bb9265de9715d4138919ea7edf15d7fcf47bbec73ee7481809cf81c7654c32120f9fca71f797eb839cfca7da823d550b0bacafeee1b0dea1a24995a46123071540f9c9eca491e67036879d66d85c84f9a9b8de1dec8aeed33c0ef421b74b4979ab97190a33c6c656a230454cb50285c0aad476b4725f22580b4bfb76c67f32bbdaf1edb8455d722e16d974910ba31ca7f608d3f318c26f6f6d0711e2041913c7ec3a9f829cb2339ef122b6ebed31d6159befc28c5b18f5933e02d369566cec07b9a4810d820e1a15eba658e8a05d41b8b2857500dacad8a4dcf76efdbf95ec53f59b0e8f0e9e7ec7a8c64c6530aa365a10c294d8413e278a7cfdbbd6fe82f5e50bc5b6acfe5de3e3d9c10533ad8a9a28defea732d1d23cf43f20710848399b586e88117428d9b344114e232ba0143e66172cdf59f66556b35dd73b016955f88673cb452d984b6b3c28999e800b7c911a4135fedd22d3a1d49db0d2746d278c81f31427a6aea1f0ec54ac89afa215eeafb509750990d19a04bbbb2ad140d96355a9646bd9c19193d5487cb492f071f53399ecd8fd61a50e6a0907093122b6598d53e803b903b852c719e898c11dbb6aa0c129a2ed853970296fd7087458786294a27cc2746b96d6f0e1f200babe1d513ffb957fb1095cc96ce9223b15e56f9eb627982b93885870b09ae36b00b882410744</script>
+  <div class="hbe hbe-content">
+    <div class="hbe hbe-input hbe-input-default">
+      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
+      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
+        <span class="hbe hbe-input-label-content hbe-input-label-content-default">您好, 这里需要密码.</span>
+      </label>
+    </div>
+  </div>
+</div>
+<script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">]]></content>
+  </entry>
+  <entry>
     <title>逆向工程学习录——Detour / Hook Functions</title>
     <url>/2020/12/29/detour-hook-functions/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><p>在游戏逆向中我们需要在某个执行函数的地方添加自己的代码。<br>案例：HackMe.exe</p>
@@ -112,22 +128,6 @@ BOOL WINAPI <span class="token function">DllMain</span><span class="token punctu
         <tag>逆向</tag>
         <tag>Detour Hook</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>test encrytion</title>
-    <url>/2020/05/01/encryption/</url>
-    <content><![CDATA[<div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="抱歉, 这个密码看着不太对, 请再试试." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
-  <script id="hbeData" type="hbeData" data-hmacdigest="b7a9444bdf9ec67159fa957423d5943978cc67273067e801e38bb4ad457a9203">10d79030e8222445804370796b90fca14b3382df4730eb0fe3a9f1aa6acbfdf977f308135c251cf4014cb9472e5eb4c7010efd08fb0e3bdf1ebef1844b47b7bbdce99f87d5af857ca0ff659bfd7ff8403889b6c438821c099230c528e1e072086db67c3268f0c3fbef4285ecdfb74d10c44a10a54b42bc087ce2562c8b1b0d82c747e40ef6687175228e1aa7de665ca0630685dfdfd49a11eb58a99d311c252752a333719030d038bb8d865dd3e440bff3cd209fe3ca3a26fb5772705760421ee28b997bb286ef46d1032c18074a8e246f2b089c181f769c3ff273587971e21fb48c46d1068c2933cce24d3f3220cc3682f130f26d5e47aa28d728332b46e808627eb02d3a45d7ff8ef7c9018b3a38bb9265de9715d4138919ea7edf15d7fcf47bbec73ee7481809cf81c7654c32120f9fca71f797eb839cfca7da823d550b0bacafeee1b0dea1a24995a46123071540f9c9eca491e67036879d66d85c84f9a9b8de1dec8aeed33c0ef421b74b4979ab97190a33c6c656a230454cb50285c0aad476b4725f22580b4bfb76c67f32bbdaf1edb8455d722e16d974910ba31ca7f608d3f318c26f6f6d0711e2041913c7ec3a9f829cb2339ef122b6ebed31d6159befc28c5b18f5933e02d369566cec07b9a4810d820e1a15eba658e8a05d41b8b2857500dacad8a4dcf76efdbf95ec53f59b0e8f0e9e7ec7a8c64c6530aa365a10c294d8413e278a7cfdbbd6fe82f5e50bc5b6acfe5de3e3d9c10533ad8a9a28defea732d1d23cf43f20710848399b586e88117428d9b344114e232ba0143e66172cdf59f66556b35dd73b016955f88673cb452d984b6b3c28999e800b7c911a4135fedd22d3a1d49db0d2746d278c81f31427a6aea1f0ec54ac89afa215eeafb509750990d19a04bbbb2ad140d96355a9646bd9c19193d5487cb492f071f53399ecd8fd61a50e6a0907093122b6598d53e803b903b852c719e898c11dbb6aa0c129a2ed853970296fd7087458786294a27cc2746b96d6f0e1f200babe1d513ffb957fb1095cc96ce9223b15e56f9eb627982b93885870b09ae36b00b882410744</script>
-  <div class="hbe hbe-content">
-    <div class="hbe hbe-input hbe-input-default">
-      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
-      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
-        <span class="hbe hbe-input-label-content hbe-input-label-content-default">您好, 这里需要密码.</span>
-      </label>
-    </div>
-  </div>
-</div>
-<script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">]]></content>
   </entry>
   <entry>
     <title>记一次用python做的多元线性回归分析</title>
@@ -1375,6 +1375,596 @@ hxi_hwint07<span class="token operator">:</span>
       <tags>
         <tag>逆向</tag>
         <tag>病毒分析</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>webFlux及相关知识点理解和学习</title>
+    <url>/2021/07/10/webflux-xue-xi-ji-yuan-li-xing-li-jie/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><blockquote>
+<p>本人英语渣渣，但是学习较新的知识还是选择外面的世界多看看，某度的引擎真的是毒瘤，本文概念和词汇可能包含机翻部分，欢迎大神们批评指针</p>
+<p>Quote:<a href="https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html#webflux-new-framework">https://docs.spring.io/spring-framework/docs/current/reference/html/web-reactive.html#webflux-new-framework</a></p>
+</blockquote>
+<p>我们先看看Spring为什么要创造WebFlux:</p>
+<blockquote>
+<p>Part of the answer is the need for a non-blocking web stack to handle concurrency with a small number of threads and scale with fewer hardware resources. Servlet 3.1 did provide an API for non-blocking I/O. However, using it leads away from the rest of the Servlet API, where contracts are synchronous (<code>Filter</code>, <code>Servlet</code>) or blocking (<code>getParameter</code>, <code>getPart</code>). This was the motivation for a new common API to serve as a foundation across any non-blocking runtime. That is important because of servers (such as Netty) that are well-established in the async, non-blocking space.</p>
+<p>The other part of the answer is functional programming. Much as the addition of annotations in Java 5 created opportunities (such as annotated REST controllers or unit tests), the addition of lambda expressions in Java 8 created opportunities for functional APIs in Java. This is a boon for non-blocking applications and continuation-style APIs (as popularized by <code>CompletableFuture</code> and <a href="http://reactivex.io/">ReactiveX</a>) that allow declarative composition of asynchronous logic. At the programming-model level, Java 8 enabled Spring WebFlux to offer functional web endpoints alongside annotated controllers.</p>
+</blockquote>
+<p>总结一下：</p>
+<ul>
+<li>需要一个非阻塞的Web技术栈来处理具有少量线程的并发并使用较少的硬件资源进行扩展，Servlet3.1之后提供了NIO非阻塞式API以及Netty都提供了支持</li>
+<li>Java的函数式编程（functional programming）支持，lambda表达式提供了函数式API，允许异步逻辑的声明式组合的非阻塞应用程序</li>
+</ul>
+<p>那么所以学习WebFlux之前必须了解两个东西<code>lambda</code>、<code>Stream</code></p>
+<p>lambda和流API都是Java8才有的（21年3.16JDK16发布），这里就不对lambda和Stream的使用做介绍了，我们主要研究一下实现原理</p>
+<h2 id="lambda实现原理"><a href="#lambda实现原理" class="headerlink" title="lambda实现原理"></a>lambda实现原理</h2><p>初看lambda表达式，感觉就是一个匿名函数（类比匿名内部类），所以我推测当时出这个功能就是Java程序员发现Java只能传递对象，没办法传递函数，大致的使用场景可能是这样的</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">executeFunc</span><span class="token punctuation">(</span>函数引用<span class="token punctuation">,</span><span class="token class-name">String</span> word<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// todo 用传入的方法打印word变量</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>这段代码要是换成C来，只要往这个方法传入一个函数指针即可（函数入口地址）</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">printWord</span><span class="token punctuation">(</span><span class="token keyword">char</span><span class="token operator">*</span> str<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//声明函数</span>
+<span class="token punctuation">.</span><span class="token punctuation">.</span><span class="token punctuation">.</span>
+
+<span class="token keyword">void</span> <span class="token punctuation">(</span><span class="token operator">*</span>fun_ptr<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token keyword">char</span><span class="token operator">*</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//定义函数指针</span>
+fun_ptr<span class="token operator">=</span>printWord<span class="token punctuation">;</span><span class="token comment">//把printWord函数地址赋值给fun_ptr</span>
+<span class="token punctuation">(</span><span class="token operator">*</span>fun_ptr<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token string">"Hello World!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//直接调用</span>
+<span class="token function">another_func</span><span class="token punctuation">(</span>fun_ptr<span class="token punctuation">,</span><span class="token string">"Hello World"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//间接调用，回调函数就是用这种方式实现的</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>那么Java怎么办解决这个问题呢，前面提到了匿名内部类，lambda最初开发的时候可能真的是从这里启发来的，用一个接口(匿名类的父类接口)包裹住这个方法，传接口对象进去就可以了。</p>
+<p>为了研究这个问题 上代码，用反编译工具查看底层字节码研究原理</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">main</span><span class="token punctuation">;</span>
+
+<span class="token keyword">interface</span> <span class="token class-name">Wrapper</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">void</span> <span class="token function">myPrint</span><span class="token punctuation">(</span><span class="token class-name">String</span> w<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">class</span> <span class="token class-name">Solution</span> <span class="token punctuation">&#123;</span>
+
+    <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">executeFunc</span><span class="token punctuation">(</span><span class="token class-name">Wrapper</span> w<span class="token punctuation">,</span> <span class="token class-name">String</span> word<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        w<span class="token punctuation">.</span><span class="token function">myPrint</span><span class="token punctuation">(</span>word<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">// 匿名内部类写法</span>
+        <span class="token function">executeFunc</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Wrapper</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token annotation punctuation">@Override</span>
+            <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">myPrint</span><span class="token punctuation">(</span><span class="token class-name">String</span> w<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token comment">// 个性化拓展，例如在打印之前记录时间什么的</span>
+                <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>w<span class="token punctuation">)</span><span class="token punctuation">;</span>
+            <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token string">"Hello Lambda!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        
+        <span class="token comment">// lambda写法</span>
+        <span class="token function">executeFunc</span><span class="token punctuation">(</span>w <span class="token operator">-></span> <span class="token punctuation">&#123;</span>
+            <span class="token comment">// 个性化拓展，例如在打印之前记录时间什么的</span>
+            <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>w<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token string">"Hello Lambda!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+ 
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>我们看lambda这部分的字节码</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token comment">// class version 55.0 (55)</span>
+<span class="token comment">// access flags 0x20</span>
+<span class="token keyword">class</span> main<span class="token operator">/</span><span class="token class-name">Solution</span> <span class="token punctuation">&#123;</span>
+
+  <span class="token comment">// compiled from: Solution.java</span>
+  <span class="token comment">// access flags 0x19</span>
+  <span class="token keyword">public</span> <span class="token keyword">final</span> <span class="token keyword">static</span> INNERCLASS java<span class="token operator">/</span>lang<span class="token operator">/</span>invoke<span class="token operator">/</span><span class="token class-name">MethodHandles</span>$<span class="token class-name">Lookup</span> java<span class="token operator">/</span>lang<span class="token operator">/</span>invoke<span class="token operator">/</span><span class="token class-name">MethodHandles</span> <span class="token class-name">Lookup</span>
+
+  <span class="token comment">// access flags 0x0</span>
+  <span class="token generics"><span class="token punctuation">&lt;</span>init<span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token class-name">V</span>
+   L0
+    LINENUMBER <span class="token number">8</span> L0
+    ALOAD <span class="token number">0</span>
+    INVOKESPECIAL java<span class="token operator">/</span>lang<span class="token operator">/</span><span class="token class-name">Object</span><span class="token punctuation">.</span><span class="token generics"><span class="token punctuation">&lt;</span>init<span class="token punctuation">></span></span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token class-name">V</span>
+    RETURN
+   L1
+    LOCALVARIABLE <span class="token keyword">this</span> <span class="token class-name">Lmain</span><span class="token operator">/</span><span class="token class-name">Solution</span><span class="token punctuation">;</span> L0 L1 <span class="token number">0</span>
+    MAXSTACK <span class="token operator">=</span> <span class="token number">1</span>
+    MAXLOCALS <span class="token operator">=</span> <span class="token number">1</span>
+
+  <span class="token comment">// access flags 0x8</span>
+  <span class="token keyword">static</span> <span class="token function">executeFunc</span><span class="token punctuation">(</span><span class="token class-name">Lmain</span><span class="token operator">/</span><span class="token class-name">Wrapper</span><span class="token punctuation">;</span><span class="token class-name">Ljava</span><span class="token operator">/</span>lang<span class="token operator">/</span><span class="token class-name">String</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token class-name">V</span>
+   L0
+    LINENUMBER <span class="token number">11</span> L0
+    ALOAD <span class="token number">0</span>
+    ALOAD <span class="token number">1</span>
+    INVOKEINTERFACE main<span class="token operator">/</span><span class="token class-name">Wrapper</span><span class="token punctuation">.</span>myPrint <span class="token punctuation">(</span><span class="token class-name">Ljava</span><span class="token operator">/</span>lang<span class="token operator">/</span><span class="token class-name">String</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token class-name">V</span> <span class="token punctuation">(</span>itf<span class="token punctuation">)</span>
+   L1
+    LINENUMBER <span class="token number">12</span> L1
+    RETURN
+   L2
+    LOCALVARIABLE w <span class="token class-name">Lmain</span><span class="token operator">/</span><span class="token class-name">Wrapper</span><span class="token punctuation">;</span> L0 L2 <span class="token number">0</span>
+    LOCALVARIABLE word <span class="token class-name">Ljava</span><span class="token operator">/</span>lang<span class="token operator">/</span><span class="token class-name">String</span><span class="token punctuation">;</span> L0 L2 <span class="token number">1</span>
+    MAXSTACK <span class="token operator">=</span> <span class="token number">2</span>
+    MAXLOCALS <span class="token operator">=</span> <span class="token number">2</span>
+
+  <span class="token comment">// access flags 0x9</span>
+  <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token class-name">Ljava</span><span class="token operator">/</span>lang<span class="token operator">/</span><span class="token class-name">String</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token class-name">V</span>
+   L0
+    LINENUMBER <span class="token number">26</span> L0
+    <span class="token class-name">INVOKEDYNAMIC</span> <span class="token function">myPrint</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token class-name">Lmain</span><span class="token operator">/</span><span class="token class-name">Wrapper</span><span class="token punctuation">;</span> <span class="token punctuation">[</span>
+      <span class="token comment">// handle kind 0x6 : INVOKESTATIC</span>
+      java<span class="token operator">/</span>lang<span class="token operator">/</span>invoke<span class="token operator">/</span><span class="token class-name">LambdaMetafactory</span><span class="token punctuation">.</span><span class="token function">metafactory</span><span class="token punctuation">(</span><span class="token class-name">Ljava</span><span class="token operator">/</span>lang<span class="token operator">/</span>invoke<span class="token operator">/</span><span class="token class-name">MethodHandles</span>$<span class="token class-name">Lookup</span><span class="token punctuation">;</span><span class="token class-name">Ljava</span><span class="token operator">/</span>lang<span class="token operator">/</span><span class="token class-name">String</span><span class="token punctuation">;</span><span class="token class-name">Ljava</span><span class="token operator">/</span>lang<span class="token operator">/</span>invoke<span class="token operator">/</span><span class="token class-name">MethodType</span><span class="token punctuation">;</span><span class="token class-name">Ljava</span><span class="token operator">/</span>lang<span class="token operator">/</span>invoke<span class="token operator">/</span><span class="token class-name">MethodType</span><span class="token punctuation">;</span><span class="token class-name">Ljava</span><span class="token operator">/</span>lang<span class="token operator">/</span>invoke<span class="token operator">/</span><span class="token class-name">MethodHandle</span><span class="token punctuation">;</span><span class="token class-name">Ljava</span><span class="token operator">/</span>lang<span class="token operator">/</span>invoke<span class="token operator">/</span><span class="token class-name">MethodType</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token class-name">Ljava</span><span class="token operator">/</span>lang<span class="token operator">/</span>invoke<span class="token operator">/</span><span class="token class-name">CallSite</span><span class="token punctuation">;</span>
+      <span class="token comment">// arguments:</span>
+      <span class="token punctuation">(</span><span class="token class-name">Ljava</span><span class="token operator">/</span>lang<span class="token operator">/</span><span class="token class-name">String</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token class-name">V</span><span class="token punctuation">,</span> 
+      <span class="token comment">// handle kind 0x6 : INVOKESTATIC</span>
+      main<span class="token operator">/</span><span class="token class-name">Solution</span><span class="token punctuation">.</span>lambda$main$<span class="token function">0</span><span class="token punctuation">(</span><span class="token class-name">Ljava</span><span class="token operator">/</span>lang<span class="token operator">/</span><span class="token class-name">String</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token class-name">V</span><span class="token punctuation">,</span> 
+      <span class="token punctuation">(</span><span class="token class-name">Ljava</span><span class="token operator">/</span>lang<span class="token operator">/</span><span class="token class-name">String</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token class-name">V</span>
+    <span class="token punctuation">]</span>
+    LDC <span class="token string">"Hello Lambda!"</span>
+    INVOKESTATIC main<span class="token operator">/</span><span class="token class-name">Solution</span><span class="token punctuation">.</span>executeFunc <span class="token punctuation">(</span><span class="token class-name">Lmain</span><span class="token operator">/</span><span class="token class-name">Wrapper</span><span class="token punctuation">;</span><span class="token class-name">Ljava</span><span class="token operator">/</span>lang<span class="token operator">/</span><span class="token class-name">String</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token class-name">V</span>
+   L1
+    LINENUMBER <span class="token number">31</span> L1
+    RETURN
+   L2
+    LOCALVARIABLE args <span class="token punctuation">[</span><span class="token class-name">Ljava</span><span class="token operator">/</span>lang<span class="token operator">/</span><span class="token class-name">String</span><span class="token punctuation">;</span> L0 L2 <span class="token number">0</span>
+    MAXSTACK <span class="token operator">=</span> <span class="token number">2</span>
+    MAXLOCALS <span class="token operator">=</span> <span class="token number">1</span>
+
+  <span class="token comment">// access flags 0x100A</span>
+  <span class="token keyword">private</span> <span class="token keyword">static</span> synthetic lambda$main$<span class="token function">0</span><span class="token punctuation">(</span><span class="token class-name">Ljava</span><span class="token operator">/</span>lang<span class="token operator">/</span><span class="token class-name">String</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token class-name">V</span>
+   L0
+    LINENUMBER <span class="token number">28</span> L0
+    GETSTATIC java<span class="token operator">/</span>lang<span class="token operator">/</span><span class="token class-name">System</span><span class="token punctuation">.</span>out <span class="token operator">:</span> <span class="token class-name">Ljava</span><span class="token operator">/</span>io<span class="token operator">/</span><span class="token class-name">PrintStream</span><span class="token punctuation">;</span>
+    ALOAD <span class="token number">0</span>
+    INVOKEVIRTUAL java<span class="token operator">/</span>io<span class="token operator">/</span><span class="token class-name">PrintStream</span><span class="token punctuation">.</span>println <span class="token punctuation">(</span><span class="token class-name">Ljava</span><span class="token operator">/</span>lang<span class="token operator">/</span><span class="token class-name">String</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token class-name">V</span>
+   L1
+    LINENUMBER <span class="token number">29</span> L1
+    RETURN
+   L2
+    LOCALVARIABLE w <span class="token class-name">Ljava</span><span class="token operator">/</span>lang<span class="token operator">/</span><span class="token class-name">String</span><span class="token punctuation">;</span> L0 L2 <span class="token number">0</span>
+    MAXSTACK <span class="token operator">=</span> <span class="token number">2</span>
+    MAXLOCALS <span class="token operator">=</span> <span class="token number">1</span>
+<span class="token punctuation">&#125;</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>注意一行代码</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">private</span> <span class="token keyword">static</span> synthetic lambda$main$<span class="token function">0</span><span class="token punctuation">(</span><span class="token class-name">Ljava</span><span class="token operator">/</span>lang<span class="token operator">/</span><span class="token class-name">String</span><span class="token punctuation">;</span><span class="token punctuation">)</span><span class="token class-name">V</span><span class="token comment">//line 61</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+<p>synthetic这个词的意思是“人造的; (人工)合成的; 综合(型)的”，作为关键字，它表示该方法由编译器自动生成。简言之，把它当做void，这是一个无返回值的静态方法，叫lambda$main$0，接受一个String类型的参数。里面又有一系列操作</p>
+<p>编译器把我们写的lambda表达式转换成了一个<strong>静态的私有函数</strong>，通过调用这个函数来解决传递一段代码的问题</p>
+<p>那么还剩下一个问题，JVM是通过什么知道如何执行该私有函数呢，这就得翻阅<a href="https://docs.oracle.com/javase/7/docs/technotes/guides/vm/multiple-language-support.html">Oracle官方文档</a>的The invokedynamic Instruction章节</p>
+<p><code>INVOKEDYNAMIC</code>指令，顾名思义，就是动态激活。那这个动态是怎么理解的？这里的”动态”意思是，在运行时才确定，这个调用lambda函数的下一步指向哪里。在初始状态（程序编译成字节码后但未运行时），这个标记是空的，不会执行任何动作。当程序开始执行时，具体一点就是发生字节码的43行，初始化就开始了。在运行时确定，无外乎反射，仔细看43行的一大串包，也确实是通过反射实现的</p>
+<h2 id="Stream实现原理"><a href="#Stream实现原理" class="headerlink" title="Stream实现原理"></a>Stream实现原理</h2><p>先上一张copy的速查表格</p>
+<table>
+<thead>
+<tr>
+<th align="center">Stream操作分类</th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">中间操作(Intermediate operations)</td>
+<td>无状态(Stateless)</td>
+<td>unordered() filter() map() mapToInt() mapToLong() mapToDouble() flatMap() flatMapToInt() flatMapToLong() flatMapToDouble() peek()</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td>有状态(Stateful)</td>
+<td>distinct() sorted() sorted() limit() skip()</td>
+</tr>
+<tr>
+<td align="center">结束操作(Terminal operations)</td>
+<td>非短路操作</td>
+<td>forEach() forEachOrdered() toArray() reduce() collect() max() min() count()</td>
+</tr>
+<tr>
+<td align="center"></td>
+<td>短路操作(short-circuiting)</td>
+<td>anyMatch() allMatch() noneMatch() findFirst() findAny()</td>
+</tr>
+</tbody></table>
+<p><img src="https://pic.innnovation.cn//img/20210710222024.png" alt="Stream结构示意图"></p>
+<blockquote>
+<p>原理解释引用自:<a href="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/6-Stream%20Pipelines.md">https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/6-Stream%20Pipelines.md</a></p>
+</blockquote>
+<h3 id="gt-gt-操作如何记录"><a href="#gt-gt-操作如何记录" class="headerlink" title="&gt;&gt; 操作如何记录"></a>&gt;&gt; 操作如何记录</h3><p><a href="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/Figures/Java_stream_pipeline_classes.png"><img src="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/Figures/Java_stream_pipeline_classes.png?raw=true" alt="Java_stream_pipeline_classes"></a></p>
+<p>注意这里使用的是“<em>操作(operation)<em>”一词，指的是“Stream中间操作”的操作，很多Stream操作会需要一个回调函数（Lambda表达式），因此一个完整的操作是&lt;*数据来源，操作，回调函数*&gt;构成的三元组。Stream中使用Stage的概念来描述一个完整的操作，并用某种实例化后的</em>PipelineHelper</em>来代表Stage，将具有先后顺序的各个Stage连到一起，就构成了整个流水线。跟Stream相关类和接口的继承关系图示。</p>
+<p>还有<em>IntPipeline, LongPipeline, DoublePipeline</em>没在图中画出，这三个类专门为三种基本类型（不是包装类型）而定制的，跟<em>ReferencePipeline</em>是并列关系。图中<em>Head</em>用于表示第一个Stage，即调用调用诸如<em>Collection.stream()*方法产生的Stage，很显然这个Stage里不包含任何操作；*StatelessOp*和*StatefulOp</em>分别表示无状态和有状态的Stage，对应于无状态和有状态的中间操作。</p>
+<p>Stream流水线组织结构示意图如下：</p>
+<p><a href="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/Figures/Stream_pipeline_example.png"><img src="https://github.com/CarpenterLee/JavaLambdaInternals/raw/master/Figures/Stream_pipeline_example.png?raw=true" alt="Stream_pipeline_example"></a></p>
+<p>图中通过<code>Collection.stream()</code>方法得到<em>Head</em>也就是stage0，紧接着调用一系列的中间操作，不断产生新的Stream。<strong>这些Stream对象以双向链表的形式组织在一起，构成整个流水线，由于每个Stage都记录了前一个Stage和本次的操作以及回调函数，依靠这种结构就能建立起对数据源的所有操作</strong>。这就是Stream记录操作的方式。</p>
+<h3 id="gt-gt-操作如何叠加"><a href="#gt-gt-操作如何叠加" class="headerlink" title="&gt;&gt; 操作如何叠加"></a>&gt;&gt; 操作如何叠加</h3><p>以上只是解决了操作记录的问题，要想让流水线起到应有的作用我们需要一种将所有操作叠加到一起的方案。你可能会觉得这很简单，只需要从流水线的head开始依次执行每一步的操作（包括回调函数）就行了。这听起来似乎是可行的，但是你忽略了前面的Stage并不知道后面Stage到底执行了哪种操作，以及回调函数是哪种形式。换句话说，只有当前Stage本身才知道该如何执行自己包含的动作。这就需要有某种协议来协调相邻Stage之间的调用关系。</p>
+<p>这种协议由<em>Sink</em>接口完成，<em>Sink</em>接口包含的方法如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>void begin(long size)</td>
+<td>开始遍历元素之前调用该方法，通知Sink做好准备。</td>
+</tr>
+<tr>
+<td>void end()</td>
+<td>所有元素遍历完成之后调用，通知Sink没有更多的元素了。</td>
+</tr>
+<tr>
+<td>boolean cancellationRequested()</td>
+<td>是否可以结束操作，可以让短路操作尽早结束。</td>
+</tr>
+<tr>
+<td>void accept(T t)</td>
+<td>遍历元素时调用，接受一个待处理元素，并对元素进行处理。Stage把自己包含的操作和回调方法封装到该方法里，前一个Stage只需要调用当前Stage.accept(T t)方法就行了。</td>
+</tr>
+</tbody></table>
+<p>有了上面的协议，相邻Stage之间调用就很方便了，每个Stage都会将自己的操作封装到一个Sink里，前一个Stage只需调用后一个Stage的<code>accept()</code>方法即可，并不需要知道其内部是如何处理的。当然对于有状态的操作，Sink的<code>begin()</code>和<code>end()</code>方法也是必须实现的。比如Stream.sorted()是一个有状态的中间操作，其对应的Sink.begin()方法可能创建一个盛放结果的容器，而accept()方法负责将元素添加到该容器，最后end()负责对容器进行排序。对于短路操作，<code>Sink.cancellationRequested()</code>也是必须实现的，比如Stream.findFirst()是短路操作，只要找到一个元素，cancellationRequested()就应该返回<em>true</em>，以便调用者尽快结束查找。Sink的四个接口方法常常相互协作，共同完成计算任务。<strong>实际上Stream API内部实现的的本质，就是如何重写Sink的这四个接口方法</strong>。</p>
+<p>有了Sink对操作的包装，Stage之间的调用问题就解决了，执行时只需要从流水线的head开始对数据源依次调用每个Stage对应的Sink.{begin(), accept(), cancellationRequested(), end()}方法就可以了。一种可能的Sink.accept()方法流程是这样的：</p>
+<pre class="line-numbers language-none"><code class="language-none">void accept(U u)&#123;
+    1. 使用当前Sink包装的回调函数处理u
+    2. 将处理结果传递给流水线下游的Sink
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>Sink接口的其他几个方法也是按照这种[处理-&gt;转发]的模型实现。下面我们结合具体例子看看Stream的中间操作是如何将自身的操作包装成Sink以及Sink是如何将处理结果转发给下一个Sink的。先看Stream.map()方法：</p>
+<pre class="line-numbers language-none"><code class="language-none">&#x2F;&#x2F; Stream.map()，调用该方法将产生一个新的Stream
+public final &lt;R&gt; Stream&lt;R&gt; map(Function&lt;? super P_OUT, ? extends R&gt; mapper) &#123;
+    ...
+    return new StatelessOp&lt;P_OUT, R&gt;(this, StreamShape.REFERENCE,
+                                 StreamOpFlag.NOT_SORTED | StreamOpFlag.NOT_DISTINCT) &#123;
+        @Override &#x2F;*opWripSink()方法返回由回调函数包装而成Sink*&#x2F;
+        Sink&lt;P_OUT&gt; opWrapSink(int flags, Sink&lt;R&gt; downstream) &#123;
+            return new Sink.ChainedReference&lt;P_OUT, R&gt;(downstream) &#123;
+                @Override
+                public void accept(P_OUT u) &#123;
+                    R r &#x3D; mapper.apply(u);&#x2F;&#x2F; 1. 使用当前Sink包装的回调函数mapper处理u
+                    downstream.accept(r);&#x2F;&#x2F; 2. 将处理结果传递给流水线下游的Sink
+                &#125;
+            &#125;;
+        &#125;
+    &#125;;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>上述代码看似复杂，其实逻辑很简单，就是将回调函数<em>mapper</em>包装到一个Sink当中。由于Stream.map()是一个无状态的中间操作，所以map()方法返回了一个StatelessOp内部类对象（一个新的Stream），调用这个新Stream的opWripSink()方法将得到一个包装了当前回调函数的Sink。</p>
+<p>再来看一个复杂一点的例子。Stream.sorted()方法将对Stream中的元素进行排序，显然这是一个有状态的中间操作，因为读取所有元素之前是没法得到最终顺序的。抛开模板代码直接进入问题本质，sorted()方法是如何将操作封装成Sink的呢？sorted()一种可能封装的Sink代码如下：</p>
+<pre class="line-numbers language-none"><code class="language-none">&#x2F;&#x2F; Stream.sort()方法用到的Sink实现
+class RefSortingSink&lt;T&gt; extends AbstractRefSortingSink&lt;T&gt; &#123;
+    private ArrayList&lt;T&gt; list;&#x2F;&#x2F; 存放用于排序的元素
+    RefSortingSink(Sink&lt;? super T&gt; downstream, Comparator&lt;? super T&gt; comparator) &#123;
+        super(downstream, comparator);
+    &#125;
+    @Override
+    public void begin(long size) &#123;
+        ...
+        &#x2F;&#x2F; 创建一个存放排序元素的列表
+        list &#x3D; (size &gt;&#x3D; 0) ? new ArrayList&lt;T&gt;((int) size) : new ArrayList&lt;T&gt;();
+    &#125;
+    @Override
+    public void end() &#123;
+        list.sort(comparator);&#x2F;&#x2F; 只有元素全部接收之后才能开始排序
+        downstream.begin(list.size());
+        if (!cancellationWasRequested) &#123;&#x2F;&#x2F; 下游Sink不包含短路操作
+            list.forEach(downstream::accept);&#x2F;&#x2F; 2. 将处理结果传递给流水线下游的Sink
+        &#125;
+        else &#123;&#x2F;&#x2F; 下游Sink包含短路操作
+            for (T t : list) &#123;&#x2F;&#x2F; 每次都调用cancellationRequested()询问是否可以结束处理。
+                if (downstream.cancellationRequested()) break;
+                downstream.accept(t);&#x2F;&#x2F; 2. 将处理结果传递给流水线下游的Sink
+            &#125;
+        &#125;
+        downstream.end();
+        list &#x3D; null;
+    &#125;
+    @Override
+    public void accept(T t) &#123;
+        list.add(t);&#x2F;&#x2F; 1. 使用当前Sink包装动作处理t，只是简单的将元素添加到中间列表当中
+    &#125;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>上述代码完美的展现了Sink的四个接口方法是如何协同工作的：</p>
+<ol>
+<li>首先begin()方法告诉Sink参与排序的元素个数，方便确定中间结果容器的的大小；</li>
+<li>之后通过accept()方法将元素添加到中间结果当中，最终执行时调用者会不断调用该方法，直到遍历所有元素；</li>
+<li>最后end()方法告诉Sink所有元素遍历完毕，启动排序步骤，排序完成后将结果传递给下游的Sink；</li>
+<li>如果下游的Sink是短路操作，将结果传递给下游时不断询问下游cancellationRequested()是否可以结束处理。</li>
+</ol>
+<h3 id="gt-gt-叠加之后的操作如何执行"><a href="#gt-gt-叠加之后的操作如何执行" class="headerlink" title="&gt;&gt; 叠加之后的操作如何执行"></a>&gt;&gt; 叠加之后的操作如何执行</h3><p><a href="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/Figures/Stream_pipeline_Sink.png"><img src="https://github.com/CarpenterLee/JavaLambdaInternals/raw/master/Figures/Stream_pipeline_Sink.png?raw=true" alt="Stream_pipeline_Sink"></a></p>
+<p>Sink完美封装了Stream每一步操作，并给出了[处理-&gt;转发]的模式来叠加操作。这一连串的齿轮已经咬合，就差最后一步拨动齿轮启动执行。是什么启动这一连串的操作呢？也许你已经想到了启动的原始动力就是结束操作(Terminal Operation)，一旦调用某个结束操作，就会触发整个流水线的执行。</p>
+<p>结束操作之后不能再有别的操作，所以结束操作不会创建新的流水线阶段(Stage)，直观的说就是流水线的链表不会在往后延伸了。结束操作会创建一个包装了自己操作的Sink，这也是流水线中最后一个Sink，这个Sink只需要处理数据而不需要将结果传递给下游的Sink（因为没有下游）。对于Sink的[处理-&gt;转发]模型，结束操作的Sink就是调用链的出口。</p>
+<p>我们再来考察一下上游的Sink是如何找到下游Sink的。一种可选的方案是在<em>PipelineHelper</em>中设置一个Sink字段，在流水线中找到下游Stage并访问Sink字段即可。但Stream类库的设计者没有这么做，而是设置了一个<code>Sink AbstractPipeline.opWrapSink(int flags, Sink downstream)</code>方法来得到Sink，该方法的作用是返回一个新的包含了当前Stage代表的操作以及能够将结果传递给downstream的Sink对象。为什么要产生一个新对象而不是返回一个Sink字段？这是因为使用opWrapSink()可以将当前操作与下游Sink（上文中的downstream参数）结合成新Sink。试想只要从流水线的最后一个Stage开始，不断调用上一个Stage的opWrapSink()方法直到最开始（不包括stage0，因为stage0代表数据源，不包含操作），就可以得到一个代表了流水线上所有操作的Sink，用代码表示就是这样：</p>
+<pre class="line-numbers language-none"><code class="language-none">&#x2F;&#x2F; AbstractPipeline.wrapSink()
+&#x2F;&#x2F; 从下游向上游不断包装Sink。如果最初传入的sink代表结束操作，
+&#x2F;&#x2F; 函数返回时就可以得到一个代表了流水线上所有操作的Sink。
+final &lt;P_IN&gt; Sink&lt;P_IN&gt; wrapSink(Sink&lt;E_OUT&gt; sink) &#123;
+    ...
+    for (AbstractPipeline p&#x3D;AbstractPipeline.this; p.depth &gt; 0; p&#x3D;p.previousStage) &#123;
+        sink &#x3D; p.opWrapSink(p.previousStage.combinedFlags, sink);
+    &#125;
+    return (Sink&lt;P_IN&gt;) sink;
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>现在流水线上从开始到结束的所有的操作都被包装到了一个Sink里，执行这个Sink就相当于执行整个流水线，执行Sink的代码如下：</p>
+<pre class="line-numbers language-none"><code class="language-none">&#x2F;&#x2F; AbstractPipeline.copyInto(), 对spliterator代表的数据执行wrappedSink代表的操作。
+final &lt;P_IN&gt; void copyInto(Sink&lt;P_IN&gt; wrappedSink, Spliterator&lt;P_IN&gt; spliterator) &#123;
+    ...
+    if (!StreamOpFlag.SHORT_CIRCUIT.isKnown(getStreamAndOpFlags())) &#123;
+        wrappedSink.begin(spliterator.getExactSizeIfKnown());&#x2F;&#x2F; 通知开始遍历
+        spliterator.forEachRemaining(wrappedSink);&#x2F;&#x2F; 迭代
+        wrappedSink.end();&#x2F;&#x2F; 通知遍历结束
+    &#125;
+    ...
+&#125;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>上述代码首先调用wrappedSink.begin()方法告诉Sink数据即将到来，然后调用spliterator.forEachRemaining()方法对数据进行迭代（Spliterator是容器的一种迭代器，[参阅](<a href="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/3-Lambda">https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/3-Lambda</a> and Collections.md#spliterator)），最后调用wrappedSink.end()方法通知Sink数据处理结束。逻辑如此清晰。</p>
+<h3 id="gt-gt-执行后的结果在哪里"><a href="#gt-gt-执行后的结果在哪里" class="headerlink" title="&gt;&gt; 执行后的结果在哪里"></a>&gt;&gt; 执行后的结果在哪里</h3><p>最后一个问题是流水线上所有操作都执行后，用户所需要的结果（如果有）在哪里？首先要说明的是不是所有的Stream结束操作都需要返回结果，有些操作只是为了使用其副作用(<em>Side-effects</em>)，比如使用<code>Stream.forEach()</code>方法将结果打印出来就是常见的使用副作用的场景（事实上，除了打印之外其他场景都应避免使用副作用），对于真正需要返回结果的结束操作结果存在哪里呢？</p>
+<blockquote>
+<p>特别说明：副作用不应该被滥用，也许你会觉得在Stream.forEach()里进行元素收集是个不错的选择，就像下面代码中那样，但遗憾的是这样使用的正确性和效率都无法保证，因为Stream可能会并行执行。大多数使用副作用的地方都可以使用[归约操作](<a href="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/5-Streams">https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/5-Streams</a> API(II).md)更安全和有效的完成。</p>
+</blockquote>
+<pre class="line-numbers language-none"><code class="language-none">&#x2F;&#x2F; 错误的收集方式
+ArrayList&lt;String&gt; results &#x3D; new ArrayList&lt;&gt;();
+stream.filter(s -&gt; pattern.matcher(s).matches())
+      .forEach(s -&gt; results.add(s));  &#x2F;&#x2F; Unnecessary use of side-effects!
+&#x2F;&#x2F; 正确的收集方式
+List&lt;String&gt;results &#x3D;
+     stream.filter(s -&gt; pattern.matcher(s).matches())
+             .collect(Collectors.toList());  &#x2F;&#x2F; No side-effects!<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>回到流水线执行结果的问题上来，需要返回结果的流水线结果存在哪里呢？这要分不同的情况讨论，下表给出了各种有返回结果的Stream结束操作。</p>
+<table>
+<thead>
+<tr>
+<th>返回类型</th>
+<th>对应的结束操作</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>boolean</td>
+<td>anyMatch() allMatch() noneMatch()</td>
+</tr>
+<tr>
+<td>Optional</td>
+<td>findFirst() findAny()</td>
+</tr>
+<tr>
+<td>归约结果</td>
+<td>reduce() collect()</td>
+</tr>
+<tr>
+<td>数组</td>
+<td>toArray()</td>
+</tr>
+</tbody></table>
+<ol>
+<li>对于表中返回boolean或者Optional的操作（Optional是存放 一个 值的容器）的操作，由于值返回一个值，只需要在对应的Sink中记录这个值，等到执行结束时返回就可以了。</li>
+<li>对于归约操作，最终结果放在用户调用时指定的容器中（容器类型通过[收集器](<a href="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/5-Streams">https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/5-Streams</a> API(II).md#收集器)指定）。collect(), reduce(), max(), min()都是归约操作，虽然max()和min()也是返回一个Optional，但事实上底层是通过调用[reduce()](<a href="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/5-Streams">https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/5-Streams</a> API(II).md#多面手reduce)方法实现的。</li>
+<li>对于返回是数组的情况，毫无疑问的结果会放在数组当中。这么说当然是对的，但在最终返回数组之前，结果其实是存储在一种叫做<em>Node</em>的数据结构中的。Node是一种多叉树结构，元素存储在树的叶子当中，并且一个叶子节点可以存放多个元素。这样做是为了并行执行方便。关于Node的具体结构，我们会在下一节探究Stream如何并行执行时给出详细说明。</li>
+</ol>
+<p>我们直接举个栗子</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token class-name">List</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">String</span><span class="token punctuation">></span></span> data <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+data<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"张三"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+data<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"李四"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+data<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"王三"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+data<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span><span class="token string">"马六"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+data<span class="token punctuation">.</span><span class="token function">stream</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span>x <span class="token operator">-></span> x<span class="token punctuation">.</span><span class="token function">length</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">2</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span>x <span class="token operator">-></span> x<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token string">"三"</span><span class="token punctuation">,</span><span class="token string">"五"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">sorted</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span>x <span class="token operator">-></span> x<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span><span class="token string">"五"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token operator">::</span><span class="token function">println</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>操作是如何记录下来的?</strong></p>
+<ol>
+<li>Head记录Stream起始操作</li>
+<li>StatelessOp记录中间操作</li>
+<li>StatefulOp记录有状态的中间操作<br>这三个操作实例化会指向其父类<code>AbstractPipeline</code>,也就是在<code>AbstractPipeline</code>中建立了双向链表</li>
+</ol>
+<p>对于Head</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token class-name">AbstractPipeline</span><span class="token punctuation">(</span><span class="token class-name">Spliterator</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span><span class="token punctuation">></span></span> source<span class="token punctuation">,</span>
+                 <span class="token keyword">int</span> sourceFlags<span class="token punctuation">,</span> <span class="token keyword">boolean</span> parallel<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>previousStage <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span> <span class="token comment">//首操作上一步为null    </span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>sourceSpliterator <span class="token operator">=</span> source<span class="token punctuation">;</span> <span class="token comment">//数据</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>sourceStage <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">;</span> <span class="token comment">//Head操作</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>sourceOrOpFlags <span class="token operator">=</span> sourceFlags <span class="token operator">&amp;</span> <span class="token class-name">StreamOpFlag</span><span class="token punctuation">.</span>STREAM_MASK<span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>combinedFlags <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token operator">~</span><span class="token punctuation">(</span>sourceOrOpFlags <span class="token operator">&lt;&lt;</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token operator">&amp;</span> <span class="token class-name">StreamOpFlag</span><span class="token punctuation">.</span>INITIAL_OPS_VALUE<span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>depth <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>parallel <span class="token operator">=</span> parallel<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>对于其他Stage:</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token class-name">AbstractPipeline</span><span class="token punctuation">(</span><span class="token class-name">AbstractPipeline</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span><span class="token punctuation">,</span> E_IN<span class="token punctuation">,</span> <span class="token operator">?</span><span class="token punctuation">></span></span> previousStage<span class="token punctuation">,</span> <span class="token keyword">int</span> opFlags<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>previousStage<span class="token punctuation">.</span>linkedOrConsumed<span class="token punctuation">)</span>
+        <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">IllegalStateException</span><span class="token punctuation">(</span>MSG_STREAM_LINKED<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    previousStage<span class="token punctuation">.</span>linkedOrConsumed <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+    <span class="token comment">//双向链表的建立</span>
+    previousStage<span class="token punctuation">.</span>nextStage <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>previousStage <span class="token operator">=</span> previousStage<span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>sourceStage <span class="token operator">=</span> previousStage<span class="token punctuation">.</span>sourceStage<span class="token punctuation">;</span>        
+    <span class="token keyword">this</span><span class="token punctuation">.</span>depth <span class="token operator">=</span> previousStage<span class="token punctuation">.</span>depth <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">;</span>        
+    
+    <span class="token keyword">this</span><span class="token punctuation">.</span>sourceOrOpFlags <span class="token operator">=</span> opFlags <span class="token operator">&amp;</span> <span class="token class-name">StreamOpFlag</span><span class="token punctuation">.</span>OP_MASK<span class="token punctuation">;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>combinedFlags <span class="token operator">=</span> <span class="token class-name">StreamOpFlag</span><span class="token punctuation">.</span><span class="token function">combineOpFlags</span><span class="token punctuation">(</span>opFlags<span class="token punctuation">,</span> previousStage<span class="token punctuation">.</span>combinedFlags<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">opIsStateful</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        sourceStage<span class="token punctuation">.</span>sourceAnyStateful <span class="token operator">=</span> <span class="token boolean">true</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>调用过程如此用双向链表串联起来,每一步都得知其上一步与下一步的操作.</p>
+<p><img src="https://pic4.zhimg.com/80/v2-e13fc52100682a9b250e414f1de96753_720w.jpg" alt="img"></p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">data<span class="token punctuation">.</span><span class="token function">stream</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span>x <span class="token operator">-></span> x<span class="token punctuation">.</span><span class="token function">length</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">==</span> <span class="token number">2</span><span class="token punctuation">)</span>
+<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span>x <span class="token operator">-></span> x<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span>“三”<span class="token punctuation">,</span>”五”<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">.</span><span class="token function">sorted</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span>x <span class="token operator">-></span> x<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span>“五”<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token operator">::</span><span class="token function">println</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>操作是如何叠加的?</strong></p>
+<p><code>Sink&lt;T&gt;</code>接口:</p>
+<ol>
+<li>void begin(long size),循环开始前调用,通知每个Stage做好准备</li>
+<li>void end(),循环结束时调用,依次调用每个Stage的end方法,处理结果</li>
+<li>boolean cancellationRequested(),判断是否可以提前结束循环</li>
+<li>void accept(T value),每一步的处理</li>
+</ol>
+<p>其子类之一ChainedReference:</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">static</span> <span class="token keyword">abstract</span> <span class="token keyword">class</span> <span class="token class-name">ChainedReference</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">T</span><span class="token punctuation">,</span> E_OUT<span class="token punctuation">></span></span> <span class="token keyword">implements</span> <span class="token class-name">Sink</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">T</span><span class="token punctuation">></span></span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">protected</span> <span class="token keyword">final</span> <span class="token class-name">Sink</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span> <span class="token keyword">super</span> E_OUT<span class="token punctuation">></span></span> downstream<span class="token punctuation">;</span>
+    <span class="token keyword">public</span> <span class="token class-name">ChainedReference</span><span class="token punctuation">(</span><span class="token class-name">Sink</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span> <span class="token keyword">super</span> E_OUT<span class="token punctuation">></span></span> downstream<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>downstream <span class="token operator">=</span> <span class="token class-name">Objects</span><span class="token punctuation">.</span><span class="token function">requireNonNull</span><span class="token punctuation">(</span>downstream<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">begin</span><span class="token punctuation">(</span><span class="token keyword">long</span> size<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        downstream<span class="token punctuation">.</span><span class="token function">begin</span><span class="token punctuation">(</span>size<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        downstream<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">cancellationRequested</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> downstream<span class="token punctuation">.</span><span class="token function">cancellationRequested</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>例Filter:</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> <span class="token keyword">final</span> <span class="token class-name">Stream</span><span class="token generics"><span class="token punctuation">&lt;</span>P_OUT<span class="token punctuation">></span></span> <span class="token function">filter</span><span class="token punctuation">(</span><span class="token class-name">Predicate</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span> <span class="token keyword">super</span> P_OUT<span class="token punctuation">></span></span> predicate<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token class-name">Objects</span><span class="token punctuation">.</span><span class="token function">requireNonNull</span><span class="token punctuation">(</span>predicate<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">StatelessOp</span><span class="token generics"><span class="token punctuation">&lt;</span>P_OUT<span class="token punctuation">,</span> P_OUT<span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> <span class="token class-name">StreamShape</span><span class="token punctuation">.</span>REFERENCE<span class="token punctuation">,</span>
+                                 <span class="token class-name">StreamOpFlag</span><span class="token punctuation">.</span>NOT_SIZED<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token annotation punctuation">@Override</span>
+        <span class="token class-name">Sink</span><span class="token generics"><span class="token punctuation">&lt;</span>P_OUT<span class="token punctuation">></span></span> <span class="token function">opWrapSink</span><span class="token punctuation">(</span><span class="token keyword">int</span> flags<span class="token punctuation">,</span> <span class="token class-name">Sink</span><span class="token generics"><span class="token punctuation">&lt;</span>P_OUT<span class="token punctuation">></span></span> sink<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Sink<span class="token punctuation">.</span>ChainedReference</span><span class="token generics"><span class="token punctuation">&lt;</span>P_OUT<span class="token punctuation">,</span> P_OUT<span class="token punctuation">></span></span><span class="token punctuation">(</span>sink<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                <span class="token annotation punctuation">@Override</span>
+                <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">begin</span><span class="token punctuation">(</span><span class="token keyword">long</span> size<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    downstream<span class="token punctuation">.</span><span class="token function">begin</span><span class="token punctuation">(</span><span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span>
+                <span class="token annotation punctuation">@Override</span>
+                <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">accept</span><span class="token punctuation">(</span><span class="token class-name">P_OUT</span> u<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+                    <span class="token comment">//条件成立则传递给下一个操作,也因为如此所以有状态的操作必须放到</span>
+                    <span class="token comment">//end方法里面</span>
+                    <span class="token keyword">if</span> <span class="token punctuation">(</span>predicate<span class="token punctuation">.</span><span class="token function">test</span><span class="token punctuation">(</span>u<span class="token punctuation">)</span><span class="token punctuation">)</span>
+                        downstream<span class="token punctuation">.</span><span class="token function">accept</span><span class="token punctuation">(</span>u<span class="token punctuation">)</span><span class="token punctuation">;</span>
+                <span class="token punctuation">&#125;</span>
+            <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>再例如sorted():</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">begin</span><span class="token punctuation">(</span><span class="token keyword">long</span> size<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>size <span class="token operator">>=</span> <span class="token class-name">Nodes</span><span class="token punctuation">.</span>MAX_ARRAY_SIZE<span class="token punctuation">)</span>
+        <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">IllegalArgumentException</span><span class="token punctuation">(</span><span class="token class-name">Nodes</span><span class="token punctuation">.</span>BAD_SIZE<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    list <span class="token operator">=</span> <span class="token punctuation">(</span>size <span class="token operator">>=</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token operator">?</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">T</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">int</span><span class="token punctuation">)</span> size<span class="token punctuation">)</span> <span class="token operator">:</span> <span class="token keyword">new</span> <span class="token class-name">ArrayList</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">T</span><span class="token punctuation">></span></span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    list<span class="token punctuation">.</span><span class="token function">sort</span><span class="token punctuation">(</span>comparator<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    downstream<span class="token punctuation">.</span><span class="token function">begin</span><span class="token punctuation">(</span>list<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>cancellationWasRequested<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        list<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span>downstream<span class="token operator">::</span><span class="token function">accept</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">T</span> t <span class="token operator">:</span> list<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">if</span> <span class="token punctuation">(</span>downstream<span class="token punctuation">.</span><span class="token function">cancellationRequested</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">break</span><span class="token punctuation">;</span>
+            downstream<span class="token punctuation">.</span><span class="token function">accept</span><span class="token punctuation">(</span>t<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    downstream<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    list <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">accept</span><span class="token punctuation">(</span><span class="token class-name">T</span> t<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    list<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>t<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p><img src="https://pic3.zhimg.com/80/v2-034ec3fcaeb99bac2df782df981dbf7a_720w.jpg" alt="img"></p>
+<p><strong>叠加后如何执行?</strong></p>
+<p>执行操作是由终端操作来触发的,例如foreach操作</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">forEach</span><span class="token punctuation">(</span><span class="token class-name">Consumer</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span> <span class="token keyword">super</span> P_OUT<span class="token punctuation">></span></span> action<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">//evaluate就是开关,一旦调用就立即执行整个Stream    </span>
+    <span class="token function">evaluate</span><span class="token punctuation">(</span><span class="token class-name">ForEachOps</span><span class="token punctuation">.</span><span class="token function">makeRef</span><span class="token punctuation">(</span>action<span class="token punctuation">,</span> <span class="token boolean">false</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>执行前会对操作从末尾到起始反向包裹起来,得到调用链</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token class-name">Sink</span> <span class="token function">opWrapSink</span><span class="token punctuation">(</span><span class="token keyword">int</span> flags<span class="token punctuation">,</span> <span class="token class-name">Sink</span><span class="token generics"><span class="token punctuation">&lt;</span>P_OUT<span class="token punctuation">></span></span> sink<span class="token punctuation">)</span> <span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+
+
+
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token comment">//这个Sink是终端操作所对应的Sink</span>
+<span class="token keyword">final</span> <span class="token generics"><span class="token punctuation">&lt;</span>P_IN<span class="token punctuation">></span></span> <span class="token class-name">Sink</span><span class="token generics"><span class="token punctuation">&lt;</span>P_IN<span class="token punctuation">></span></span> <span class="token function">wrapSink</span><span class="token punctuation">(</span><span class="token class-name">Sink</span><span class="token generics"><span class="token punctuation">&lt;</span>E_OUT<span class="token punctuation">></span></span> sink<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token class-name">Objects</span><span class="token punctuation">.</span><span class="token function">requireNonNull</span><span class="token punctuation">(</span>sink<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span> <span class="token class-name">AbstractPipeline</span> p<span class="token operator">=</span><span class="token class-name">AbstractPipeline</span><span class="token punctuation">.</span><span class="token keyword">this</span><span class="token punctuation">;</span> p<span class="token punctuation">.</span>depth <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">;</span> p<span class="token operator">=</span>p<span class="token punctuation">.</span>previousStage<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        sink <span class="token operator">=</span> p<span class="token punctuation">.</span><span class="token function">opWrapSink</span><span class="token punctuation">(</span>p<span class="token punctuation">.</span>previousStage<span class="token punctuation">.</span>combinedFlags<span class="token punctuation">,</span> sink<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">(</span><span class="token class-name">Sink</span><span class="token generics"><span class="token punctuation">&lt;</span>P_IN<span class="token punctuation">></span></span><span class="token punctuation">)</span> sink<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><img src="https://pic1.zhimg.com/80/v2-899dd62d7ccd05f47d914d2b678e95dc_720w.jpg" alt="img"></p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+<span class="token keyword">final</span> <span class="token generics"><span class="token punctuation">&lt;</span>P_IN<span class="token punctuation">></span></span> <span class="token keyword">void</span> <span class="token function">copyInto</span><span class="token punctuation">(</span><span class="token class-name">Sink</span><span class="token generics"><span class="token punctuation">&lt;</span>P_IN<span class="token punctuation">></span></span> wrappedSink<span class="token punctuation">,</span> <span class="token class-name">Spliterator</span><span class="token generics"><span class="token punctuation">&lt;</span>P_IN<span class="token punctuation">></span></span> spliterator<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token class-name">Objects</span><span class="token punctuation">.</span><span class="token function">requireNonNull</span><span class="token punctuation">(</span>wrappedSink<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token class-name">StreamOpFlag</span><span class="token punctuation">.</span>SHORT_CIRCUIT<span class="token punctuation">.</span><span class="token function">isKnown</span><span class="token punctuation">(</span><span class="token function">getStreamAndOpFlags</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">//依次执行调用链</span>
+        wrappedSink<span class="token punctuation">.</span><span class="token function">begin</span><span class="token punctuation">(</span>spliterator<span class="token punctuation">.</span><span class="token function">getExactSizeIfKnown</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        spliterator<span class="token punctuation">.</span><span class="token function">forEachRemaining</span><span class="token punctuation">(</span>wrappedSink<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        wrappedSink<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">copyIntoWithCancel</span><span class="token punctuation">(</span>wrappedSink<span class="token punctuation">,</span> spliterator<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>有状态的中间操作何时执行?</strong></p>
+<p>例如sorted()操作,其依赖上一次操作的结果集,按照调用链来说结果集必须在accept()调用完才会产生.那也就说明sorted操作需要在end中,然后再重新开启调用链.</p>
+<p><strong>sorted的end方法</strong>:</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+ <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+     list<span class="token punctuation">.</span><span class="token function">sort</span><span class="token punctuation">(</span>comparator<span class="token punctuation">)</span><span class="token punctuation">;</span>
+     downstream<span class="token punctuation">.</span><span class="token function">begin</span><span class="token punctuation">(</span>list<span class="token punctuation">.</span><span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+     <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>cancellationWasRequested<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+         list<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span>downstream<span class="token operator">::</span><span class="token function">accept</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+     <span class="token punctuation">&#125;</span>
+     <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+         <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">T</span> t <span class="token operator">:</span> list<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+             <span class="token keyword">if</span> <span class="token punctuation">(</span>downstream<span class="token punctuation">.</span><span class="token function">cancellationRequested</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token keyword">break</span><span class="token punctuation">;</span>
+             downstream<span class="token punctuation">.</span><span class="token function">accept</span><span class="token punctuation">(</span>t<span class="token punctuation">)</span><span class="token punctuation">;</span>
+         <span class="token punctuation">&#125;</span>
+     <span class="token punctuation">&#125;</span>
+     downstream<span class="token punctuation">.</span><span class="token function">end</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+     list <span class="token operator">=</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+ <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>那么就相当于sorted给原有操作断路了一次,然后又重新接上,再次遍历.</p>
+<p><img src="https://pic3.zhimg.com/80/v2-0d0ef60a9b3a1d5c81910064a9bcaa02_720w.jpg" alt="img"></p>
+<p><strong>如何收集到结果?</strong></p>
+<p>foreach是不需要收集到结果的,但是对于collect这样的操作是需要拿到最终end产生的结果.end产生的结果在最后一个Sink中,这样的操作最终都会提供一个取出数据的get方法.</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token annotation punctuation">@Override</span>
+ <span class="token keyword">public</span> <span class="token generics"><span class="token punctuation">&lt;</span>P_IN<span class="token punctuation">></span></span> <span class="token class-name">R</span> <span class="token function">evaluateSequential</span><span class="token punctuation">(</span><span class="token class-name">PipelineHelper</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token class-name">T</span><span class="token punctuation">></span></span> helper<span class="token punctuation">,</span>
+                                    <span class="token class-name">Spliterator</span><span class="token generics"><span class="token punctuation">&lt;</span>P_IN<span class="token punctuation">></span></span> spliterator<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+     <span class="token keyword">return</span> helper<span class="token punctuation">.</span><span class="token function">wrapAndCopyInto</span><span class="token punctuation">(</span><span class="token function">makeSink</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> spliterator<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+ <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="WebFlux"><a href="#WebFlux" class="headerlink" title="WebFlux"></a>WebFlux</h2><p>终于到了我们的主角WebFlux，阅读官网文档会发现有这些单词</p>
+<blockquote>
+<p>We touched on “non-blocking” and “functional” but what does reactive mean?</p>
+<p>The term, “reactive,” refers to programming models that are built around reacting to change — network components reacting to I/O events, UI controllers reacting to mouse events, and others. In that sense, non-blocking is reactive, because, instead of being blocked, we are now in the mode of reacting to notifications as operations complete or data becomes available.</p>
+<p>There is also another important mechanism that we on the Spring team associate with “reactive” and that is non-blocking back pressure. In synchronous, imperative code, blocking calls serve as a natural form of back pressure that forces the caller to wait. In non-blocking code, it becomes important to control the rate of events so that a fast producer does not overwhelm its destination.</p>
+</blockquote>
+<p>其中有几个关键词：响应式、异步非阻塞、背压。这就是WebFlux的概念核心</p>
+<p>先上图</p>
+<p><img src="https://pic.innnovation.cn//img/20210710223351.png" alt="WebFlux并发模型"></p>
+<p>WebFlux模型主要依赖响应式编程库Reactor，Reactor 有两种模型，Flux 和 Mono，提供了非阻塞、支持回压机制的异步流处理能力。WebFlux API接收普通Publisher作为输入，在内部使其适配Reactor类型，使用它并返回Flux或Mono作为输出。</p>
+<p>我们平时开发过程中只要在Controller中控制每个接口的Publisher入参和Mono返回值(web项目用mono比较多吧)就可以顺利使用WebFlux框架完成业务，并不需要关注黑盒中的东西。</p>
+<p>上图中我们主要到从Http客户端到Spring Controller到Service到数据库之间所有的请求全部是Flux，即全部是异步非阻塞，如果一个系统完全遵守Flux的模型开发，将会大大提高系统的吞吐量，比如Mybatis、JDBC等技术将不推荐使用，因为他们本质都是同步操作，这样还是会使得请求在最后的同步IO管线上堆积。对于底层的数据源来说，MongoDB, Redis, 和 Cassandra 可以直接以reactive的方式支持Spring Data。</p>
+<p><img src="https://docs.spring.io/spring-framework/docs/current/reference/html/images/spring-mvc-and-webflux-venn.png" alt="mvc对比WebFlux"></p>
+<p>我整理了一张反应式组件的图</p>
+<p><img src="https://pic.innnovation.cn//img/20210710224942.png" alt="反应式组件关系"></p>
+<p>其中JDK9的响应式流其实本质上完全跟JDK8的同步流不是一个东西，Project Reactor其实就是根据JDK9响应流接口做的1：1设计，可以自己查看JDK9的源码就可以得到相关的接口信息。</p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>Spring</tag>
+        <tag>WebFlux</tag>
       </tags>
   </entry>
   <entry>
