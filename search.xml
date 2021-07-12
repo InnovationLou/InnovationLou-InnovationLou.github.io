@@ -3139,7 +3139,7 @@ Result=u
 **/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
 <p>观察manyLetters变量的结构，Flux之所以支持对流中数据的链式调用，是因为每一步返回的Flux对象都被上一个Flux对象包含。</p>
-<p><img src="http://ypk1226.com/images/2019/08/manyletters.png" alt="manyLetters"></p>
+<p><img src="https://pic.innnovation.cn//img/20210712125221.png" alt="manyLetters"></p>
 <p><strong>manyLetters</strong></p>
 <blockquote>
 <p>组合的操作符(Operator)对流中数据进行处理，实际上是对<code>Publisher</code>发布消息前的功能增强，使元素可以在发布之前被加工处理好。</p>
