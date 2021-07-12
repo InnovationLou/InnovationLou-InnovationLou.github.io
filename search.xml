@@ -2376,7 +2376,7 @@ E、进行logo显示
 </ul>
 <p>那么所以学习WebFlux之前必须了解两个东西<code>lambda</code>、<code>Stream</code></p>
 <p>lambda和流API都是Java8才有的（21年3.16JDK16发布），这里就不对lambda和Stream的使用做介绍了，我们主要研究一下实现原理</p>
-<h2 id="lambda实现原理"><a href="#lambda实现原理" class="headerlink" title="lambda实现原理"></a>lambda实现原理</h2><p>初看lambda表达式，感觉就是一个匿名函数（类比匿名内部类），所以我推测当时出这个功能就是Java程序员发现Java只能传递对象，没办法传递函数，大致的使用场景可能是这样的</p>
+<h1 id="lambda实现原理"><a href="#lambda实现原理" class="headerlink" title="lambda实现原理"></a>lambda实现原理</h1><p>初看lambda表达式，感觉就是一个匿名函数（类比匿名内部类），所以我推测当时出这个功能就是Java程序员发现Java只能传递对象，没办法传递函数，大致的使用场景可能是这样的</p>
 <pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">executeFunc</span><span class="token punctuation">(</span>函数引用<span class="token punctuation">,</span><span class="token class-name">String</span> word<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
     <span class="token comment">// todo 用传入的方法打印word变量</span>
 <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
@@ -2507,7 +2507,7 @@ fun_ptr<span class="token operator">=</span>printWord<span class="token punctuat
 <p>编译器把我们写的lambda表达式转换成了一个<strong>静态的私有函数</strong>，通过调用这个函数来解决传递一段代码的问题</p>
 <p>那么还剩下一个问题，JVM是通过什么知道如何执行该私有函数呢，这就得翻阅<a href="https://docs.oracle.com/javase/7/docs/technotes/guides/vm/multiple-language-support.html">Oracle官方文档</a>的The invokedynamic Instruction章节</p>
 <p><code>INVOKEDYNAMIC</code>指令，顾名思义，就是动态激活。那这个动态是怎么理解的？这里的”动态”意思是，在运行时才确定，这个调用lambda函数的下一步指向哪里。在初始状态（程序编译成字节码后但未运行时），这个标记是空的，不会执行任何动作。当程序开始执行时，具体一点就是发生字节码的43行，初始化就开始了。在运行时确定，无外乎反射，仔细看43行的一大串包，也确实是通过反射实现的</p>
-<h2 id="Stream实现原理"><a href="#Stream实现原理" class="headerlink" title="Stream实现原理"></a>Stream实现原理</h2><p>先上一张copy的速查表格</p>
+<h1 id="Stream实现原理"><a href="#Stream实现原理" class="headerlink" title="Stream实现原理"></a>Stream实现原理</h1><p>先上一张copy的速查表格</p>
 <table>
 <thead>
 <tr>
