@@ -416,7 +416,7 @@ plt<span class="token punctuation">.</span>show<span class="token punctuation">(
     <title>git复习进阶及命令速查</title>
     <url>/2021/07/07/git-shi-yong-fu-xi-jin-jie-su-cha-shou-ce/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><h2 id="主要操作流程图"><a href="#主要操作流程图" class="headerlink" title="主要操作流程图"></a>主要操作流程图</h2><p><img src="https://pic.innnovation.cn//img/20210708083941.jpeg" alt="git原理图"></p>
-<h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><p>版本控制系统主要分为中央式和分布式</p>
+<h2 id="基本原理"><a href="#基本原理" class="headerlink" title="基本原理"></a>基本原理</h2><p>版本控制系统(VCS)主要分为中央式和分布式</p>
 <ul>
 <li>中央式：将代码保存在中央服务器，加入编码的成员均与服务器通讯，在本地完成代码，上传/同步他人代码，代码由服务器统一管理</li>
 <li>分布式：所有参与开发的人员都维护自己的本地仓库，对自己本地仓库提交切换分支等操作均在本地完成，远程仓库由仓库管理员管理分配权限，本地仓库和远程仓库有时候会各自维护自己的分支，而远程仓库更多只是起到团队同步代码的作用</li>
@@ -1290,435 +1290,6 @@ step1<span class="token operator">:</span>
       </tags>
   </entry>
   <entry>
-    <title>操作系统-实现内存页分配与释放</title>
-    <url>/2021/07/12/cao-zuo-xi-tong-shi-xian-nei-cun-ye-de-fen-pei-yu-shi-fang/</url>
-    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h2 id="内存页的分配"><a href="#内存页的分配" class="headerlink" title="内存页的分配"></a>内存页的分配</h2><p>如果让你实现一次只分配一个页面，我相信这个问题很好解决，因为你只需要写一段循环代码，在其中遍历出一个空闲的 msadsc_t 结构，就可以返回了，这个算法就可以结束了</p>
-<p>但现实却不容许我们这么简单地处理问题，我们内存管理器要为内核、驱动，还有应用提供服务，它们对请求内存页面的多少、内存页面是不是连续，内存页面所处的物理地址都有要求。</p>
-<p><strong>内存分配的接口函数</strong></p>
-<pre class="line-numbers language-c" data-language="c"><code class="language-c">
-<span class="token comment">//内存分配页面框架函数</span>
-<span class="token class-name">msadsc_t</span> <span class="token operator">*</span><span class="token function">mm_divpages_fmwk</span><span class="token punctuation">(</span><span class="token class-name">memmgrob_t</span> <span class="token operator">*</span>mmobjp<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> pages<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> <span class="token operator">*</span>retrelpnr<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> mrtype<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> flgs<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-    <span class="token comment">//返回mrtype对应的内存区结构的指针</span>
-    <span class="token class-name">memarea_t</span> <span class="token operator">*</span>marea <span class="token operator">=</span> <span class="token function">onmrtype_retn_marea</span><span class="token punctuation">(</span>mmobjp<span class="token punctuation">,</span> mrtype<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token constant">NULL</span> <span class="token operator">==</span> marea<span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-        <span class="token operator">*</span>retrelpnr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token class-name">uint_t</span> retpnr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-    <span class="token comment">//内存分配的核心函数</span>
-    <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>retmsa <span class="token operator">=</span> <span class="token function">mm_divpages_core</span><span class="token punctuation">(</span>marea<span class="token punctuation">,</span> pages<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retpnr<span class="token punctuation">,</span> flgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token constant">NULL</span> <span class="token operator">==</span> retmsa<span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-        <span class="token operator">*</span>retrelpnr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token operator">*</span>retrelpnr <span class="token operator">=</span> retpnr<span class="token punctuation">;</span>
-    <span class="token keyword">return</span> retmsa<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-
-<span class="token comment">//内存分配页面接口</span>
-
-<span class="token comment">//mmobjp->内存管理数据结构指针</span>
-<span class="token comment">//pages->请求分配的内存页面数</span>
-<span class="token comment">//retrealpnr->存放实际分配内存页面数的指针</span>
-<span class="token comment">//mrtype->请求的分配内存页面的内存区类型</span>
-<span class="token comment">//flgs->请求分配的内存页面的标志位</span>
-<span class="token class-name">msadsc_t</span> <span class="token operator">*</span><span class="token function">mm_division_pages</span><span class="token punctuation">(</span><span class="token class-name">memmgrob_t</span> <span class="token operator">*</span>mmobjp<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> pages<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> <span class="token operator">*</span>retrealpnr<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> mrtype<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> flgs<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token constant">NULL</span> <span class="token operator">==</span> mmobjp <span class="token operator">||</span> <span class="token constant">NULL</span> <span class="token operator">==</span> retrealpnr <span class="token operator">||</span> <span class="token number">0</span> <span class="token operator">==</span> mrtype<span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-
-    <span class="token class-name">uint_t</span> retpnr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-    <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>retmsa <span class="token operator">=</span> <span class="token function">mm_divpages_fmwk</span><span class="token punctuation">(</span>mmobjp<span class="token punctuation">,</span> pages<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retpnr<span class="token punctuation">,</span> mrtype<span class="token punctuation">,</span> flgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token constant">NULL</span> <span class="token operator">==</span> retmsa<span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-        <span class="token operator">*</span>retrealpnr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token operator">*</span>retrealpnr <span class="token operator">=</span> retpnr<span class="token punctuation">;</span>
-    <span class="token keyword">return</span> retmsa<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>我们内存管理代码的结构是：接口函数调用框架函数，框架函数调用核心函数。可以发现，这个接口函数返回的是一个 msadsc_t 结构的指针，如果是多个页面返回的就是起始页面对应的 msadsc_t 结构的指针。</p>
-<p>为什么不直接返回内存的物理地址呢？因为我们物理内存管理器是最底层的内存管理器，而上层代码中可能需要页面的相关信息，所以直接返回页面对应 msadsc_t 结构的指针。</p>
-<p>还有一个参数是用于返回实际分配的页面数的。比如，内核功能代码请求分配三个页面，我们的内存管理器不能分配三个页面，只能分配两个或四个页面，这时内存管理器就会分配四个页面返回，retrealpnr 指向的变量中就存放数字 4，表示实际分配页面的数量。</p>
-<p>有了内存分配接口、框架函数，下面我们来实现内存分配的核心函数，代码如下</p>
-<pre class="line-numbers language-c" data-language="c"><code class="language-c">
-<span class="token class-name">bool_t</span> <span class="token function">onmpgs_retn_bafhlst</span><span class="token punctuation">(</span><span class="token class-name">memarea_t</span> <span class="token operator">*</span>malckp<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> pages<span class="token punctuation">,</span> <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span><span class="token operator">*</span>retrelbafh<span class="token punctuation">,</span> <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span><span class="token operator">*</span>retdivbafh<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-    <span class="token comment">//获取bafhlst_t结构数组的开始地址</span>
-    <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>bafhstat <span class="token operator">=</span> malckp<span class="token operator">-></span>ma_mdmdata<span class="token punctuation">.</span>dm_mdmlielst<span class="token punctuation">;</span>       
-    <span class="token comment">//根据分配页面数计算出分配页面在dm_mdmlielst数组中下标</span>
-    <span class="token class-name">sint_t</span> dividx <span class="token operator">=</span> <span class="token function">retn_divoder</span><span class="token punctuation">(</span>pages<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token comment">//从第dividx个数组元素开始搜索</span>
-    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">sint_t</span> idx <span class="token operator">=</span> dividx<span class="token punctuation">;</span> idx <span class="token operator">&lt;</span> MDIVMER_ARR_LMAX<span class="token punctuation">;</span> idx<span class="token operator">++</span><span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-    <span class="token comment">//如果第idx个数组元素对应的一次可分配连续的页面数大于等于请求的页面数，且其中的可分配对象大于0则返回 </span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span>bafhstat<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>af_oderpnr <span class="token operator">>=</span> pages <span class="token operator">&amp;&amp;</span> <span class="token number">0</span> <span class="token operator">&lt;</span> bafhstat<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>af_fobjnr<span class="token punctuation">)</span>
-        <span class="token punctuation">&#123;</span>
-            <span class="token comment">//返回请求分配的bafhlst_t结构指针</span>
-            <span class="token operator">*</span>retrelbafh <span class="token operator">=</span> <span class="token operator">&amp;</span>bafhstat<span class="token punctuation">[</span>dividx<span class="token punctuation">]</span><span class="token punctuation">;</span>
-            <span class="token comment">//返回实际分配的bafhlst_t结构指针</span>
-            <span class="token operator">*</span>retdivbafh <span class="token operator">=</span> <span class="token operator">&amp;</span>bafhstat<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">;</span>
-            <span class="token keyword">return</span> TRUE<span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token operator">*</span>retrelbafh <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token operator">*</span>retdivbafh <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span> FALSE<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-
-<span class="token class-name">msadsc_t</span> <span class="token operator">*</span><span class="token function">mm_reldivpages_onmarea</span><span class="token punctuation">(</span><span class="token class-name">memarea_t</span> <span class="token operator">*</span>malckp<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> pages<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> <span class="token operator">*</span>retrelpnr<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-    <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>retrelbhl <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">,</span> <span class="token operator">*</span>retdivbhl <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token comment">//根据页面数在内存区的m_mdmlielst数组中找出其中请求分配页面的bafhlst_t结构（retrelbhl）和实际要在其中分配页面的bafhlst_t结构(retdivbhl)</span>
-    <span class="token class-name">bool_t</span> rets <span class="token operator">=</span> <span class="token function">onmpgs_retn_bafhlst</span><span class="token punctuation">(</span>malckp<span class="token punctuation">,</span> pages<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retrelbhl<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retdivbhl<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>FALSE <span class="token operator">==</span> rets<span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-        <span class="token operator">*</span>retrelpnr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token class-name">uint_t</span> retpnr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-    <span class="token comment">//实际在bafhlst_t结构中分配页面</span>
-    <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>retmsa <span class="token operator">=</span> <span class="token function">mm_reldpgsdivmsa_bafhl</span><span class="token punctuation">(</span>malckp<span class="token punctuation">,</span> pages<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retpnr<span class="token punctuation">,</span> retrelbhl<span class="token punctuation">,</span> retdivbhl<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token constant">NULL</span> <span class="token operator">==</span> retmsa<span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-        <span class="token operator">*</span>retrelpnr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token operator">*</span>retrelpnr <span class="token operator">=</span> retpnr<span class="token punctuation">;</span>
-    <span class="token keyword">return</span> retmsa<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-
-<span class="token class-name">msadsc_t</span> <span class="token operator">*</span><span class="token function">mm_divpages_core</span><span class="token punctuation">(</span><span class="token class-name">memarea_t</span> <span class="token operator">*</span>mareap<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> pages<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> <span class="token operator">*</span>retrealpnr<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> flgs<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-    <span class="token class-name">uint_t</span> retpnr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-    <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>retmsa <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span> 
-    <span class="token class-name">cpuflg_t</span> cpuflg<span class="token punctuation">;</span>
-    <span class="token comment">//内存区加锁</span>
-    <span class="token function">knl_spinlock_cli</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>mareap<span class="token operator">-></span>ma_lock<span class="token punctuation">,</span> <span class="token operator">&amp;</span>cpuflg<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>DMF_RELDIV <span class="token operator">==</span> flgs<span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-        <span class="token comment">//分配内存</span>
-        retmsa <span class="token operator">=</span> <span class="token function">mm_reldivpages_onmarea</span><span class="token punctuation">(</span>mareap<span class="token punctuation">,</span> pages<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retpnr<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">goto</span> ret_step<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    retmsa <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    retpnr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-ret_step<span class="token operator">:</span>
-    <span class="token comment">//内存区锁</span>
-    <span class="token function">knl_spinunlock_sti</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>mareap<span class="token operator">-></span>ma_lock<span class="token punctuation">,</span> <span class="token operator">&amp;</span>cpuflg<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token operator">*</span>retrealpnr <span class="token operator">=</span> retpnr<span class="token punctuation">;</span>
-    <span class="token keyword">return</span> retmsa<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>上述代码中 onmpgs_retn_bafhlst 函数返回的两个 bafhlst_t 结构指针，若是相等的，则在 mm_reldpgsdivmsa_bafhl 函数中很容易处理，只要取出 bafhlst_t 结构中对应的 msadsc_t 结构返回就好了。</p>
-<p>问题是很多时候它们不相等，这就要分隔连续的 msadsc_t 结构了，下面我们通过 mm_reldpgsdivmsa_bafhl 这个函数来处理这个问题，代码如下所示</p>
-<pre class="line-numbers language-c" data-language="c"><code class="language-c">
-<span class="token class-name">bool_t</span> <span class="token function">mrdmb_add_msa_bafh</span><span class="token punctuation">(</span><span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>bafhp<span class="token punctuation">,</span> <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>msastat<span class="token punctuation">,</span> <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>msaend<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-    <span class="token comment">//把一段连续的msadsc_t结构加入到它所对应的bafhlst_t结构中</span>
-    msastat<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_olkty <span class="token operator">=</span> MF_OLKTY_ODER<span class="token punctuation">;</span>
-    msastat<span class="token operator">-></span>md_odlink <span class="token operator">=</span> msaend<span class="token punctuation">;</span>
-    msaend<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_olkty <span class="token operator">=</span> MF_OLKTY_BAFH<span class="token punctuation">;</span>
-    msaend<span class="token operator">-></span>md_odlink <span class="token operator">=</span> bafhp<span class="token punctuation">;</span>
-    <span class="token function">list_add</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>msastat<span class="token operator">-></span>md_list<span class="token punctuation">,</span> <span class="token operator">&amp;</span>bafhp<span class="token operator">-></span>af_frelst<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    bafhp<span class="token operator">-></span>af_mobjnr<span class="token operator">++</span><span class="token punctuation">;</span>
-    bafhp<span class="token operator">-></span>af_fobjnr<span class="token operator">++</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span> TRUE<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-
-<span class="token class-name">msadsc_t</span> <span class="token operator">*</span><span class="token function">mm_divpages_opmsadsc</span><span class="token punctuation">(</span><span class="token class-name">msadsc_t</span> <span class="token operator">*</span>msastat<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> mnr<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>   <span class="token comment">//单个msadsc_t结构的情况 </span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>mend <span class="token operator">==</span> msastat<span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span><span class="token comment">//增加msadsc_t结构中分配计数，分配标志位设置为1</span>
-        msastat<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_uindx<span class="token operator">++</span><span class="token punctuation">;</span>
-        msastat<span class="token operator">-></span>md_phyadrs<span class="token punctuation">.</span>paf_alloc <span class="token operator">=</span> PAF_ALLOC<span class="token punctuation">;</span>
-        msastat<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_olkty <span class="token operator">=</span> MF_OLKTY_ODER<span class="token punctuation">;</span>
-        msastat<span class="token operator">-></span>md_odlink <span class="token operator">=</span> mend<span class="token punctuation">;</span>
-        <span class="token keyword">return</span> msastat<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    msastat<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_uindx<span class="token operator">++</span><span class="token punctuation">;</span>
-    msastat<span class="token operator">-></span>md_phyadrs<span class="token punctuation">.</span>paf_alloc <span class="token operator">=</span> PAF_ALLOC<span class="token punctuation">;</span>
-    <span class="token comment">//多个msadsc_t结构的情况下，末端msadsc_t结构也设置已分配状态</span>
-    mend<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_uindx<span class="token operator">++</span><span class="token punctuation">;</span>
-    mend<span class="token operator">-></span>md_phyadrs<span class="token punctuation">.</span>paf_alloc <span class="token operator">=</span> PAF_ALLOC<span class="token punctuation">;</span>
-    msastat<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_olkty <span class="token operator">=</span> MF_OLKTY_ODER<span class="token punctuation">;</span>
-    msastat<span class="token operator">-></span>md_odlink <span class="token operator">=</span> mend<span class="token punctuation">;</span>
-    <span class="token keyword">return</span> msastat<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-
-<span class="token class-name">bool_t</span> <span class="token function">mm_retnmsaob_onbafhlst</span><span class="token punctuation">(</span><span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>bafhp<span class="token punctuation">,</span> <span class="token class-name">msadsc_t</span> <span class="token operator">*</span><span class="token operator">*</span>retmstat<span class="token punctuation">,</span> <span class="token class-name">msadsc_t</span> <span class="token operator">*</span><span class="token operator">*</span>retmend<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-    <span class="token comment">//取出一个msadsc_t结构</span>
-    <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>tmp <span class="token operator">=</span> <span class="token function">list_entry</span><span class="token punctuation">(</span>bafhp<span class="token operator">-></span>af_frelst<span class="token punctuation">.</span>next<span class="token punctuation">,</span> <span class="token class-name">msadsc_t</span><span class="token punctuation">,</span> md_list<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token comment">//从链表中删除</span>
-    <span class="token function">list_del</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>tmp<span class="token operator">-></span>md_list<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token comment">//减少bafhlst_t结构中的msadsc_t计数</span>
-    bafhp<span class="token operator">-></span>af_mobjnr<span class="token operator">--</span><span class="token punctuation">;</span>
-    bafhp<span class="token operator">-></span>af_fobjnr<span class="token operator">--</span><span class="token punctuation">;</span>
-    <span class="token comment">//增加分配计数</span>
-    bafhp<span class="token operator">-></span>af_freindx<span class="token operator">++</span><span class="token punctuation">;</span>
-    <span class="token comment">//返回msadsc_t结构</span>
-    <span class="token operator">*</span>retmstat <span class="token operator">=</span> tmp<span class="token punctuation">;</span>
-    <span class="token comment">//返回当前msadsc_t结构连续的那个结尾的msadsc_t结构 </span>
-    <span class="token operator">*</span>retmend <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">msadsc_t</span> <span class="token operator">*</span><span class="token punctuation">)</span>tmp<span class="token operator">-></span>md_odlink<span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>MF_OLKTY_BAFH <span class="token operator">==</span> tmp<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_olkty<span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span><span class="token comment">//如果只单个msadsc_t结构，那就是它本身 </span>
-        <span class="token operator">*</span>retmend <span class="token operator">=</span> tmp<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token keyword">return</span> TRUE<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-
-<span class="token class-name">msadsc_t</span> <span class="token operator">*</span><span class="token function">mm_reldpgsdivmsa_bafhl</span><span class="token punctuation">(</span><span class="token class-name">memarea_t</span> <span class="token operator">*</span>malckp<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> pages<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> <span class="token operator">*</span>retrelpnr<span class="token punctuation">,</span> <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>relbfl<span class="token punctuation">,</span> <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>divbfl<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-    <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>retmsa <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token class-name">bool_t</span> rets <span class="token operator">=</span> FALSE<span class="token punctuation">;</span>
-    <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>retmstat <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">,</span> <span class="token operator">*</span>retmend <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token comment">//处理相等的情况</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>relbfl <span class="token operator">==</span> divbfl<span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-    <span class="token comment">//从bafhlst_t结构中获取msadsc_t结构的开始与结束地址</span>
-        rets <span class="token operator">=</span> <span class="token function">mm_retnmsaob_onbafhlst</span><span class="token punctuation">(</span>relbfl<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retmstat<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retmend<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token comment">//设置msadsc_t结构的相关信息表示已经删除</span>
-        retmsa <span class="token operator">=</span> <span class="token function">mm_divpages_opmsadsc</span><span class="token punctuation">(</span>retmstat<span class="token punctuation">,</span> relbfl<span class="token operator">-></span>af_oderpnr<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token comment">//返回实际的分配页数</span>
-        <span class="token operator">*</span>retrelpnr <span class="token operator">=</span> relbfl<span class="token operator">-></span>af_oderpnr<span class="token punctuation">;</span>
-        <span class="token keyword">return</span> retmsa<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token comment">//处理不等的情况</span>
-    <span class="token comment">//从bafhlst_t结构中获取msadsc_t结构的开始与结束地址</span>
-    rets <span class="token operator">=</span> <span class="token function">mm_retnmsaob_onbafhlst</span><span class="token punctuation">(</span>divbfl<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retmstat<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retmend<span class="token punctuation">)</span><span class="token punctuation">;</span>
-     <span class="token class-name">uint_t</span> divnr <span class="token operator">=</span> divbfl<span class="token operator">-></span>af_oderpnr<span class="token punctuation">;</span>
-     <span class="token comment">//从高bafhlst_t数组元素中向下遍历</span>
-    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>tmpbfl <span class="token operator">=</span> divbfl <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span> tmpbfl <span class="token operator">>=</span> relbfl<span class="token punctuation">;</span> tmpbfl<span class="token operator">--</span><span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-        <span class="token comment">//开始分割连续的msadsc_t结构，把剩下的一段连续的msadsc_t结构加入到对应该bafhlst_t结构中</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">mrdmb_add_msa_bafh</span><span class="token punctuation">(</span>tmpbfl<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retmstat<span class="token punctuation">[</span>tmpbfl<span class="token operator">-></span>af_oderpnr<span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token class-name">msadsc_t</span> <span class="token operator">*</span><span class="token punctuation">)</span>retmstat<span class="token operator">-></span>md_odlink<span class="token punctuation">)</span> <span class="token operator">==</span> FALSE<span class="token punctuation">)</span>
-        <span class="token punctuation">&#123;</span>
-            <span class="token function">system_error</span><span class="token punctuation">(</span><span class="token string">"mrdmb_add_msa_bafh fail\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-        retmstat<span class="token operator">-></span>md_odlink <span class="token operator">=</span> <span class="token operator">&amp;</span>retmstat<span class="token punctuation">[</span>tmpbfl<span class="token operator">-></span>af_oderpnr <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-        divnr <span class="token operator">-=</span> tmpbfl<span class="token operator">-></span>af_oderpnr<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-
-    retmsa <span class="token operator">=</span> <span class="token function">mm_divpages_opmsadsc</span><span class="token punctuation">(</span>retmstat<span class="token punctuation">,</span> divnr<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token constant">NULL</span> <span class="token operator">==</span> retmsa<span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-        <span class="token operator">*</span>retrelpnr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token operator">*</span>retrelpnr <span class="token operator">=</span> relbfl<span class="token operator">-></span>af_oderpnr<span class="token punctuation">;</span>
-    <span class="token keyword">return</span> retmsa<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>这个算法将执行如下步骤：</p>
-<ol>
-<li>根据一个页面的请求，会返回 m_mdmlielst 数组中的第 0 个 bafhlst_t 结构。</li>
-<li>如果第 0 个 bafhlst_t 结构中有 msadsc_t 结构就直接返回，若没有 msadsc_t 结构，就会继续查找 m_mdmlielst 数组中的第 1 个 bafhlst_t 结构。</li>
-<li>如果第 1 个 bafhlst_t 结构中也没有 msadsc_t 结构，就会继续查找 m_mdmlielst 数组中的第 2 个 bafhlst_t 结构。</li>
-<li>如果第 2 个 bafhlst_t 结构中有 msadsc_t 结构，记住第 2 个 bafhlst_t 结构中对应是 4 个连续的 msadsc_t 结构。这时让这 4 个连续的 msadsc_t 结构从第 2 个 bafhlst_t 结构中脱离。</li>
-<li>把这 4 个连续的 msadsc_t 结构，对半分割成 2 个双 msadsc_t 结构，把其中一个双 msadsc_t 结构挂载到第 1 个 bafhlst_t 结构中。</li>
-<li>把剩下一个双 msadsc_t 结构，继续对半分割成两个单 msadsc_t 结构，把其中一个单 msadsc_t 结构挂载到第 0 个 bafhlst_t 结构中，剩下一个单 msadsc_t 结构返回给请求者，完成内存分配。</li>
-</ol>
-<p><img src="https://static001.geekbang.org/resource/image/29/2a/299b8f21c876a2b324da7a2974e8302a.jpg?wh=3976x3118" alt="内存分配算法示意图"></p>
-<h2 id="内存页的释放"><a href="#内存页的释放" class="headerlink" title="内存页的释放"></a>内存页的释放</h2><pre class="line-numbers language-c" data-language="c"><code class="language-c">
-<span class="token comment">//释放内存页面核心</span>
-<span class="token class-name">bool_t</span> <span class="token function">mm_merpages_core</span><span class="token punctuation">(</span><span class="token class-name">memarea_t</span> <span class="token operator">*</span>marea<span class="token punctuation">,</span> <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>freemsa<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> freepgs<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-    <span class="token class-name">bool_t</span> rets <span class="token operator">=</span> FALSE<span class="token punctuation">;</span>
-    <span class="token class-name">cpuflg_t</span> cpuflg<span class="token punctuation">;</span>
-    <span class="token comment">//内存区加锁</span>
-    <span class="token function">knl_spinlock_cli</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>marea<span class="token operator">-></span>ma_lock<span class="token punctuation">,</span> <span class="token operator">&amp;</span>cpuflg<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token comment">//针对一个内存区进行操作</span>
-    rets <span class="token operator">=</span> <span class="token function">mm_merpages_onmarea</span><span class="token punctuation">(</span>marea<span class="token punctuation">,</span> freemsa<span class="token punctuation">,</span> freepgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token comment">//内存区解锁</span>
-    <span class="token function">knl_spinunlock_sti</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>marea<span class="token operator">-></span>ma_lock<span class="token punctuation">,</span> <span class="token operator">&amp;</span>cpuflg<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span> rets<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-<span class="token comment">//释放内存页面框架函数</span>
-<span class="token class-name">bool_t</span> <span class="token function">mm_merpages_fmwk</span><span class="token punctuation">(</span><span class="token class-name">memmgrob_t</span> <span class="token operator">*</span>mmobjp<span class="token punctuation">,</span> <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>freemsa<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> freepgs<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-    <span class="token comment">//获取要释放msadsc_t结构所在的内存区</span>
-    <span class="token class-name">memarea_t</span> <span class="token operator">*</span>marea <span class="token operator">=</span> <span class="token function">onfrmsa_retn_marea</span><span class="token punctuation">(</span>mmobjp<span class="token punctuation">,</span> freemsa<span class="token punctuation">,</span> freepgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token constant">NULL</span> <span class="token operator">==</span> marea<span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> FALSE<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token comment">//释放内存页面的核心函数</span>
-    <span class="token class-name">bool_t</span> rets <span class="token operator">=</span> <span class="token function">mm_merpages_core</span><span class="token punctuation">(</span>marea<span class="token punctuation">,</span> freemsa<span class="token punctuation">,</span> freepgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>FALSE <span class="token operator">==</span> rets<span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> FALSE<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token keyword">return</span> rets<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-
-<span class="token comment">//释放内存页面接口</span>
-
-<span class="token comment">//mmobjp->内存管理数据结构指针</span>
-<span class="token comment">//freemsa->释放内存页面对应的首个msadsc_t结构指针</span>
-<span class="token comment">//freepgs->请求释放的内存页面数</span>
-<span class="token class-name">bool_t</span> <span class="token function">mm_merge_pages</span><span class="token punctuation">(</span><span class="token class-name">memmgrob_t</span> <span class="token operator">*</span>mmobjp<span class="token punctuation">,</span> <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>freemsa<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> freepgs<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token constant">NULL</span> <span class="token operator">==</span> mmobjp <span class="token operator">||</span> <span class="token constant">NULL</span> <span class="token operator">==</span> freemsa <span class="token operator">||</span> <span class="token number">1</span> <span class="token operator">></span> freepgs<span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> FALSE<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token comment">//调用释放内存页面的框架函数</span>
-    <span class="token class-name">bool_t</span> rets <span class="token operator">=</span> <span class="token function">mm_merpages_fmwk</span><span class="token punctuation">(</span>mmobjp<span class="token punctuation">,</span> freemsa<span class="token punctuation">,</span> freepgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>FALSE <span class="token operator">==</span> rets<span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> FALSE<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token keyword">return</span> rets<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>我们的内存释放页面的代码的结构依然是：接口函数调用框架函数，框架函数调用核心函数，函数的返回值都是 bool 类型，即 TRUE 或者 FALSE，来表示内存页面释放操作成功与否。</p>
-<p>我们从框架函数中可以发现，内存区是由 msadsc_t 结构中获取的，因为之前该结构中保留了所在内存区的类型，所以可以查到并返回内存区。</p>
-<p>在释放内存页面的核心 mm_merpages_core 函数中，会调用 mm_merpages_onmarea 函数，下面我们来实现这个函数，代码如下。</p>
-<pre class="line-numbers language-c" data-language="c"><code class="language-c">
-<span class="token class-name">sint_t</span> <span class="token function">mm_merpages_opmsadsc</span><span class="token punctuation">(</span><span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>bafh<span class="token punctuation">,</span> <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>freemsa<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> freepgs<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-    <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>fmend <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">msadsc_t</span> <span class="token operator">*</span><span class="token punctuation">)</span>freemsa<span class="token operator">-></span>md_odlink<span class="token punctuation">;</span>
-    <span class="token comment">//处理只有一个单页的情况</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span>freemsa <span class="token operator">==</span> fmend<span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-        <span class="token comment">//页面的分配计数减1</span>
-        freemsa<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_uindx<span class="token operator">--</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token number">0</span> <span class="token operator">&lt;</span> freemsa<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_uindx<span class="token punctuation">)</span>
-        <span class="token punctuation">&#123;</span><span class="token comment">//如果依然大于0说明它是共享页面 直接返回1指示不需要进行下一步操作</span>
-            <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-        <span class="token comment">//设置页未分配的标志</span>
-        freemsa<span class="token operator">-></span>md_phyadrs<span class="token punctuation">.</span>paf_alloc <span class="token operator">=</span> PAF_NO_ALLOC<span class="token punctuation">;</span>
-        freemsa<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_olkty <span class="token operator">=</span> MF_OLKTY_BAFH<span class="token punctuation">;</span>
-        freemsa<span class="token operator">-></span>md_odlink <span class="token operator">=</span> bafh<span class="token punctuation">;</span><span class="token comment">//指向所属的bafhlst_t结构</span>
-        <span class="token comment">//返回2指示需要进行下一步操作</span>
-        <span class="token keyword">return</span> <span class="token number">2</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token comment">//多个页面的超始页面和结束页面都要减一</span>
-    freemsa<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_uindx<span class="token operator">--</span><span class="token punctuation">;</span>
-    fmend<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_uindx<span class="token operator">--</span><span class="token punctuation">;</span>
-    <span class="token comment">//如果依然大于0说明它是共享页面 直接返回1指示不需要进行下一步操作</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token number">0</span> <span class="token operator">&lt;</span> freemsa<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_uindx<span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token comment">//设置起始、结束页页未分配的标志</span>
-    freemsa<span class="token operator">-></span>md_phyadrs<span class="token punctuation">.</span>paf_alloc <span class="token operator">=</span> PAF_NO_ALLOC<span class="token punctuation">;</span>
-    fmend<span class="token operator">-></span>md_phyadrs<span class="token punctuation">.</span>paf_alloc <span class="token operator">=</span> PAF_NO_ALLOC<span class="token punctuation">;</span>
-    freemsa<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_olkty <span class="token operator">=</span> MF_OLKTY_ODER<span class="token punctuation">;</span>
-    <span class="token comment">//起始页面指向结束页面</span>
-    freemsa<span class="token operator">-></span>md_odlink <span class="token operator">=</span> fmend<span class="token punctuation">;</span>
-    fmend<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_olkty <span class="token operator">=</span> MF_OLKTY_BAFH<span class="token punctuation">;</span>
-    <span class="token comment">//结束页面指向所属的bafhlst_t结构</span>
-    fmend<span class="token operator">-></span>md_odlink <span class="token operator">=</span> bafh<span class="token punctuation">;</span>
-    <span class="token comment">//返回2指示需要进行下一步操作</span>
-    <span class="token keyword">return</span> <span class="token number">2</span><span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-
-<span class="token class-name">bool_t</span> <span class="token function">onfpgs_retn_bafhlst</span><span class="token punctuation">(</span><span class="token class-name">memarea_t</span> <span class="token operator">*</span>malckp<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> freepgs<span class="token punctuation">,</span> <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span><span class="token operator">*</span>retrelbf<span class="token punctuation">,</span> <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span><span class="token operator">*</span>retmerbf<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-    <span class="token comment">//获取bafhlst_t结构数组的开始地址</span>
-    <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>bafhstat <span class="token operator">=</span> malckp<span class="token operator">-></span>ma_mdmdata<span class="token punctuation">.</span>dm_mdmlielst<span class="token punctuation">;</span>
-    <span class="token comment">//根据分配页面数计算出分配页面在dm_mdmlielst数组中下标</span>
-    <span class="token class-name">sint_t</span> dividx <span class="token operator">=</span> <span class="token function">retn_divoder</span><span class="token punctuation">(</span>freepgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token comment">//返回请求释放的bafhlst_t结构指针</span>
-    <span class="token operator">*</span>retrelbf <span class="token operator">=</span> <span class="token operator">&amp;</span>bafhstat<span class="token punctuation">[</span>dividx<span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token comment">//返回最大释放的bafhlst_t结构指针</span>
-    <span class="token operator">*</span>retmerbf <span class="token operator">=</span> <span class="token operator">&amp;</span>bafhstat<span class="token punctuation">[</span>MDIVMER_ARR_LMAX <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span> TRUE<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-
-<span class="token class-name">bool_t</span> <span class="token function">mm_merpages_onmarea</span><span class="token punctuation">(</span><span class="token class-name">memarea_t</span> <span class="token operator">*</span>malckp<span class="token punctuation">,</span> <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>freemsa<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> freepgs<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-    <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>prcbf <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token class-name">sint_t</span> pocs <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-    <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>retrelbf <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">,</span> <span class="token operator">*</span>retmerbf <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
-    <span class="token class-name">bool_t</span> rets <span class="token operator">=</span> FALSE<span class="token punctuation">;</span>
-    <span class="token comment">//根据freepgs返回请求释放的和最大释放的bafhlst_t结构指针</span>
-    rets <span class="token operator">=</span> <span class="token function">onfpgs_retn_bafhlst</span><span class="token punctuation">(</span>malckp<span class="token punctuation">,</span> freepgs<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retrelbf<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retmerbf<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token comment">//设置msadsc_t结构的信息，完成释放，返回1表示不需要下一步合并操作，返回2表示要进行合并操作</span>
-    <span class="token class-name">sint_t</span> mopms <span class="token operator">=</span> <span class="token function">mm_merpages_opmsadsc</span><span class="token punctuation">(</span>retrelbf<span class="token punctuation">,</span> freemsa<span class="token punctuation">,</span> freepgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token number">2</span> <span class="token operator">==</span> mopms<span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-        <span class="token comment">//把msadsc_t结构进行合并然后加入对应bafhlst_t结构</span>
-        <span class="token keyword">return</span> <span class="token function">mm_merpages_onbafhlst</span><span class="token punctuation">(</span>freemsa<span class="token punctuation">,</span> freepgs<span class="token punctuation">,</span> retrelbf<span class="token punctuation">,</span> retmerbf<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">==</span> mopms<span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> TRUE<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token keyword">return</span> FALSE<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p>在经过 mm_merpages_opmsadsc 函数操作之后，我们并没有将 msadsc_t 结构加入到对应的 bafhlst_t 结构中，这其实是在下一个函数完成的，那就是 mm_merpages_onbafhlst 这个函数。下面我们来实现它，代码如下所示。</p>
-<pre class="line-numbers language-c" data-language="c"><code class="language-c">
-<span class="token class-name">bool_t</span> <span class="token function">mpobf_add_msadsc</span><span class="token punctuation">(</span><span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>bafhp<span class="token punctuation">,</span> <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>freemstat<span class="token punctuation">,</span> <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>freemend<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-    freemstat<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_olkty <span class="token operator">=</span> MF_OLKTY_ODER<span class="token punctuation">;</span>
-    <span class="token comment">//设置起始页面指向结束页</span>
-    freemstat<span class="token operator">-></span>md_odlink <span class="token operator">=</span> freemend<span class="token punctuation">;</span>
-    freemend<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_olkty <span class="token operator">=</span> MF_OLKTY_BAFH<span class="token punctuation">;</span>
-    <span class="token comment">//结束页面指向所属的bafhlst_t结构</span>
-    freemend<span class="token operator">-></span>md_odlink <span class="token operator">=</span> bafhp<span class="token punctuation">;</span>
-    <span class="token comment">//把起始页面挂载到所属的bafhlst_t结构中</span>
-    <span class="token function">list_add</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>freemstat<span class="token operator">-></span>md_list<span class="token punctuation">,</span> <span class="token operator">&amp;</span>bafhp<span class="token operator">-></span>af_frelst<span class="token punctuation">)</span><span class="token punctuation">;</span>
-    <span class="token comment">//增加bafhlst_t结构的空闲页面对象和总的页面对象的计数</span>
-    bafhp<span class="token operator">-></span>af_fobjnr<span class="token operator">++</span><span class="token punctuation">;</span>
-    bafhp<span class="token operator">-></span>af_mobjnr<span class="token operator">++</span><span class="token punctuation">;</span>
-    <span class="token keyword">return</span> TRUE<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span>
-
-<span class="token class-name">bool_t</span> <span class="token function">mm_merpages_onbafhlst</span><span class="token punctuation">(</span><span class="token class-name">msadsc_t</span> <span class="token operator">*</span>freemsa<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> freepgs<span class="token punctuation">,</span> <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>relbf<span class="token punctuation">,</span> <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>merbf<span class="token punctuation">)</span>
-<span class="token punctuation">&#123;</span>
-    <span class="token class-name">sint_t</span> rets <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
-    <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>mnxs <span class="token operator">=</span> freemsa<span class="token punctuation">,</span> <span class="token operator">*</span>mnxe <span class="token operator">=</span> <span class="token operator">&amp;</span>freemsa<span class="token punctuation">[</span>freepgs <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
-    <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>tmpbf <span class="token operator">=</span> relbf<span class="token punctuation">;</span>
-    <span class="token comment">//从实际要开始遍历，直到最高的那个bafhlst_t结构</span>
-    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token punctuation">;</span> tmpbf <span class="token operator">&lt;</span> merbf<span class="token punctuation">;</span> tmpbf<span class="token operator">++</span><span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-        <span class="token comment">//查看最大地址连续、且空闲msadsc_t结构，如释放的是第0个msadsc_t结构我们就去查找第1个msadsc_t结构是否空闲，且与第0个msadsc_t结构的地址是不是连续的</span>
-        rets <span class="token operator">=</span> <span class="token function">mm_find_cmsa2blk</span><span class="token punctuation">(</span>tmpbf<span class="token punctuation">,</span> <span class="token operator">&amp;</span>mnxs<span class="token punctuation">,</span> <span class="token operator">&amp;</span>mnxe<span class="token punctuation">)</span><span class="token punctuation">;</span>
-        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">==</span> rets<span class="token punctuation">)</span>
-        <span class="token punctuation">&#123;</span>
-            <span class="token keyword">break</span><span class="token punctuation">;</span>
-        <span class="token punctuation">&#125;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token comment">//把合并的msadsc_t结构（从mnxs到mnxe）加入到对应的bafhlst_t结构中</span>
-    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">mpobf_add_msadsc</span><span class="token punctuation">(</span>tmpbf<span class="token punctuation">,</span> mnxs<span class="token punctuation">,</span> mnxe<span class="token punctuation">)</span> <span class="token operator">==</span> FALSE<span class="token punctuation">)</span>
-    <span class="token punctuation">&#123;</span>
-        <span class="token keyword">return</span> FALSE<span class="token punctuation">;</span>
-    <span class="token punctuation">&#125;</span>
-    <span class="token keyword">return</span> TRUE<span class="token punctuation">;</span>
-<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
-
-<p><strong>最核心的还是要对空闲页面进行合并，合并成更大的连续的内存页面</strong></p>
-<p>比如，现在我们要释放一个页面，这个算法将执行如下步骤。</p>
-<ol>
-<li>释放一个页面，会返回 m_mdmlielst 数组中的第 0 个 bafhlst_t 结构。设置这个页面对应的 msadsc_t 结构的相关信息，表示已经执行了释放操作。</li>
-<li>开始查看第 0 个 bafhlst_t 结构中有没有空闲的 msadsc_t，并且它和要释放的 msadsc_t 对应的物理地址是连续的。没有则把这个释放的 msadsc_t 挂载第 0 个 bafhlst_t 结构中，算法结束，否则进入下一步。</li>
-<li>把第 0 个 bafhlst_t 结构中的 msadsc_t 结构拿出来与释放的 msadsc_t 结构，合并成 2 个连续且更大的 msadsc_t。继续查看第 1 个 bafhlst_t 结构中有没有空闲的 msadsc_t，而且这个空闲 msadsc_t 要和上一步合并的 2 个 msadsc_t 对应的物理地址是连续的。</li>
-<li>没有则把这个合并的 2 个 msadsc_t 挂载第 1 个 bafhlst_t 结构中，算法结束，否则进入下一步。</li>
-<li>把第 1 个 bafhlst_t 结构中的 2 个连续的 msadsc_t 结构，还有合并的 2 个地址连续的 msadsc_t 结构拿出来，合并成 4 个连续且更大的 msadsc_t 结构。</li>
-<li>继续查看第 2 个 bafhlst_t 结构，有没有空闲的 msadsc_t 结构，并且它要和上一步合并的 4 个 msadsc_t 结构对应的物理地址是连续的。</li>
-<li>没有则把这个合并的 4 个 msadsc_t 挂载第 2 个 bafhlst_t 结构中，算法结束。</li>
-</ol>
-<p><img src="https://static001.geekbang.org/resource/image/a2/34/a280682b0ee533984c4yya14dee67834.jpg?wh=4049x3320" alt="内存释放算法"></p>
-]]></content>
-      <categories>
-        <category>操作系统</category>
-      </categories>
-      <tags>
-        <tag>OS</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>操作系统-第一个C函数-实现板级初始化</title>
     <url>/2021/07/05/cao-zuo-xi-tong-di-yi-ge-c-han-shu-shi-xian-ban-ji-chu-shi-hua/</url>
     <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h2 id="第一个C函数"><a href="#第一个C函数" class="headerlink" title="第一个C函数"></a>第一个C函数</h2><pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token keyword">void</span> <span class="token function">hal_start</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
@@ -2364,6 +1935,435 @@ hxi_hwint07<span class="token operator">:</span>
 <p>F、中断处理完毕</p>
 <p>G、异常处理类似，只是触发源头不太一样而已</p>
 </blockquote>
+]]></content>
+      <categories>
+        <category>操作系统</category>
+      </categories>
+      <tags>
+        <tag>OS</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>操作系统-实现内存页分配与释放</title>
+    <url>/2021/07/12/cao-zuo-xi-tong-shi-xian-nei-cun-ye-de-fen-pei-yu-shi-fang/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><h2 id="内存页的分配"><a href="#内存页的分配" class="headerlink" title="内存页的分配"></a>内存页的分配</h2><p>如果让你实现一次只分配一个页面，我相信这个问题很好解决，因为你只需要写一段循环代码，在其中遍历出一个空闲的 msadsc_t 结构，就可以返回了，这个算法就可以结束了</p>
+<p>但现实却不容许我们这么简单地处理问题，我们内存管理器要为内核、驱动，还有应用提供服务，它们对请求内存页面的多少、内存页面是不是连续，内存页面所处的物理地址都有要求。</p>
+<p><strong>内存分配的接口函数</strong></p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">
+<span class="token comment">//内存分配页面框架函数</span>
+<span class="token class-name">msadsc_t</span> <span class="token operator">*</span><span class="token function">mm_divpages_fmwk</span><span class="token punctuation">(</span><span class="token class-name">memmgrob_t</span> <span class="token operator">*</span>mmobjp<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> pages<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> <span class="token operator">*</span>retrelpnr<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> mrtype<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> flgs<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token comment">//返回mrtype对应的内存区结构的指针</span>
+    <span class="token class-name">memarea_t</span> <span class="token operator">*</span>marea <span class="token operator">=</span> <span class="token function">onmrtype_retn_marea</span><span class="token punctuation">(</span>mmobjp<span class="token punctuation">,</span> mrtype<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token constant">NULL</span> <span class="token operator">==</span> marea<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token operator">*</span>retrelpnr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token class-name">uint_t</span> retpnr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token comment">//内存分配的核心函数</span>
+    <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>retmsa <span class="token operator">=</span> <span class="token function">mm_divpages_core</span><span class="token punctuation">(</span>marea<span class="token punctuation">,</span> pages<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retpnr<span class="token punctuation">,</span> flgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token constant">NULL</span> <span class="token operator">==</span> retmsa<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token operator">*</span>retrelpnr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token operator">*</span>retrelpnr <span class="token operator">=</span> retpnr<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> retmsa<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">//内存分配页面接口</span>
+
+<span class="token comment">//mmobjp->内存管理数据结构指针</span>
+<span class="token comment">//pages->请求分配的内存页面数</span>
+<span class="token comment">//retrealpnr->存放实际分配内存页面数的指针</span>
+<span class="token comment">//mrtype->请求的分配内存页面的内存区类型</span>
+<span class="token comment">//flgs->请求分配的内存页面的标志位</span>
+<span class="token class-name">msadsc_t</span> <span class="token operator">*</span><span class="token function">mm_division_pages</span><span class="token punctuation">(</span><span class="token class-name">memmgrob_t</span> <span class="token operator">*</span>mmobjp<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> pages<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> <span class="token operator">*</span>retrealpnr<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> mrtype<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> flgs<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token constant">NULL</span> <span class="token operator">==</span> mmobjp <span class="token operator">||</span> <span class="token constant">NULL</span> <span class="token operator">==</span> retrealpnr <span class="token operator">||</span> <span class="token number">0</span> <span class="token operator">==</span> mrtype<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token class-name">uint_t</span> retpnr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>retmsa <span class="token operator">=</span> <span class="token function">mm_divpages_fmwk</span><span class="token punctuation">(</span>mmobjp<span class="token punctuation">,</span> pages<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retpnr<span class="token punctuation">,</span> mrtype<span class="token punctuation">,</span> flgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token constant">NULL</span> <span class="token operator">==</span> retmsa<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token operator">*</span>retrealpnr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token operator">*</span>retrealpnr <span class="token operator">=</span> retpnr<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> retmsa<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>我们内存管理代码的结构是：接口函数调用框架函数，框架函数调用核心函数。可以发现，这个接口函数返回的是一个 msadsc_t 结构的指针，如果是多个页面返回的就是起始页面对应的 msadsc_t 结构的指针。</p>
+<p>为什么不直接返回内存的物理地址呢？因为我们物理内存管理器是最底层的内存管理器，而上层代码中可能需要页面的相关信息，所以直接返回页面对应 msadsc_t 结构的指针。</p>
+<p>还有一个参数是用于返回实际分配的页面数的。比如，内核功能代码请求分配三个页面，我们的内存管理器不能分配三个页面，只能分配两个或四个页面，这时内存管理器就会分配四个页面返回，retrealpnr 指向的变量中就存放数字 4，表示实际分配页面的数量。</p>
+<p>有了内存分配接口、框架函数，下面我们来实现内存分配的核心函数，代码如下</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">
+<span class="token class-name">bool_t</span> <span class="token function">onmpgs_retn_bafhlst</span><span class="token punctuation">(</span><span class="token class-name">memarea_t</span> <span class="token operator">*</span>malckp<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> pages<span class="token punctuation">,</span> <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span><span class="token operator">*</span>retrelbafh<span class="token punctuation">,</span> <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span><span class="token operator">*</span>retdivbafh<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token comment">//获取bafhlst_t结构数组的开始地址</span>
+    <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>bafhstat <span class="token operator">=</span> malckp<span class="token operator">-></span>ma_mdmdata<span class="token punctuation">.</span>dm_mdmlielst<span class="token punctuation">;</span>       
+    <span class="token comment">//根据分配页面数计算出分配页面在dm_mdmlielst数组中下标</span>
+    <span class="token class-name">sint_t</span> dividx <span class="token operator">=</span> <span class="token function">retn_divoder</span><span class="token punctuation">(</span>pages<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//从第dividx个数组元素开始搜索</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">sint_t</span> idx <span class="token operator">=</span> dividx<span class="token punctuation">;</span> idx <span class="token operator">&lt;</span> MDIVMER_ARR_LMAX<span class="token punctuation">;</span> idx<span class="token operator">++</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+    <span class="token comment">//如果第idx个数组元素对应的一次可分配连续的页面数大于等于请求的页面数，且其中的可分配对象大于0则返回 </span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>bafhstat<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>af_oderpnr <span class="token operator">>=</span> pages <span class="token operator">&amp;&amp;</span> <span class="token number">0</span> <span class="token operator">&lt;</span> bafhstat<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">.</span>af_fobjnr<span class="token punctuation">)</span>
+        <span class="token punctuation">&#123;</span>
+            <span class="token comment">//返回请求分配的bafhlst_t结构指针</span>
+            <span class="token operator">*</span>retrelbafh <span class="token operator">=</span> <span class="token operator">&amp;</span>bafhstat<span class="token punctuation">[</span>dividx<span class="token punctuation">]</span><span class="token punctuation">;</span>
+            <span class="token comment">//返回实际分配的bafhlst_t结构指针</span>
+            <span class="token operator">*</span>retdivbafh <span class="token operator">=</span> <span class="token operator">&amp;</span>bafhstat<span class="token punctuation">[</span>idx<span class="token punctuation">]</span><span class="token punctuation">;</span>
+            <span class="token keyword">return</span> TRUE<span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token operator">*</span>retrelbafh <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+    <span class="token operator">*</span>retdivbafh <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> FALSE<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token class-name">msadsc_t</span> <span class="token operator">*</span><span class="token function">mm_reldivpages_onmarea</span><span class="token punctuation">(</span><span class="token class-name">memarea_t</span> <span class="token operator">*</span>malckp<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> pages<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> <span class="token operator">*</span>retrelpnr<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>retrelbhl <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">,</span> <span class="token operator">*</span>retdivbhl <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+    <span class="token comment">//根据页面数在内存区的m_mdmlielst数组中找出其中请求分配页面的bafhlst_t结构（retrelbhl）和实际要在其中分配页面的bafhlst_t结构(retdivbhl)</span>
+    <span class="token class-name">bool_t</span> rets <span class="token operator">=</span> <span class="token function">onmpgs_retn_bafhlst</span><span class="token punctuation">(</span>malckp<span class="token punctuation">,</span> pages<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retrelbhl<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retdivbhl<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>FALSE <span class="token operator">==</span> rets<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token operator">*</span>retrelpnr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token class-name">uint_t</span> retpnr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token comment">//实际在bafhlst_t结构中分配页面</span>
+    <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>retmsa <span class="token operator">=</span> <span class="token function">mm_reldpgsdivmsa_bafhl</span><span class="token punctuation">(</span>malckp<span class="token punctuation">,</span> pages<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retpnr<span class="token punctuation">,</span> retrelbhl<span class="token punctuation">,</span> retdivbhl<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token constant">NULL</span> <span class="token operator">==</span> retmsa<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token operator">*</span>retrelpnr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token operator">*</span>retrelpnr <span class="token operator">=</span> retpnr<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> retmsa<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token class-name">msadsc_t</span> <span class="token operator">*</span><span class="token function">mm_divpages_core</span><span class="token punctuation">(</span><span class="token class-name">memarea_t</span> <span class="token operator">*</span>mareap<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> pages<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> <span class="token operator">*</span>retrealpnr<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> flgs<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">uint_t</span> retpnr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>retmsa <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span> 
+    <span class="token class-name">cpuflg_t</span> cpuflg<span class="token punctuation">;</span>
+    <span class="token comment">//内存区加锁</span>
+    <span class="token function">knl_spinlock_cli</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>mareap<span class="token operator">-></span>ma_lock<span class="token punctuation">,</span> <span class="token operator">&amp;</span>cpuflg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>DMF_RELDIV <span class="token operator">==</span> flgs<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token comment">//分配内存</span>
+        retmsa <span class="token operator">=</span> <span class="token function">mm_reldivpages_onmarea</span><span class="token punctuation">(</span>mareap<span class="token punctuation">,</span> pages<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retpnr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">goto</span> ret_step<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    retmsa <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+    retpnr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+ret_step<span class="token operator">:</span>
+    <span class="token comment">//内存区锁</span>
+    <span class="token function">knl_spinunlock_sti</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>mareap<span class="token operator">-></span>ma_lock<span class="token punctuation">,</span> <span class="token operator">&amp;</span>cpuflg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token operator">*</span>retrealpnr <span class="token operator">=</span> retpnr<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> retmsa<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>上述代码中 onmpgs_retn_bafhlst 函数返回的两个 bafhlst_t 结构指针，若是相等的，则在 mm_reldpgsdivmsa_bafhl 函数中很容易处理，只要取出 bafhlst_t 结构中对应的 msadsc_t 结构返回就好了。</p>
+<p>问题是很多时候它们不相等，这就要分隔连续的 msadsc_t 结构了，下面我们通过 mm_reldpgsdivmsa_bafhl 这个函数来处理这个问题，代码如下所示</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">
+<span class="token class-name">bool_t</span> <span class="token function">mrdmb_add_msa_bafh</span><span class="token punctuation">(</span><span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>bafhp<span class="token punctuation">,</span> <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>msastat<span class="token punctuation">,</span> <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>msaend<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token comment">//把一段连续的msadsc_t结构加入到它所对应的bafhlst_t结构中</span>
+    msastat<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_olkty <span class="token operator">=</span> MF_OLKTY_ODER<span class="token punctuation">;</span>
+    msastat<span class="token operator">-></span>md_odlink <span class="token operator">=</span> msaend<span class="token punctuation">;</span>
+    msaend<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_olkty <span class="token operator">=</span> MF_OLKTY_BAFH<span class="token punctuation">;</span>
+    msaend<span class="token operator">-></span>md_odlink <span class="token operator">=</span> bafhp<span class="token punctuation">;</span>
+    <span class="token function">list_add</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>msastat<span class="token operator">-></span>md_list<span class="token punctuation">,</span> <span class="token operator">&amp;</span>bafhp<span class="token operator">-></span>af_frelst<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    bafhp<span class="token operator">-></span>af_mobjnr<span class="token operator">++</span><span class="token punctuation">;</span>
+    bafhp<span class="token operator">-></span>af_fobjnr<span class="token operator">++</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> TRUE<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token class-name">msadsc_t</span> <span class="token operator">*</span><span class="token function">mm_divpages_opmsadsc</span><span class="token punctuation">(</span><span class="token class-name">msadsc_t</span> <span class="token operator">*</span>msastat<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> mnr<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>   <span class="token comment">//单个msadsc_t结构的情况 </span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>mend <span class="token operator">==</span> msastat<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span><span class="token comment">//增加msadsc_t结构中分配计数，分配标志位设置为1</span>
+        msastat<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_uindx<span class="token operator">++</span><span class="token punctuation">;</span>
+        msastat<span class="token operator">-></span>md_phyadrs<span class="token punctuation">.</span>paf_alloc <span class="token operator">=</span> PAF_ALLOC<span class="token punctuation">;</span>
+        msastat<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_olkty <span class="token operator">=</span> MF_OLKTY_ODER<span class="token punctuation">;</span>
+        msastat<span class="token operator">-></span>md_odlink <span class="token operator">=</span> mend<span class="token punctuation">;</span>
+        <span class="token keyword">return</span> msastat<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    msastat<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_uindx<span class="token operator">++</span><span class="token punctuation">;</span>
+    msastat<span class="token operator">-></span>md_phyadrs<span class="token punctuation">.</span>paf_alloc <span class="token operator">=</span> PAF_ALLOC<span class="token punctuation">;</span>
+    <span class="token comment">//多个msadsc_t结构的情况下，末端msadsc_t结构也设置已分配状态</span>
+    mend<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_uindx<span class="token operator">++</span><span class="token punctuation">;</span>
+    mend<span class="token operator">-></span>md_phyadrs<span class="token punctuation">.</span>paf_alloc <span class="token operator">=</span> PAF_ALLOC<span class="token punctuation">;</span>
+    msastat<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_olkty <span class="token operator">=</span> MF_OLKTY_ODER<span class="token punctuation">;</span>
+    msastat<span class="token operator">-></span>md_odlink <span class="token operator">=</span> mend<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> msastat<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token class-name">bool_t</span> <span class="token function">mm_retnmsaob_onbafhlst</span><span class="token punctuation">(</span><span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>bafhp<span class="token punctuation">,</span> <span class="token class-name">msadsc_t</span> <span class="token operator">*</span><span class="token operator">*</span>retmstat<span class="token punctuation">,</span> <span class="token class-name">msadsc_t</span> <span class="token operator">*</span><span class="token operator">*</span>retmend<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token comment">//取出一个msadsc_t结构</span>
+    <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>tmp <span class="token operator">=</span> <span class="token function">list_entry</span><span class="token punctuation">(</span>bafhp<span class="token operator">-></span>af_frelst<span class="token punctuation">.</span>next<span class="token punctuation">,</span> <span class="token class-name">msadsc_t</span><span class="token punctuation">,</span> md_list<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//从链表中删除</span>
+    <span class="token function">list_del</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>tmp<span class="token operator">-></span>md_list<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//减少bafhlst_t结构中的msadsc_t计数</span>
+    bafhp<span class="token operator">-></span>af_mobjnr<span class="token operator">--</span><span class="token punctuation">;</span>
+    bafhp<span class="token operator">-></span>af_fobjnr<span class="token operator">--</span><span class="token punctuation">;</span>
+    <span class="token comment">//增加分配计数</span>
+    bafhp<span class="token operator">-></span>af_freindx<span class="token operator">++</span><span class="token punctuation">;</span>
+    <span class="token comment">//返回msadsc_t结构</span>
+    <span class="token operator">*</span>retmstat <span class="token operator">=</span> tmp<span class="token punctuation">;</span>
+    <span class="token comment">//返回当前msadsc_t结构连续的那个结尾的msadsc_t结构 </span>
+    <span class="token operator">*</span>retmend <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">msadsc_t</span> <span class="token operator">*</span><span class="token punctuation">)</span>tmp<span class="token operator">-></span>md_odlink<span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>MF_OLKTY_BAFH <span class="token operator">==</span> tmp<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_olkty<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span><span class="token comment">//如果只单个msadsc_t结构，那就是它本身 </span>
+        <span class="token operator">*</span>retmend <span class="token operator">=</span> tmp<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> TRUE<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token class-name">msadsc_t</span> <span class="token operator">*</span><span class="token function">mm_reldpgsdivmsa_bafhl</span><span class="token punctuation">(</span><span class="token class-name">memarea_t</span> <span class="token operator">*</span>malckp<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> pages<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> <span class="token operator">*</span>retrelpnr<span class="token punctuation">,</span> <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>relbfl<span class="token punctuation">,</span> <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>divbfl<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>retmsa <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+    <span class="token class-name">bool_t</span> rets <span class="token operator">=</span> FALSE<span class="token punctuation">;</span>
+    <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>retmstat <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">,</span> <span class="token operator">*</span>retmend <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+    <span class="token comment">//处理相等的情况</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>relbfl <span class="token operator">==</span> divbfl<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+    <span class="token comment">//从bafhlst_t结构中获取msadsc_t结构的开始与结束地址</span>
+        rets <span class="token operator">=</span> <span class="token function">mm_retnmsaob_onbafhlst</span><span class="token punctuation">(</span>relbfl<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retmstat<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retmend<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">//设置msadsc_t结构的相关信息表示已经删除</span>
+        retmsa <span class="token operator">=</span> <span class="token function">mm_divpages_opmsadsc</span><span class="token punctuation">(</span>retmstat<span class="token punctuation">,</span> relbfl<span class="token operator">-></span>af_oderpnr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token comment">//返回实际的分配页数</span>
+        <span class="token operator">*</span>retrelpnr <span class="token operator">=</span> relbfl<span class="token operator">-></span>af_oderpnr<span class="token punctuation">;</span>
+        <span class="token keyword">return</span> retmsa<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">//处理不等的情况</span>
+    <span class="token comment">//从bafhlst_t结构中获取msadsc_t结构的开始与结束地址</span>
+    rets <span class="token operator">=</span> <span class="token function">mm_retnmsaob_onbafhlst</span><span class="token punctuation">(</span>divbfl<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retmstat<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retmend<span class="token punctuation">)</span><span class="token punctuation">;</span>
+     <span class="token class-name">uint_t</span> divnr <span class="token operator">=</span> divbfl<span class="token operator">-></span>af_oderpnr<span class="token punctuation">;</span>
+     <span class="token comment">//从高bafhlst_t数组元素中向下遍历</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>tmpbfl <span class="token operator">=</span> divbfl <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span> tmpbfl <span class="token operator">>=</span> relbfl<span class="token punctuation">;</span> tmpbfl<span class="token operator">--</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token comment">//开始分割连续的msadsc_t结构，把剩下的一段连续的msadsc_t结构加入到对应该bafhlst_t结构中</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">mrdmb_add_msa_bafh</span><span class="token punctuation">(</span>tmpbfl<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retmstat<span class="token punctuation">[</span>tmpbfl<span class="token operator">-></span>af_oderpnr<span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token class-name">msadsc_t</span> <span class="token operator">*</span><span class="token punctuation">)</span>retmstat<span class="token operator">-></span>md_odlink<span class="token punctuation">)</span> <span class="token operator">==</span> FALSE<span class="token punctuation">)</span>
+        <span class="token punctuation">&#123;</span>
+            <span class="token function">system_error</span><span class="token punctuation">(</span><span class="token string">"mrdmb_add_msa_bafh fail\n"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        retmstat<span class="token operator">-></span>md_odlink <span class="token operator">=</span> <span class="token operator">&amp;</span>retmstat<span class="token punctuation">[</span>tmpbfl<span class="token operator">-></span>af_oderpnr <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+        divnr <span class="token operator">-=</span> tmpbfl<span class="token operator">-></span>af_oderpnr<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    retmsa <span class="token operator">=</span> <span class="token function">mm_divpages_opmsadsc</span><span class="token punctuation">(</span>retmstat<span class="token punctuation">,</span> divnr<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token constant">NULL</span> <span class="token operator">==</span> retmsa<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token operator">*</span>retrelpnr <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+        <span class="token keyword">return</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token operator">*</span>retrelpnr <span class="token operator">=</span> relbfl<span class="token operator">-></span>af_oderpnr<span class="token punctuation">;</span>
+    <span class="token keyword">return</span> retmsa<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>这个算法将执行如下步骤：</p>
+<ol>
+<li>根据一个页面的请求，会返回 m_mdmlielst 数组中的第 0 个 bafhlst_t 结构。</li>
+<li>如果第 0 个 bafhlst_t 结构中有 msadsc_t 结构就直接返回，若没有 msadsc_t 结构，就会继续查找 m_mdmlielst 数组中的第 1 个 bafhlst_t 结构。</li>
+<li>如果第 1 个 bafhlst_t 结构中也没有 msadsc_t 结构，就会继续查找 m_mdmlielst 数组中的第 2 个 bafhlst_t 结构。</li>
+<li>如果第 2 个 bafhlst_t 结构中有 msadsc_t 结构，记住第 2 个 bafhlst_t 结构中对应是 4 个连续的 msadsc_t 结构。这时让这 4 个连续的 msadsc_t 结构从第 2 个 bafhlst_t 结构中脱离。</li>
+<li>把这 4 个连续的 msadsc_t 结构，对半分割成 2 个双 msadsc_t 结构，把其中一个双 msadsc_t 结构挂载到第 1 个 bafhlst_t 结构中。</li>
+<li>把剩下一个双 msadsc_t 结构，继续对半分割成两个单 msadsc_t 结构，把其中一个单 msadsc_t 结构挂载到第 0 个 bafhlst_t 结构中，剩下一个单 msadsc_t 结构返回给请求者，完成内存分配。</li>
+</ol>
+<p><img src="https://static001.geekbang.org/resource/image/29/2a/299b8f21c876a2b324da7a2974e8302a.jpg?wh=3976x3118" alt="内存分配算法示意图"></p>
+<h2 id="内存页的释放"><a href="#内存页的释放" class="headerlink" title="内存页的释放"></a>内存页的释放</h2><pre class="line-numbers language-c" data-language="c"><code class="language-c">
+<span class="token comment">//释放内存页面核心</span>
+<span class="token class-name">bool_t</span> <span class="token function">mm_merpages_core</span><span class="token punctuation">(</span><span class="token class-name">memarea_t</span> <span class="token operator">*</span>marea<span class="token punctuation">,</span> <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>freemsa<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> freepgs<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">bool_t</span> rets <span class="token operator">=</span> FALSE<span class="token punctuation">;</span>
+    <span class="token class-name">cpuflg_t</span> cpuflg<span class="token punctuation">;</span>
+    <span class="token comment">//内存区加锁</span>
+    <span class="token function">knl_spinlock_cli</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>marea<span class="token operator">-></span>ma_lock<span class="token punctuation">,</span> <span class="token operator">&amp;</span>cpuflg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//针对一个内存区进行操作</span>
+    rets <span class="token operator">=</span> <span class="token function">mm_merpages_onmarea</span><span class="token punctuation">(</span>marea<span class="token punctuation">,</span> freemsa<span class="token punctuation">,</span> freepgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//内存区解锁</span>
+    <span class="token function">knl_spinunlock_sti</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>marea<span class="token operator">-></span>ma_lock<span class="token punctuation">,</span> <span class="token operator">&amp;</span>cpuflg<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> rets<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">//释放内存页面框架函数</span>
+<span class="token class-name">bool_t</span> <span class="token function">mm_merpages_fmwk</span><span class="token punctuation">(</span><span class="token class-name">memmgrob_t</span> <span class="token operator">*</span>mmobjp<span class="token punctuation">,</span> <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>freemsa<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> freepgs<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token comment">//获取要释放msadsc_t结构所在的内存区</span>
+    <span class="token class-name">memarea_t</span> <span class="token operator">*</span>marea <span class="token operator">=</span> <span class="token function">onfrmsa_retn_marea</span><span class="token punctuation">(</span>mmobjp<span class="token punctuation">,</span> freemsa<span class="token punctuation">,</span> freepgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token constant">NULL</span> <span class="token operator">==</span> marea<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> FALSE<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">//释放内存页面的核心函数</span>
+    <span class="token class-name">bool_t</span> rets <span class="token operator">=</span> <span class="token function">mm_merpages_core</span><span class="token punctuation">(</span>marea<span class="token punctuation">,</span> freemsa<span class="token punctuation">,</span> freepgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>FALSE <span class="token operator">==</span> rets<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> FALSE<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> rets<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">//释放内存页面接口</span>
+
+<span class="token comment">//mmobjp->内存管理数据结构指针</span>
+<span class="token comment">//freemsa->释放内存页面对应的首个msadsc_t结构指针</span>
+<span class="token comment">//freepgs->请求释放的内存页面数</span>
+<span class="token class-name">bool_t</span> <span class="token function">mm_merge_pages</span><span class="token punctuation">(</span><span class="token class-name">memmgrob_t</span> <span class="token operator">*</span>mmobjp<span class="token punctuation">,</span> <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>freemsa<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> freepgs<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token constant">NULL</span> <span class="token operator">==</span> mmobjp <span class="token operator">||</span> <span class="token constant">NULL</span> <span class="token operator">==</span> freemsa <span class="token operator">||</span> <span class="token number">1</span> <span class="token operator">></span> freepgs<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> FALSE<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">//调用释放内存页面的框架函数</span>
+    <span class="token class-name">bool_t</span> rets <span class="token operator">=</span> <span class="token function">mm_merpages_fmwk</span><span class="token punctuation">(</span>mmobjp<span class="token punctuation">,</span> freemsa<span class="token punctuation">,</span> freepgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>FALSE <span class="token operator">==</span> rets<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> FALSE<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> rets<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>我们的内存释放页面的代码的结构依然是：接口函数调用框架函数，框架函数调用核心函数，函数的返回值都是 bool 类型，即 TRUE 或者 FALSE，来表示内存页面释放操作成功与否。</p>
+<p>我们从框架函数中可以发现，内存区是由 msadsc_t 结构中获取的，因为之前该结构中保留了所在内存区的类型，所以可以查到并返回内存区。</p>
+<p>在释放内存页面的核心 mm_merpages_core 函数中，会调用 mm_merpages_onmarea 函数，下面我们来实现这个函数，代码如下。</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">
+<span class="token class-name">sint_t</span> <span class="token function">mm_merpages_opmsadsc</span><span class="token punctuation">(</span><span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>bafh<span class="token punctuation">,</span> <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>freemsa<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> freepgs<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>fmend <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">msadsc_t</span> <span class="token operator">*</span><span class="token punctuation">)</span>freemsa<span class="token operator">-></span>md_odlink<span class="token punctuation">;</span>
+    <span class="token comment">//处理只有一个单页的情况</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>freemsa <span class="token operator">==</span> fmend<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token comment">//页面的分配计数减1</span>
+        freemsa<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_uindx<span class="token operator">--</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token number">0</span> <span class="token operator">&lt;</span> freemsa<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_uindx<span class="token punctuation">)</span>
+        <span class="token punctuation">&#123;</span><span class="token comment">//如果依然大于0说明它是共享页面 直接返回1指示不需要进行下一步操作</span>
+            <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token comment">//设置页未分配的标志</span>
+        freemsa<span class="token operator">-></span>md_phyadrs<span class="token punctuation">.</span>paf_alloc <span class="token operator">=</span> PAF_NO_ALLOC<span class="token punctuation">;</span>
+        freemsa<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_olkty <span class="token operator">=</span> MF_OLKTY_BAFH<span class="token punctuation">;</span>
+        freemsa<span class="token operator">-></span>md_odlink <span class="token operator">=</span> bafh<span class="token punctuation">;</span><span class="token comment">//指向所属的bafhlst_t结构</span>
+        <span class="token comment">//返回2指示需要进行下一步操作</span>
+        <span class="token keyword">return</span> <span class="token number">2</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">//多个页面的超始页面和结束页面都要减一</span>
+    freemsa<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_uindx<span class="token operator">--</span><span class="token punctuation">;</span>
+    fmend<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_uindx<span class="token operator">--</span><span class="token punctuation">;</span>
+    <span class="token comment">//如果依然大于0说明它是共享页面 直接返回1指示不需要进行下一步操作</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token number">0</span> <span class="token operator">&lt;</span> freemsa<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_uindx<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token number">1</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">//设置起始、结束页页未分配的标志</span>
+    freemsa<span class="token operator">-></span>md_phyadrs<span class="token punctuation">.</span>paf_alloc <span class="token operator">=</span> PAF_NO_ALLOC<span class="token punctuation">;</span>
+    fmend<span class="token operator">-></span>md_phyadrs<span class="token punctuation">.</span>paf_alloc <span class="token operator">=</span> PAF_NO_ALLOC<span class="token punctuation">;</span>
+    freemsa<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_olkty <span class="token operator">=</span> MF_OLKTY_ODER<span class="token punctuation">;</span>
+    <span class="token comment">//起始页面指向结束页面</span>
+    freemsa<span class="token operator">-></span>md_odlink <span class="token operator">=</span> fmend<span class="token punctuation">;</span>
+    fmend<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_olkty <span class="token operator">=</span> MF_OLKTY_BAFH<span class="token punctuation">;</span>
+    <span class="token comment">//结束页面指向所属的bafhlst_t结构</span>
+    fmend<span class="token operator">-></span>md_odlink <span class="token operator">=</span> bafh<span class="token punctuation">;</span>
+    <span class="token comment">//返回2指示需要进行下一步操作</span>
+    <span class="token keyword">return</span> <span class="token number">2</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token class-name">bool_t</span> <span class="token function">onfpgs_retn_bafhlst</span><span class="token punctuation">(</span><span class="token class-name">memarea_t</span> <span class="token operator">*</span>malckp<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> freepgs<span class="token punctuation">,</span> <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span><span class="token operator">*</span>retrelbf<span class="token punctuation">,</span> <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span><span class="token operator">*</span>retmerbf<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token comment">//获取bafhlst_t结构数组的开始地址</span>
+    <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>bafhstat <span class="token operator">=</span> malckp<span class="token operator">-></span>ma_mdmdata<span class="token punctuation">.</span>dm_mdmlielst<span class="token punctuation">;</span>
+    <span class="token comment">//根据分配页面数计算出分配页面在dm_mdmlielst数组中下标</span>
+    <span class="token class-name">sint_t</span> dividx <span class="token operator">=</span> <span class="token function">retn_divoder</span><span class="token punctuation">(</span>freepgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//返回请求释放的bafhlst_t结构指针</span>
+    <span class="token operator">*</span>retrelbf <span class="token operator">=</span> <span class="token operator">&amp;</span>bafhstat<span class="token punctuation">[</span>dividx<span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token comment">//返回最大释放的bafhlst_t结构指针</span>
+    <span class="token operator">*</span>retmerbf <span class="token operator">=</span> <span class="token operator">&amp;</span>bafhstat<span class="token punctuation">[</span>MDIVMER_ARR_LMAX <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> TRUE<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token class-name">bool_t</span> <span class="token function">mm_merpages_onmarea</span><span class="token punctuation">(</span><span class="token class-name">memarea_t</span> <span class="token operator">*</span>malckp<span class="token punctuation">,</span> <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>freemsa<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> freepgs<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>prcbf <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+    <span class="token class-name">sint_t</span> pocs <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>retrelbf <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">,</span> <span class="token operator">*</span>retmerbf <span class="token operator">=</span> <span class="token constant">NULL</span><span class="token punctuation">;</span>
+    <span class="token class-name">bool_t</span> rets <span class="token operator">=</span> FALSE<span class="token punctuation">;</span>
+    <span class="token comment">//根据freepgs返回请求释放的和最大释放的bafhlst_t结构指针</span>
+    rets <span class="token operator">=</span> <span class="token function">onfpgs_retn_bafhlst</span><span class="token punctuation">(</span>malckp<span class="token punctuation">,</span> freepgs<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retrelbf<span class="token punctuation">,</span> <span class="token operator">&amp;</span>retmerbf<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//设置msadsc_t结构的信息，完成释放，返回1表示不需要下一步合并操作，返回2表示要进行合并操作</span>
+    <span class="token class-name">sint_t</span> mopms <span class="token operator">=</span> <span class="token function">mm_merpages_opmsadsc</span><span class="token punctuation">(</span>retrelbf<span class="token punctuation">,</span> freemsa<span class="token punctuation">,</span> freepgs<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token number">2</span> <span class="token operator">==</span> mopms<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token comment">//把msadsc_t结构进行合并然后加入对应bafhlst_t结构</span>
+        <span class="token keyword">return</span> <span class="token function">mm_merpages_onbafhlst</span><span class="token punctuation">(</span>freemsa<span class="token punctuation">,</span> freepgs<span class="token punctuation">,</span> retrelbf<span class="token punctuation">,</span> retmerbf<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">==</span> mopms<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> TRUE<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> FALSE<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>在经过 mm_merpages_opmsadsc 函数操作之后，我们并没有将 msadsc_t 结构加入到对应的 bafhlst_t 结构中，这其实是在下一个函数完成的，那就是 mm_merpages_onbafhlst 这个函数。下面我们来实现它，代码如下所示。</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c">
+<span class="token class-name">bool_t</span> <span class="token function">mpobf_add_msadsc</span><span class="token punctuation">(</span><span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>bafhp<span class="token punctuation">,</span> <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>freemstat<span class="token punctuation">,</span> <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>freemend<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    freemstat<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_olkty <span class="token operator">=</span> MF_OLKTY_ODER<span class="token punctuation">;</span>
+    <span class="token comment">//设置起始页面指向结束页</span>
+    freemstat<span class="token operator">-></span>md_odlink <span class="token operator">=</span> freemend<span class="token punctuation">;</span>
+    freemend<span class="token operator">-></span>md_indxflgs<span class="token punctuation">.</span>mf_olkty <span class="token operator">=</span> MF_OLKTY_BAFH<span class="token punctuation">;</span>
+    <span class="token comment">//结束页面指向所属的bafhlst_t结构</span>
+    freemend<span class="token operator">-></span>md_odlink <span class="token operator">=</span> bafhp<span class="token punctuation">;</span>
+    <span class="token comment">//把起始页面挂载到所属的bafhlst_t结构中</span>
+    <span class="token function">list_add</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>freemstat<span class="token operator">-></span>md_list<span class="token punctuation">,</span> <span class="token operator">&amp;</span>bafhp<span class="token operator">-></span>af_frelst<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token comment">//增加bafhlst_t结构的空闲页面对象和总的页面对象的计数</span>
+    bafhp<span class="token operator">-></span>af_fobjnr<span class="token operator">++</span><span class="token punctuation">;</span>
+    bafhp<span class="token operator">-></span>af_mobjnr<span class="token operator">++</span><span class="token punctuation">;</span>
+    <span class="token keyword">return</span> TRUE<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token class-name">bool_t</span> <span class="token function">mm_merpages_onbafhlst</span><span class="token punctuation">(</span><span class="token class-name">msadsc_t</span> <span class="token operator">*</span>freemsa<span class="token punctuation">,</span> <span class="token class-name">uint_t</span> freepgs<span class="token punctuation">,</span> <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>relbf<span class="token punctuation">,</span> <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>merbf<span class="token punctuation">)</span>
+<span class="token punctuation">&#123;</span>
+    <span class="token class-name">sint_t</span> rets <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+    <span class="token class-name">msadsc_t</span> <span class="token operator">*</span>mnxs <span class="token operator">=</span> freemsa<span class="token punctuation">,</span> <span class="token operator">*</span>mnxe <span class="token operator">=</span> <span class="token operator">&amp;</span>freemsa<span class="token punctuation">[</span>freepgs <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token class-name">bafhlst_t</span> <span class="token operator">*</span>tmpbf <span class="token operator">=</span> relbf<span class="token punctuation">;</span>
+    <span class="token comment">//从实际要开始遍历，直到最高的那个bafhlst_t结构</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token punctuation">;</span> tmpbf <span class="token operator">&lt;</span> merbf<span class="token punctuation">;</span> tmpbf<span class="token operator">++</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token comment">//查看最大地址连续、且空闲msadsc_t结构，如释放的是第0个msadsc_t结构我们就去查找第1个msadsc_t结构是否空闲，且与第0个msadsc_t结构的地址是不是连续的</span>
+        rets <span class="token operator">=</span> <span class="token function">mm_find_cmsa2blk</span><span class="token punctuation">(</span>tmpbf<span class="token punctuation">,</span> <span class="token operator">&amp;</span>mnxs<span class="token punctuation">,</span> <span class="token operator">&amp;</span>mnxe<span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">==</span> rets<span class="token punctuation">)</span>
+        <span class="token punctuation">&#123;</span>
+            <span class="token keyword">break</span><span class="token punctuation">;</span>
+        <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">//把合并的msadsc_t结构（从mnxs到mnxe）加入到对应的bafhlst_t结构中</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">mpobf_add_msadsc</span><span class="token punctuation">(</span>tmpbf<span class="token punctuation">,</span> mnxs<span class="token punctuation">,</span> mnxe<span class="token punctuation">)</span> <span class="token operator">==</span> FALSE<span class="token punctuation">)</span>
+    <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> FALSE<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> TRUE<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>最核心的还是要对空闲页面进行合并，合并成更大的连续的内存页面</strong></p>
+<p>比如，现在我们要释放一个页面，这个算法将执行如下步骤。</p>
+<ol>
+<li>释放一个页面，会返回 m_mdmlielst 数组中的第 0 个 bafhlst_t 结构。设置这个页面对应的 msadsc_t 结构的相关信息，表示已经执行了释放操作。</li>
+<li>开始查看第 0 个 bafhlst_t 结构中有没有空闲的 msadsc_t，并且它和要释放的 msadsc_t 对应的物理地址是连续的。没有则把这个释放的 msadsc_t 挂载第 0 个 bafhlst_t 结构中，算法结束，否则进入下一步。</li>
+<li>把第 0 个 bafhlst_t 结构中的 msadsc_t 结构拿出来与释放的 msadsc_t 结构，合并成 2 个连续且更大的 msadsc_t。继续查看第 1 个 bafhlst_t 结构中有没有空闲的 msadsc_t，而且这个空闲 msadsc_t 要和上一步合并的 2 个 msadsc_t 对应的物理地址是连续的。</li>
+<li>没有则把这个合并的 2 个 msadsc_t 挂载第 1 个 bafhlst_t 结构中，算法结束，否则进入下一步。</li>
+<li>把第 1 个 bafhlst_t 结构中的 2 个连续的 msadsc_t 结构，还有合并的 2 个地址连续的 msadsc_t 结构拿出来，合并成 4 个连续且更大的 msadsc_t 结构。</li>
+<li>继续查看第 2 个 bafhlst_t 结构，有没有空闲的 msadsc_t 结构，并且它要和上一步合并的 4 个 msadsc_t 结构对应的物理地址是连续的。</li>
+<li>没有则把这个合并的 4 个 msadsc_t 挂载第 2 个 bafhlst_t 结构中，算法结束。</li>
+</ol>
+<p><img src="https://static001.geekbang.org/resource/image/a2/34/a280682b0ee533984c4yya14dee67834.jpg?wh=4049x3320" alt="内存释放算法"></p>
 ]]></content>
       <categories>
         <category>操作系统</category>
