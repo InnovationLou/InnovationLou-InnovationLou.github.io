@@ -493,7 +493,7 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2021-07-12
+                    2021-07-13
                 </div>
                 
 
@@ -539,7 +539,7 @@
 <p>Part of the answer is the need for a non-blocking web stack to handle concurrency with a small number of threads and scale with fewer hardware resources. Servlet 3.1 did provide an API for non-blocking I/O. However, using it leads away from the rest of the Servlet API, where contracts are synchronous (<code>Filter</code>, <code>Servlet</code>) or blocking (<code>getParameter</code>, <code>getPart</code>). This was the motivation for a new common API to serve as a foundation across any non-blocking runtime. That is important because of servers (such as Netty) that are well-established in the async, non-blocking space.</p>
 <p>The other part of the answer is functional programming. Much as the addition of annotations in Java 5 created opportunities (such as annotated REST controllers or unit tests), the addition of lambda expressions in Java 8 created opportunities for functional APIs in Java. This is a boon for non-blocking applications and continuation-style APIs (as popularized by <code>CompletableFuture</code> and <a target="_blank" rel="noopener" href="http://reactivex.io/">ReactiveX</a>) that allow declarative composition of asynchronous logic. At the programming-model level, Java 8 enabled Spring WebFlux to offer functional web endpoints alongside annotated controllers.</p>
 </blockquote>
-<p>总结一下：</p>
+<p>总结</p>
 <ul>
 <li>需要一个非阻塞的Web技术栈来处理具有少量线程的并发并使用较少的硬件资源进行扩展，Servlet3.1之后提供了NIO非阻塞式API以及Netty都提供了支持</li>
 <li>Java的函数式编程（functional programming）支持，lambda表达式提供了函数式API，允许异步逻辑的声明式组合的非阻塞应用程序</li>
