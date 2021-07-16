@@ -3604,7 +3604,7 @@ fun_ptr<span class="token operator">=</span>printWord<span class="token punctuat
 <span class="token punctuation">(</span><span class="token operator">*</span>fun_ptr<span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token string">"Hello World!"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//直接调用</span>
 <span class="token function">another_func</span><span class="token punctuation">(</span>fun_ptr<span class="token punctuation">,</span><span class="token string">"Hello World"</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//间接调用，回调函数就是用这种方式实现的</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
 
-<p>那么Java怎么办解决这个问题呢，前面提到了匿名内部类，lambda最初开发的时候可能真的是从这里启发来的，用一个接口(匿名类的父类接口)包裹住这个方法，传接口对象进去就可以了。</p>
+<p>那么Java怎么办解决这个问题呢，前面提到了匿名内部类，lambda最初开发的时候可能真的是从这里启发来的，用一个接口(匿名类的父类接口)包裹住这个方法，传接口对象进去就可以了</p>
 <p>为了研究这个问题 上代码，用反编译工具查看底层字节码研究原理</p>
 <pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">package</span> <span class="token namespace">main</span><span class="token punctuation">;</span>
 
@@ -4623,6 +4623,7 @@ Result=u
 ]]></content>
       <categories>
         <category>Java</category>
+        <category>Spring</category>
       </categories>
       <tags>
         <tag>Java</tag>
