@@ -647,10 +647,10 @@
 <li>综合情况</li>
 </ul>
 <h3 id="1）跨数据源"><a href="#1）跨数据源" class="headerlink" title="1）跨数据源"></a>1）跨数据源</h3><p>随着业务数据规模的快速发展，数据量越来越大，单库单表逐渐成为瓶颈。所以我们对数据库进行了水平拆分，将原单库单表拆分成数据库分片，于是就产生了跨数据库事务问题。</p>
-<p><img src="assets/pic/image-20200304201018438.png" alt="跨数据源"></p>
+<p><img src="https://pic.innnovation.cn//img/20210716150053.png" alt="跨数据源"></p>
 <h3 id="2）跨服务"><a href="#2）跨服务" class="headerlink" title="2）跨服务"></a>2）跨服务</h3><p>在业务发展初期，“一块大饼”的单业务系统架构，能满足基本的业务需求。但是随着业务的快速发展，系统的访问量和业务复杂程度都在快速增长，单系统架构逐渐成为业务发展瓶颈，解决业务系统的高耦合、可伸缩问题的需求越来越强烈。</p>
 <p>如下图所示，按照面向服务（SOA）的架构的设计原则，将单业务系统拆分成多个业务系统，降低了各系统之间的耦合度，使不同的业务系统专注于自身业务，更有利于业务的发展和系统容量的伸缩。</p>
-<p><img src="assets/pic/image-20200304202639509.png" alt="跨服务"></p>
+<p><img src="https://pic.innnovation.cn//img/20210716150103.png" alt="跨服务"></p>
 <h3 id="3）分布式系统的数据一致性问题"><a href="#3）分布式系统的数据一致性问题" class="headerlink" title="3）分布式系统的数据一致性问题"></a>3）分布式系统的数据一致性问题</h3><p>在数据库水平拆分、服务垂直拆分之后，一个业务操作通常要跨多个数据库、服务才能完成。在分布式网络环境下，我们无法保障所有服务、数据库都百分百可用，一定会出现部分服务、数据库执行成功，另一部分执行失败的问题。</p>
 <p>当出现部分业务操作成功、部分业务操作失败时，业务数据就会出现不一致。</p>
 <p>例如电商行业中比较常见的下单付款案例，包括下面几个行为：</p>
@@ -660,7 +660,7 @@
 <li>从用户账户余额扣除金额</li>
 </ul>
 <p>完成上面的操作需要访问三个不同的微服务和三个不同的数据库。</p>
-<p><img src="assets/pic/image-20200304204442839.png" alt="下单付款业务"></p>
+<p><img src="https://pic.innnovation.cn//img/20210716150111.png" alt="下单付款业务"></p>
 <p>在分布式环境下，肯定会出现部分操作成功、部分操作失败的问题，比如：订单生成了，库存也扣减了，但是 用户账户的余额不足，这就造成数据不一致。</p>
 <p>订单的创建、库存的扣减、账户扣款在每一个服务和数据库内是一个本地事务，可以保证ACID原则。</p>
 <p>但是当我们把三件事情看做一个事情事，要满足保证“业务”的原子性，要么所有操作全部成功，要么全部失败，不允许出现部分成功部分失败的现象，这就是分布式系统下的事务了。</p>
@@ -669,7 +669,7 @@
 <p>这得从CAP定理和BASE理论说起。</p>
 <h2 id="2-1-CAP定理"><a href="#2-1-CAP定理" class="headerlink" title="2.1.CAP定理"></a>2.1.CAP定理</h2><p>本小节内容摘自：<a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2018/07/cap.html">CAP 定理的含义</a></p>
 <p>什么是CAP定理呢？</p>
-<p><img src="assets/pic/image-20200304205842784.png" alt="CAP定理"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150123.png" alt="CAP定理"> </p>
 <p>1998年，加州大学的计算机科学家 Eric Brewer 提出，分布式系统有三个指标。</p>
 <blockquote>
 <ul>
@@ -683,19 +683,19 @@
 <h3 id="2-1-1-Partition-tolerance"><a href="#2-1-1-Partition-tolerance" class="headerlink" title="2.1.1.Partition tolerance"></a>2.1.1.Partition tolerance</h3><p>先看 Partition tolerance，中文叫做”分区容错”。</p>
 <p>大多数分布式系统都分布在多个子网络。每个子网络就叫做一个区（partition）。分区容错的意思是，区间通信可能失败。比如，一台服务器放在上海，另一台服务器放在北京，这就是两个区，它们之间可能因网络问题无法通信。</p>
 <p>如图：</p>
-<p><img src="assets/pic/image-20200304210120471.png"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150212.png"> </p>
 <p>上图中，G1 和 G2 是两台跨区的服务器。G1 向 G2 发送一条消息，G2 可能无法收到。系统设计的时候，必须考虑到这种情况。</p>
 <p>一般来说，分布式系统，分区容错无法避免，因此可以认为 CAP 的 P 总是成立。根据CAP 定理，剩下的 C 和 A 无法同时做到。</p>
 <h3 id="2-1-2-Consistency"><a href="#2-1-2-Consistency" class="headerlink" title="2.1.2.Consistency"></a>2.1.2.Consistency</h3><p>Consistency 中文叫做”一致性”。意思是，写操作之后的读操作，必须返回该值。举例来说，某条记录是 v0，用户向 G1 发起一个写操作，将其改为 v1。</p>
-<p><img src="assets/pic/image-20200304210414309.png"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150224.png"> </p>
 <p>接下来，用户的读操作就会得到 v1。这就叫一致性。</p>
-<p><img src="assets/pic/image-20200304210506575.png"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150225.png"> </p>
 <p>问题是，用户有可能向 G2 发起读操作，由于 G2 的值没有发生变化，因此返回的是 v0。G1 和 G2 读操作的结果不一致，这就不满足一致性了。</p>
-<p><img src="assets/pic/image-20200304210521364.png"></p>
+<p><img src="https://pic.innnovation.cn//img/20210716150226.png"></p>
 <p>为了让 G2 也能变为 v1，就要在 G1 写操作的时候，让 G1 向 G2 发送一条消息，要求 G2 也改成 v1。</p>
-<p><img src="assets/pic/image-20200304210540168.png"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150227.png"> </p>
 <p>这样的话，用户向 G2 发起读操作，也能得到 v1。</p>
-<p><img src="assets/pic/image-20200304210557117.png"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150228.png"> </p>
 <h3 id="2-1-3-Availability"><a href="#2-1-3-Availability" class="headerlink" title="2.1.3.Availability"></a>2.1.3.Availability</h3><p> Availability 中文叫做”可用性”，意思是只要收到用户的请求，服务器就必须给出回应（对和错不论）。</p>
 <p>用户可以选择向 G1 或 G2 发起读操作。不管是哪台服务器，只要收到请求，就必须告诉用户，到底是 v0 还是 v1，否则就不满足可用性。</p>
 <h3 id="2-1-4-Consistency-和-Availability-的矛盾"><a href="#2-1-4-Consistency-和-Availability-的矛盾" class="headerlink" title="2.1.4.Consistency 和 Availability 的矛盾"></a>2.1.4.Consistency 和 Availability 的矛盾</h3><p>一致性和可用性，为什么不可能同时成立？</p>
@@ -762,14 +762,14 @@
 <blockquote>
 <p>1）正常情况</p>
 </blockquote>
-<p><img src="assets/pic/image-20200305141029973.png"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150229.png"> </p>
 <p><strong>投票阶段</strong>：协调组询问各个事务参与者，是否可以执行事务。每个事务参与者执行事务，写入redo和undo日志，然后反馈事务执行成功的信息（<code>agree</code>）</p>
 <p><strong>提交阶段</strong>：协调组发现每个参与者都可以执行事务（<code>agree</code>），于是向各个事务参与者发出<code>commit</code>指令，各个事务参与者提交事务。</p>
 <blockquote>
 <p>2）异常情况</p>
 </blockquote>
 <p>当然，也有异常的时候：</p>
-<p><img src="assets/pic/image-20200305141318326.png"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150230.png"> </p>
 <p><strong>投票阶段</strong>：协调组询问各个事务参与者，是否可以执行事务。每个事务参与者执行事务，写入redo和undo日志，然后反馈事务执行结果，但只要有一个参与者返回的是<code>Disagree</code>，则说明执行失败。</p>
 <p><strong>提交阶段</strong>：协调组发现有一个或多个参与者返回的是<code>Disagree</code>，认为执行失败。于是向各个事务参与者发出<code>abort</code>指令，各个事务参与者回滚事务。</p>
 <blockquote>
@@ -779,7 +779,7 @@
 <ul>
 <li><p>单点故障问题</p>
 <p>2PC的缺点在于不能处理fail-stop形式的节点failure. 比如下图这种情况.</p>
-<p><img src="assets/pic/image-20200305142812815.png"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150231.png"> </p>
 <p>假设coordinator和voter3都在Commit这个阶段crash了, 而voter1和voter2没有收到commit消息. 这时候voter1和voter2就陷入了一个困境. 因为他们并不能判断现在是两个场景中的哪一种:</p>
 <p> (1)上轮全票通过然后voter3第一个收到了commit的消息并在commit操作之后crash了</p>
 <p> (2)上轮voter3反对所以干脆没有通过.</p>
@@ -802,14 +802,14 @@
 <li>准备阶段（try）：资源的检测和预留；</li>
 <li>执行阶段（confirm/cancel）：根据上一步结果，判断下面的执行方法。如果上一步中所有事务参与者都成功，则这里执行confirm。反之，执行cancel</li>
 </ul>
-<p><img src="assets/pic/image-20200305155521612.png"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150232.png"> </p>
 <p>粗看似乎与两阶段提交没什么区别，但其实差别很大：</p>
 <ul>
 <li>try、confirm、cancel都是独立的事务，不受其它参与者的影响，不会阻塞等待它人</li>
 <li>try、confirm、cancel由程序员在业务层编写，锁粒度有代码控制</li>
 </ul>
 <h3 id="2-5-2-实例"><a href="#2-5-2-实例" class="headerlink" title="2.5.2.实例"></a>2.5.2.实例</h3><p>我们以之前的下单业务中的扣减余额为例来看下三个不同的方法要怎么编写，假设账户A原来余额是100，需要余额扣减30元。如图：</p>
-<p><img src="assets/pic/image-20200305155830732.png"></p>
+<p><img src="https://pic.innnovation.cn//img/20210716150233.png"></p>
 <ul>
 <li><p>一阶段（Try）：余额检查，并冻结用户部分金额，此阶段执行完毕，事务已经提交</p>
 <ul>
@@ -855,7 +855,7 @@
 <li>事务参与者B接收到消息后执行本地事务</li>
 </ul>
 <p>如图：</p>
-<p><img src="assets/pic/image-20200305181454125.png"></p>
+<p><img src="https://pic.innnovation.cn//img/20210716150234.png"></p>
 <p>这个过程有点像你去学校食堂吃饭：</p>
 <ul>
 <li>拿着钱去收银处，点一份红烧牛肉面，付钱</li>
@@ -872,7 +872,7 @@
 <p>那么问题来了，我们如何保证消息发送一定成功？如何保证消费者一定能收到消息？</p>
 <h3 id="2-6-2-本地消息表"><a href="#2-6-2-本地消息表" class="headerlink" title="2.6.2.本地消息表"></a>2.6.2.本地消息表</h3><p>为了避免消息发送失败或丢失，我们可以把消息持久化到数据库中。实现时有简化版本和解耦合版本两种方式。</p>
 <h4 id="1）简化版本"><a href="#1）简化版本" class="headerlink" title="1）简化版本"></a>1）简化版本</h4><p>原理图：</p>
-<p><img src="assets/pic/image-20200305183431211.png"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150235.png"> </p>
 <ul>
 <li><p>事务发起者：</p>
 <ul>
@@ -914,9 +914,9 @@
 </li>
 </ul>
 <h4 id="2）独立消息服务"><a href="#2）独立消息服务" class="headerlink" title="2）独立消息服务"></a>2）独立消息服务</h4><p>为了解决上述问题，我们会引入一个独立的消息服务，来完成对消息的持久化、发送、确认、失败重试等一系列行为，大概的模型如下：</p>
-<p><img src="assets/pic/image-20200305200131083.png" alt="独立消息服务"></p>
+<p><img src="https://pic.innnovation.cn//img/20210716150236.png" alt="独立消息服务"></p>
 <p>一次消息发送的时序图：</p>
-<p><img src="assets/pic/image-20200305205430863.png" alt="时序图"></p>
+<p><img src="https://pic.innnovation.cn//img/20210716150237.png" alt="时序图"></p>
 <p>事务发起者A的基本执行步骤：</p>
 <ul>
 <li>开启本地事务</li>
@@ -1002,7 +1002,7 @@
 <p>在 AT 模式下，用户只需关注自己的“业务 SQL”，用户的 “业务 SQL” 作为一阶段，Seata 框架会自动生成事务的二阶段提交和回滚操作。</p>
 <p>可以参考Seata的<a target="_blank" rel="noopener" href="https://seata.io/zh-cn/docs/dev/mode/at-mode.html">官方文档</a>。</p>
 <h3 id="2-7-1-基本原理"><a href="#2-7-1-基本原理" class="headerlink" title="2.7.1.基本原理"></a>2.7.1.基本原理</h3><p>先来看一张流程图：</p>
-<p><img src="assets/pic/image-20200305212340203.png" alt="AT模式"></p>
+<p><img src="https://pic.innnovation.cn//img/20210716150238.png" alt="AT模式"></p>
 <p>有没有感觉跟TCC的执行很像，都是分两个阶段：</p>
 <ul>
 <li>一阶段：执行本地事务，并返回执行结果</li>
@@ -1015,7 +1015,7 @@
 </blockquote>
 <p>在一阶段，Seata 会拦截“业务 SQL”，首先解析 SQL 语义，找到“<code>业务 SQL</code>”要更新的业务数据，在业务数据被更新前，将其保存成“<code>before image</code>”，然后执行“<code>业务 SQL</code>”更新业务数据，在业务数据更新之后，再将其保存成“<code>after image</code>”，最后获取全局行锁，<strong>提交事务</strong>。以上操作全部在一个数据库事务内完成，这样保证了一阶段操作的原子性。</p>
 <p>这里的<code>before image</code>和<code>after image</code>类似于数据库的undo和redo日志，但其实是用数据库模拟的。</p>
-<p><img src="assets/pic/image-20200305213652558.png"></p>
+<p><img src="https://pic.innnovation.cn//img/20210716150239.png"></p>
 <blockquote>
 <p>二阶段提交</p>
 </blockquote>
@@ -1024,7 +1024,7 @@
 <p>二阶段回滚：</p>
 </blockquote>
 <p>二阶段如果是回滚的话，Seata 就需要回滚一阶段已经执行的“<code>业务 SQL</code>”，还原业务数据。回滚方式便是用“<code>before image</code>”还原业务数据；但在还原前要首先要校验脏写，对比“数据库当前业务数据”和 “<code>after image</code>”，如果两份数据完全一致就说明没有脏写，可以还原业务数据，如果不一致就说明有<code>脏写</code>，出现脏写就需要转人工处理。</p>
-<p><img src="assets/pic/image-20200305214649845.png"></p>
+<p><img src="https://pic.innnovation.cn//img/20210716150240.png"></p>
 <p>不过因为有全局锁机制，所以可以降低出现<code>脏写</code>的概率。</p>
 <p>AT 模式的一阶段、二阶段提交和回滚均由 Seata 框架自动生成，用户只需编写“业务 SQL”，便能轻松接入分布式事务，AT 模式是一种对业务无任何侵入的分布式事务解决方案。</p>
 <h3 id="2-7-2-详细架构和流程"><a href="#2-7-2-详细架构和流程" class="headerlink" title="2.7.2.详细架构和流程"></a>2.7.2.详细架构和流程</h3><p>Seata中的几个基本概念：</p>
@@ -1040,7 +1040,7 @@
 </li>
 </ul>
 <p>我们看下面的一个架构图</p>
-<p><img src="assets/pic/image-20200305225811888.png"></p>
+<p><img src="https://pic.innnovation.cn//img/20210716150241.png"></p>
 <ul>
 <li>TM：业务模块中全局事务的开启者<ul>
 <li>向TC开启一个全局事务</li>
@@ -1252,7 +1252,7 @@
 <p>Seata官网对于Saga的指南：<a target="_blank" rel="noopener" href="https://seata.io/zh-cn/docs/user/saga.html">https://seata.io/zh-cn/docs/user/saga.html</a></p>
 <h3 id="基本模型"><a href="#基本模型" class="headerlink" title="基本模型"></a>基本模型</h3><p>在 Saga 模式下，分布式事务内有多个参与者，每一个参与者都是一个冲正补偿服务，需要用户根据业务场景实现其正向操作和逆向回滚操作。</p>
 <p>分布式事务执行过程中，依次执行各参与者的正向操作，如果所有正向操作均执行成功，那么分布式事务提交。如果任何一个正向操作执行失败，那么分布式事务会去退回去执行前面各参与者的逆向回滚操作，回滚已提交的参与者，使分布式事务回到初始状态。</p>
-<p><img src="assets/pic/1561965208439-606129fe-6761-4177-8887-1fda9306f104.png" alt="Saga 模式"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150242.png" alt="Saga 模式"> </p>
 <p>Saga 模式下分布式事务通常是由事件驱动的，各个参与者之间是异步执行的，Saga 模式是一种长事务解决方案。</p>
 <h3 id="适用场景："><a href="#适用场景：" class="headerlink" title="适用场景："></a>适用场景：</h3><ul>
 <li>业务流程长、业务流程多</li>
@@ -1268,10 +1268,10 @@
 </ul>
 <h1 id="3-Seata"><a href="#3-Seata" class="headerlink" title="3.Seata"></a>3.Seata</h1><h2 id="3-1-介绍"><a href="#3-1-介绍" class="headerlink" title="3.1.介绍"></a>3.1.介绍</h2><p>Seata（Simple Extensible Autonomous Transaction Architecture，简单可扩展自治事务框架）是 2019 年 1 月份蚂蚁金服和阿里巴巴共同开源的分布式事务解决方案。Seata 开源半年左右，目前已经有接近一万 star，社区非常活跃。我们热忱欢迎大家参与到 Seata 社区建设中，一同将 Seata 打造成开源分布式事务标杆产品。</p>
 <p>Seata：<a target="_blank" rel="noopener" href="https://github.com/seata/seata">https://</a><a target="_blank" rel="noopener" href="https://github.com/seata/seata">github.com/seata/seata</a></p>
-<p><img src="assets/pic/1561960344792-8810110b-1eda-4417-944e-7051ca52f90d.png" alt="Seata"></p>
+<p><img src="https://pic.innnovation.cn//img/20210716150243.png" alt="Seata"></p>
 <h3 id="3-1-1-Seata-产品模块"><a href="#3-1-1-Seata-产品模块" class="headerlink" title="3.1.1. Seata 产品模块"></a>3.1.1. Seata 产品模块</h3><p>如下图所示，Seata 中有三大模块，分别是 TM、RM 和 TC。 其中 TM 和 RM 是作为 Seata 的客户端与业务系统集成在一起，TC 作为 Seata 的服务端独立部署。</p>
-<p><img src="assets/pic/image-20200305225811888.png"></p>
-<h3 id="3-1-2-Seata支持的事务模型"><a href="#3-1-2-Seata支持的事务模型" class="headerlink" title="3.1.2.Seata支持的事务模型"></a>3.1.2.Seata支持的事务模型</h3><p>Seata 会有 4 种分布式事务解决方案，分别是 AT 模式、TCC 模式、Saga 模式和 XA 模式。<img src="assets/pic/image-20200305230513415.png"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150241.png"></p>
+<h3 id="3-1-2-Seata支持的事务模型"><a href="#3-1-2-Seata支持的事务模型" class="headerlink" title="3.1.2.Seata支持的事务模型"></a>3.1.2.Seata支持的事务模型</h3><p>Seata 会有 4 种分布式事务解决方案，分别是 AT 模式、TCC 模式、Saga 模式和 XA 模式。<img src="https://pic.innnovation.cn//img/20210716150244.png"> </p>
 <h2 id="3-2-AT模式实践"><a href="#3-2-AT模式实践" class="headerlink" title="3.2.AT模式实践"></a>3.2.AT模式实践</h2><p>Seata中比较常用的是AT模式，这里我们拿AT模式来做演示，看看如何在SpringCloud微服务中集成Seata.</p>
 <p>我们假定一个用户购买商品的业务逻辑。整个业务逻辑由3个微服务提供支持：</p>
 <ul>
@@ -1280,7 +1280,7 @@
 <li>帐户服务：从用户帐户中扣除余额。</li>
 </ul>
 <p>流程图：</p>
-<p><img src="assets/pic/image-20200306164728739.png"></p>
+<p><img src="https://pic.innnovation.cn//img/20210716150245.png"></p>
 <p>订单服务在下单时，同时调用库存服务和用户服务，此时就会发生跨服务和跨数据源的分布式事务问题。</p>
 <h3 id="3-2-1-准备数据"><a href="#3-2-1-准备数据" class="headerlink" title="3.2.1.准备数据"></a>3.2.1.准备数据</h3><p>执行资料中提供的<code>seata_demo.sql</code>文件，导入数据。</p>
 <p>其中包含4张表。</p>
@@ -1330,7 +1330,7 @@
 
 <h3 id="3-2-2-引入Demo工程"><a href="#3-2-2-引入Demo工程" class="headerlink" title="3.2.2.引入Demo工程"></a>3.2.2.引入Demo工程</h3><p>我们先准备基本的项目环境，实现下单的业务代码</p>
 <h4 id="导入项目"><a href="#导入项目" class="headerlink" title="导入项目"></a>导入项目</h4><p>项目结构如下：</p>
-<p><img src="assets/pic/image-20200306171827203.png"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150246.png"> </p>
 <p>结构说明：</p>
 <ul>
 <li>account-service：用户服务，提供操作用户账号余额的功能，端口8083</li>
@@ -1354,32 +1354,32 @@
 </ul>
 <p>原始数据库数据：</p>
 <p>余额：</p>
-<p><img src="assets/pic/image-20200306173439268.png"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150247.png"> </p>
 <p>库存：</p>
-<p><img src="assets/pic/image-20200306173511332.png"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150248.png"> </p>
 <p>其它两张表为空。</p>
 <blockquote>
 <p>正常下单</p>
 </blockquote>
 <p>此时启动项目，尝试下单，目前商品库存为10，用户余额为1000，因此只要数据不超过这两个值应该能正常下单。</p>
-<p><img src="assets/pic/image-20200306173343839.png"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150249.png"> </p>
 <p>查看数据库数据：</p>
 <p>余额：</p>
-<p><img src="assets/pic/image-20200306173602942.png"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150250.png"> </p>
 <p>库存：</p>
-<p><img src="assets/pic/image-20200306173629491.png"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150251.png"> </p>
 <p>订单：</p>
-<p><img src="assets/pic/image-20200306173700813.png"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150252.png"> </p>
 <blockquote>
 <p>异常下单</p>
 </blockquote>
 <p>这次，我们把money参数设置为1200，这样就超过了余额最大值，理论上所有数据都应该回滚：</p>
-<p><img src="assets/pic/image-20200306173916953.png"></p>
+<p><img src="https://pic.innnovation.cn//img/20210716150253.png"></p>
 <p>看下用户余额：</p>
-<p><img src="assets/pic/image-20200306224048175.png"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150254.png"> </p>
 <p>因为扣款失败，因此这里没有扣减</p>
 <p>来看下库存数据：</p>
-<p><img src="assets/pic/image-20200306174001901.png"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150255.png"> </p>
 <p>这说明扣减库存依然成功，并未回滚！</p>
 <p>接下来，我们引入Seata，看看能不能解决这个问题。</p>
 <h3 id="3-2-3-准备TC服务"><a href="#3-2-3-准备TC服务" class="headerlink" title="3.2.3.准备TC服务"></a>3.2.3.准备TC服务</h3><p>在之前讲解Seata原理的时候，我们就聊过，其中包含重要的3个角色：</p>
@@ -1392,7 +1392,7 @@
 <p>因此，首先我们需要搭建一个独立的TC服务。</p>
 <h4 id="1）安装"><a href="#1）安装" class="headerlink" title="1）安装"></a>1）安装</h4><p>首先去官网下载TC的服务端安装包，GitHub的地址：<a target="_blank" rel="noopener" href="https://github.com/seata/seata/releases">https://github.com/seata/seata/releases</a></p>
 <p>其目录结构如下：</p>
-<p><img src="assets/pic/image-20200306174818712.png"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150256.png"> </p>
 <p>包括：</p>
 <ul>
 <li>bin：启动脚本</li>
@@ -1565,7 +1565,7 @@ store <span class="token punctuation">&#123;</span>
 
 
 <h4 id="3）启动"><a href="#3）启动" class="headerlink" title="3）启动"></a>3）启动</h4><p>进入<code>$&#123;seata_home&#125;/bin/</code>目录中:</p>
-<p><img src="assets/pic/image-20200306201749660.png"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150257.png"> </p>
 <p>如果是linux环境（要有JRE），执行<code>seata-server.sh</code></p>
 <p>如果是windows环境，执行<code>seata-server.bat</code></p>
 <h3 id="3-2-4-改造Order服务"><a href="#3-2-4-改造Order服务" class="headerlink" title="3.2.4.改造Order服务"></a>3.2.4.改造Order服务</h3><p>接下来是微服务的改造，不管是哪一个微服务，只要是事务的参与者，步骤基本一致。</p>
@@ -1748,7 +1748,7 @@ client <span class="token punctuation">&#123;</span>
 <p>注意，这里因为订单服务使用了mybatis-plus这个框架（这是一个mybatis集成框架，自动生成单表Sql），因此我们需要用mybatis-plus的<code>MybatisSqlSessionFactoryBean</code>代替<code>SqlSessionFactoryBean</code></p>
 <p>如果用的是原生的mybatis，请使用<code>SqlSessionFactoryBean</code>。</p>
 <h4 id="4）添加事务注解"><a href="#4）添加事务注解" class="headerlink" title="4）添加事务注解"></a>4）添加事务注解</h4><p>给事务发起者<code>order_service</code>的<code>OrderServiceImpl</code>中的<code>createOrder()</code>方法添加<code>@GlobalTransactional</code>注解，开启全局事务：</p>
-<p><img src="assets/pic/image-20200306223043452.png"></p>
+<p><img src="https://pic.innnovation.cn//img/20210716150258.png"></p>
 <p>重新启动即可。</p>
 <h3 id="3-2-5-改造Storage、Account服务"><a href="#3-2-5-改造Storage、Account服务" class="headerlink" title="3.2.5.改造Storage、Account服务"></a>3.2.5.改造Storage、Account服务</h3><p>与OrderService类似，这里也要经过下面的步骤：</p>
 <ul>
@@ -1784,12 +1784,12 @@ client <span class="token punctuation">&#123;</span>
 <h3 id="3-2-6-测试"><a href="#3-2-6-测试" class="headerlink" title="3.2.6.测试"></a>3.2.6.测试</h3><p>重启所有微服务后，我们再次测试。</p>
 <p>目前数据情况：用户余额900，库存为6.</p>
 <p>我们试试扣款1200元，那么扣款失败，理论上来说所有数据都会回滚.</p>
-<p><img src="assets/pic/image-20200306173916953.png"></p>
+<p><img src="https://pic.innnovation.cn//img/20210716150253.png"></p>
 <p>看下用户余额：</p>
-<p><img src="assets/pic/image-20200306224048175.png"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150254.png"> </p>
 <p>因为扣款失败，因此这里没有扣减</p>
 <p>来看下库存数据：</p>
-<p><img src="assets/pic/image-20200306174001901.png"> </p>
+<p><img src="https://pic.innnovation.cn//img/20210716150255.png"> </p>
 <p>减库存依然是6，成功回滚，说明分布式事务生效了！</p>
 
                 
