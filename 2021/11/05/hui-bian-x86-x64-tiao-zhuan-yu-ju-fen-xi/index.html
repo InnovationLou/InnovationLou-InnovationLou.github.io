@@ -4,7 +4,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="keywords" content="操作系统-如何管理内存对象, Innovation Louke">
+    <meta name="keywords" content="汇编x86 x64跳转语句分析, Innovation Louke">
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -16,7 +16,7 @@
     <!-- Global site tag (gtag.js) - Google Analytics -->
 
 
-    <title>操作系统-如何管理内存对象 | Innovation Louke</title>
+    <title>汇编x86 x64跳转语句分析 | Innovation Louke</title>
     <link rel="icon" type="image/png" href="/favicon.png">
 
     <link rel="stylesheet" type="text/css" href="/libs/awesome/css/all.css">
@@ -332,12 +332,12 @@
 
 
 
-<div class="bg-cover pd-header post-cover" style="background-image: url('https://pic.innnovation.cn//img/20210625223502.png')">
+<div class="bg-cover pd-header post-cover" style="background-image: url('/medias/featureimages/16.jpg')">
     <div class="container" style="right: 0px;left: 0px;">
         <div class="row">
             <div class="col s12 m12 l12">
                 <div class="brand">
-                    <h1 class="description center-align post-title">操作系统-如何管理内存对象</h1>
+                    <h1 class="description center-align post-title">汇编x86 x64跳转语句分析</h1>
                 </div>
             </div>
         </div>
@@ -453,8 +453,12 @@
                     
                     <div class="article-tag">
                         
-                            <a href="/tags/OS/">
-                                <span class="chip bg-color">OS</span>
+                            <a href="/tags/%E9%80%86%E5%90%91/">
+                                <span class="chip bg-color">逆向</span>
+                            </a>
+                        
+                            <a href="/tags/%E6%B1%87%E7%BC%96/">
+                                <span class="chip bg-color">汇编</span>
                             </a>
                         
                     </div>
@@ -465,8 +469,8 @@
                     <div class="post-cate">
                         <i class="fas fa-bookmark fa-fw icon-category"></i>
                         
-                            <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="post-category">
-                                操作系统
+                            <a href="/categories/%E6%B1%87%E7%BC%96/" class="post-category">
+                                汇编
                             </a>
                         
                     </div>
@@ -478,28 +482,28 @@
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-minus fa-fw"></i>发布日期:&nbsp;&nbsp;
-                    2021-07-12
+                    2021-11-05
                 </div>
                 
 
                 
                 <div class="post-date info-break-policy">
                     <i class="far fa-calendar-check fa-fw"></i>更新日期:&nbsp;&nbsp;
-                    2021-07-12
+                    2021-11-06
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-file-word fa-fw"></i>文章字数:&nbsp;&nbsp;
-                    0
+                    909
                 </div>
                 
 
                 
                 <div class="info-break-policy">
                     <i class="far fa-clock fa-fw"></i>阅读时长:&nbsp;&nbsp;
-                    1 分
+                    5 分
                 </div>
                 
 
@@ -522,7 +526,242 @@
 
         <div class="card-content article-card-content">
             <div id="articleContent">
-                
+                <p>code:</p>
+<pre class="line-numbers language-c" data-language="c"><code class="language-c"><span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;stdio.h></span></span>
+<span class="token macro property"><span class="token directive-hash">#</span><span class="token directive keyword">include</span><span class="token string">&lt;stdlib.h></span></span>
+<span class="token keyword">int</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">int</span> nIndex1 <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+	<span class="token keyword">int</span> nIndex2 <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span>
+	<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"nIndex1:"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token function">scanf</span><span class="token punctuation">(</span><span class="token string">"%d"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>nIndex1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"nIndex2:"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token function">scanf</span><span class="token punctuation">(</span><span class="token string">"%d"</span><span class="token punctuation">,</span> <span class="token operator">&amp;</span>nIndex2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token keyword">if</span> <span class="token punctuation">(</span>nIndex1 <span class="token operator">==</span> <span class="token number">1</span> <span class="token operator">&amp;&amp;</span> nIndex2 <span class="token operator">==</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d"</span><span class="token punctuation">,</span> nIndex1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>nIndex1 <span class="token operator">==</span> <span class="token number">2</span> <span class="token operator">||</span> nIndex2 <span class="token operator">==</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+		<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d"</span><span class="token punctuation">,</span> nIndex1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token keyword">else</span>
+	<span class="token punctuation">&#123;</span>
+		<span class="token function">printf</span><span class="token punctuation">(</span><span class="token string">"%d"</span><span class="token punctuation">,</span> nIndex1<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
+	<span class="token function">system</span><span class="token punctuation">(</span><span class="token string">"pause"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token keyword">return</span> <span class="token number">0</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>x86 Debug:</p>
+<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">;[ebp-0Ch]&#x3D;0
+00CF196F  mov         dword ptr [ebp-0Ch],0  
+;[ebp-18h]&#x3D;0
+00CF1976  mov         dword ptr [ebp-18h],0  
+;nIndex1:
+00CF197D  push        0CF7B30h  
+;prinf
+00CF1982  call        00CF10D7  
+;平栈
+00CF1987  add         esp,4  
+;eax&#x3D;&amp;[ebp-0ch]
+00CF198A  lea         eax,[ebp-0Ch]  
+00CF198D  push        eax  
+;%d
+00CF198E  push        0CF7B3Ch  
+;scanf
+00CF1993  call        00CF1037  
+;Balance stack
+00CF1998  add         esp,8  
+;nIndex2:
+00CF199B  push        0CF7B40h  
+;printf
+00CF19A0  call        00CF10D7  
+;Balance stack
+00CF19A5  add         esp,4  
+00CF19A8  lea         eax,[ebp-18h]  
+00CF19AB  push        eax  
+00CF19AC  push        0CF7B3Ch  
+;scanf
+00CF19B1  call        00CF1037  
+;BS
+00CF19B6  add         esp,8  
+;[ebp-0Ch] 和1比  
+00CF19B9  cmp         dword ptr [ebp-0Ch],1  
+;not eq jmp inno1
+00CF19BD  jne         00CF19D8  
+;[ebp-18h] 和1比  
+00CF19BF  cmp         dword ptr [ebp-18h],1  
+;not eq jmp inno1
+00CF19C3  jne         00CF19D8  
+00CF19C5  mov         eax,dword ptr [ebp-0Ch]  
+00CF19C8  push        eax  
+00CF19C9  push        0CF7B3Ch  
+;取[ebp-0Ch]  的指然后printf
+00CF19CE  call        00CF10D7  
+;BS
+00CF19D3  add         esp,8  
+00CF19D6  jmp         00CF1A08  
+inno1:
+00CF19D8  cmp         dword ptr [ebp-0Ch],2  
+;eq jmp inno2;
+00CF19DC  je          00CF19E4  
+00CF19DE  cmp         dword ptr [ebp-18h],2  
+;not eq jmp inno3;
+00CF19E2  jne         00CF19F7 
+inno2:
+00CF19E4  mov         eax,dword ptr [ebp-0Ch]  
+00CF19E7  push        eax  
+00CF19E8  push        0CF7B3Ch  
+00CF19ED  call        00CF10D7  
+00CF19F2  add         esp,8  
+00CF19F5  jmp         00CF1A08 
+inno3:
+00CF19F7  mov         eax,dword ptr [ebp-0Ch]  
+00CF19FA  push        eax  
+00CF19FB  push        0CF7B3Ch  
+00CF1A00  call        00CF10D7  
+00CF1A05  add         esp,8  <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>x86 Release</p>
+<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">	;对比发现GCC指令后面不会马上call，都是统一跳到002010E4执行
+	;int nIndex1 &#x3D; 0;
+	;int nIndex2 &#x3D; 0;
+	;printf(&quot;nIndex1:&quot;);
+00201090  push        202108h  
+00201095  mov         dword ptr [ebp-8],0  
+0020109C  mov         dword ptr [ebp-0Ch],0  
+002010A3  call        00201020  
+	;scanf(&quot;%d&quot;, &amp;nIndex1);
+002010A8  lea         eax,[ebp-8]  
+002010AB  push        eax  
+002010AC  push        202114h  
+002010B1  call        00201050  
+	;printf(&quot;nIndex2:&quot;);
+002010B6  push        202118h  
+002010BB  call        00201020  
+	;scanf(&quot;%d&quot;, &amp;nIndex2);
+002010C0  lea         eax,[ebp-0Ch]  
+002010C3  push        eax  
+002010C4  push        202114h  
+002010C9  call        00201050  
+	;if (nIndex1 &#x3D;&#x3D; 1 &amp;&amp; nIndex2 &#x3D;&#x3D; 1) &#123;
+002010CE  mov         eax,dword ptr [ebp-8]  
+002010D1  add         esp,18h  
+002010D4  mov         ecx,dword ptr [ebp-0Ch]  
+002010D7  cmp         eax,1  
+002010DA  jne         002010E4  
+002010DC  cmp         ecx,1  
+002010DF  jne         002010E4  
+		;printf(&quot;%d&quot;, nIndex1);
+002010E1  push        ecx  
+
+002010E2  jmp         002010E5  
+	;else if (nIndex1 &#x3D;&#x3D; 2 || nIndex2 &#x3D;&#x3D; 2) &#123;
+		;printf(&quot;%d&quot;, nIndex1);
+	;&#125;
+	;else
+	;&#123;
+		;printf(&quot;%d&quot;, nIndex1);
+	;&#125;
+002010E4  push        eax  
+002010E5  push        202114h  
+002010EA  call        00201020  
+002010EF  add         esp,8  <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>x64 Debug</p>
+<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">	;int nIndex1 &#x3D; 0;
+00007FF69FD8197D  mov         dword ptr [rbp+4],0  
+	;int nIndex2 &#x3D; 0;
+00007FF69FD81984  mov         dword ptr [rbp+24h],0  
+	;printf(&quot;nIndex1:&quot;);
+00007FF69FD8198B  lea         rcx,[00007FF69FD8AD70h]  
+00007FF69FD81992  call        00007FF69FD8119A  
+	;scanf(&quot;%d&quot;, &amp;nIndex1);
+00007FF69FD81997  lea         rdx,[rbp+4]  
+00007FF69FD8199B  lea         rcx,[00007FF69FD8AD7Ch]  
+00007FF69FD819A2  call        00007FF69FD8109B  
+	;printf(&quot;nIndex2:&quot;);
+00007FF69FD819A7  lea         rcx,[00007FF69FD8AD80h]  
+00007FF69FD819AE  call        00007FF69FD8119A  
+	;scanf(&quot;%d&quot;, &amp;nIndex2);
+00007FF69FD819B3  lea         rdx,[rbp+24h]  
+00007FF69FD819B7  lea         rcx,[00007FF69FD8AD7Ch]  
+00007FF69FD819BE  call        00007FF69FD8109B  
+	;if (nIndex1 &#x3D;&#x3D; 1 &amp;&amp; nIndex2 &#x3D;&#x3D; 1) &#123;
+00007FF69FD819C3  cmp         dword ptr [rbp+4],1  
+00007FF69FD819C7  jne         00007FF69FD819E0  
+00007FF69FD819C9  cmp         dword ptr [rbp+24h],1  
+00007FF69FD819CD  jne         00007FF69FD819E0  
+		;printf(&quot;%d&quot;, nIndex1);
+00007FF69FD819CF  mov         edx,dword ptr [rbp+4]  
+00007FF69FD819D2  lea         rcx,[00007FF69FD8AD7Ch]  
+00007FF69FD819D9  call        00007FF69FD8119A  
+
+00007FF69FD819DE  jmp         00007FF69FD81A0C  
+	;else if (nIndex1 &#x3D;&#x3D; 2 || nIndex2 &#x3D;&#x3D; 2) &#123;
+00007FF69FD819E0  cmp         dword ptr [rbp+4],2  
+00007FF69FD819E4  je          00007FF69FD819EC  
+00007FF69FD819E6  cmp         dword ptr [rbp+24h],2  
+00007FF69FD819EA  jne         00007FF69FD819FD  
+		;printf(&quot;%d&quot;, nIndex1);
+00007FF69FD819EC  mov         edx,dword ptr [rbp+4]  
+00007FF69FD819EF  lea         rcx,[00007FF69FD8AD7Ch]  
+00007FF69FD819F6  call        00007FF69FD8119A  
+
+00007FF69FD819FB  jmp         00007FF69FD81A0C  
+		;printf(&quot;%d&quot;, nIndex1);
+00007FF69FD819FD  mov         edx,dword ptr [rbp+4]  
+00007FF69FD81A00  lea         rcx,[00007FF69FD8AD7Ch]  
+00007FF69FD81A07  call        00007FF69FD8119A  <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p>x64 Release</p>
+<pre class="line-numbers language-assembly" data-language="assembly"><code class="language-assembly">	;int nIndex1 &#x3D; 0;
+00007FF670ED10F3  xor         eax,eax  
+	;int nIndex2 &#x3D; 0;
+	;printf(&quot;nIndex1:&quot;);
+00007FF670ED10F5  lea         rcx,[00007FF670ED2250h]  
+;一起用eax初始化局部变量
+00007FF670ED10FC  mov         dword ptr [rsp+24h],eax  
+00007FF670ED1100  mov         dword ptr [rsp+20h],eax  
+00007FF670ED1104  call        00007FF670ED1020  
+	;scanf(&quot;%d&quot;, &amp;nIndex1);
+00007FF670ED1109  lea         rdx,[rsp+24h]  
+00007FF670ED110E  lea         rcx,[00007FF670ED225Ch]  
+00007FF670ED1115  call        00007FF670ED1080  
+	;printf(&quot;nIndex2:&quot;);
+00007FF670ED111A  lea         rcx,[00007FF670ED2260h]  
+00007FF670ED1121  call        00007FF670ED1020  
+	;scanf(&quot;%d&quot;, &amp;nIndex2);
+00007FF670ED1126  lea         rdx,[rsp+20h]  
+00007FF670ED112B  lea         rcx,[00007FF670ED225Ch]  
+00007FF670ED1132  call        00007FF670ED1080  
+	;if (nIndex1 &#x3D;&#x3D; 1 &amp;&amp; nIndex2 &#x3D;&#x3D; 1) &#123;
+00007FF670ED1137  mov         edx,dword ptr [rsp+24h]  
+00007FF670ED113B  mov         eax,dword ptr [rsp+20h]  
+	; [rsp+24h]  和1比
+00007FF670ED113F  cmp         edx,1  
+00007FF670ED1142  jne         00007FF670ED1148  
+00007FF670ED1144  cmp         eax,edx  
+00007FF670ED1146  jne         00007FF670ED1148  
+		printf(&quot;%d&quot;, nIndex1);
+	&#125;
+	else if (nIndex1 &#x3D;&#x3D; 2 || nIndex2 &#x3D;&#x3D; 2) &#123;
+		printf(&quot;%d&quot;, nIndex1);
+	&#125;
+	else
+	&#123;
+		printf(&quot;%d&quot;, nIndex1);
+	&#125;
+	system(&quot;pause&quot;);
+	;rcx &#x3D;&quot;%d&quot; 此时的rdx是[rsp+24h]  
+00007FF670ED1148  lea         rcx,[00007FF670ED225Ch]  
+00007FF670ED114F  call        00007FF670ED1020  <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+
                 
             </div>
             <hr/>
@@ -548,7 +787,7 @@
                     </i>
                 </span>
                 <span class="reprint-info">
-                    <a href="https://blog.innnovation.cn/2021/07/12/cao-zuo-xi-tong-ru-he-guan-li-nei-cun-dui-xiang/">https://blog.innnovation.cn/2021/07/12/cao-zuo-xi-tong-ru-he-guan-li-nei-cun-dui-xiang/</a>
+                    <a href="https://blog.innnovation.cn/2021/11/05/hui-bian-x86-x64-tiao-zhuan-yu-ju-fen-xi/">https://blog.innnovation.cn/2021/11/05/hui-bian-x86-x64-tiao-zhuan-yu-ju-fen-xi/</a>
                 </span>
             </div>
             <div class="reprint__notice">
@@ -586,8 +825,12 @@
                     
                         <div class="article-tag">
                             
-                                <a href="/tags/OS/">
-                                    <span class="chip bg-color">OS</span>
+                                <a href="/tags/%E9%80%86%E5%90%91/">
+                                    <span class="chip bg-color">逆向</span>
+                                </a>
+                            
+                                <a href="/tags/%E6%B1%87%E7%BC%96/">
+                                    <span class="chip bg-color">汇编</span>
                                 </a>
                             
                         </div>
@@ -1025,9 +1268,64 @@
 <article id="prenext-posts" class="prev-next articles">
     <div class="row article-row">
         
-        <div class="article col s12 m6" data-aos="fade-up">
+        <div class="article col s12 m6" data-aos="fade-up" data-aos="fade-up">
             <div class="article-badge left-badge text-color">
-                <i class="fas fa-chevron-left"></i>&nbsp;上一篇</div>
+                <i class="far fa-dot-circle"></i>&nbsp;本篇
+            </div>
+            <div class="card">
+                <a href="/2021/11/05/hui-bian-x86-x64-tiao-zhuan-yu-ju-fen-xi/">
+                    <div class="card-image">
+                        
+                        
+                        <img src="/medias/featureimages/16.jpg" class="responsive-img" alt="汇编x86 x64跳转语句分析">
+                        
+                        <span class="card-title">汇编x86 x64跳转语句分析</span>
+                    </div>
+                </a>
+                <div class="card-content article-content">
+                    <div class="summary block-with-text">
+                        
+                            
+                        
+                    </div>
+                    <div class="publish-info">
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-11-05
+                            </span>
+                        <span class="publish-author">
+                            
+                            <i class="fas fa-bookmark fa-fw icon-category"></i>
+                            
+                            <a href="/categories/%E6%B1%87%E7%BC%96/" class="post-category">
+                                    汇编
+                                </a>
+                            
+                            
+                        </span>
+                    </div>
+                </div>
+
+                
+                <div class="card-action article-tags">
+                    
+                    <a href="/tags/%E9%80%86%E5%90%91/">
+                        <span class="chip bg-color">逆向</span>
+                    </a>
+                    
+                    <a href="/tags/%E6%B1%87%E7%BC%96/">
+                        <span class="chip bg-color">汇编</span>
+                    </a>
+                    
+                </div>
+                
+            </div>
+        </div>
+        
+        
+        <div class="article col s12 m6" data-aos="fade-up">
+            <div class="article-badge right-badge text-color">
+                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
+            </div>
             <div class="card">
                 <a href="/2021/07/16/fen-bu-shi-shi-wu/">
                     <div class="card-image">
@@ -1045,9 +1343,9 @@
                         
                     </div>
                     <div class="publish-info">
-                        <span class="publish-date">
-                            <i class="far fa-clock fa-fw icon-date"></i>2021-07-16
-                        </span>
+                            <span class="publish-date">
+                                <i class="far fa-clock fa-fw icon-date"></i>2021-07-16
+                            </span>
                         <span class="publish-author">
                             
                             <i class="fas fa-bookmark fa-fw icon-category"></i>
@@ -1081,54 +1379,6 @@
                     
                     <a href="/tags/Seata/">
                         <span class="chip bg-color">Seata</span>
-                    </a>
-                    
-                </div>
-                
-            </div>
-        </div>
-        
-        
-        <div class="article col s12 m6" data-aos="fade-up">
-            <div class="article-badge right-badge text-color">
-                下一篇&nbsp;<i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="card">
-                <a href="/2021/07/12/cao-zuo-xi-tong-ru-he-hua-fen-yu-zu-zhi-nei-cun/">
-                    <div class="card-image">
-                        
-                        <img src="https://pic.innnovation.cn//img/20210625223502.png" class="responsive-img" alt="操作系统-如何划分和组织内存">
-                        
-                        <span class="card-title">操作系统-如何划分和组织内存</span>
-                    </div>
-                </a>
-                <div class="card-content article-content">
-                    <div class="summary block-with-text">
-                        
-                            
-                        
-                    </div>
-                    <div class="publish-info">
-                            <span class="publish-date">
-                                <i class="far fa-clock fa-fw icon-date"></i>2021-07-12
-                            </span>
-                        <span class="publish-author">
-                            
-                            <i class="fas fa-bookmark fa-fw icon-category"></i>
-                            
-                            <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" class="post-category">
-                                    操作系统
-                                </a>
-                            
-                            
-                        </span>
-                    </div>
-                </div>
-                
-                <div class="card-action article-tags">
-                    
-                    <a href="/tags/OS/">
-                        <span class="chip bg-color">OS</span>
                     </a>
                     
                 </div>
